@@ -23,6 +23,9 @@
     anchored: true
   - type: TimedDespawn
     lifetime: 3.0
+  - type: Tag
+    tags:
+    - HideContextMenu
 
 - type: entity
   id: ESViewconeEffectFootstep

@@ -29,7 +29,7 @@ namespace Content.Shared.Movement.Components
         public const float DefaultBaseSprintSpeed = 4.5f;
 
         // ES START
-        public static Angle ESDefaultBackwardsAngle = Angle.FromDegrees(140);
+        public static Angle ESDefaultBackwardsAngle = Angle.FromDegrees(150);
         // ES END
 
         #endregion
@@ -62,6 +62,11 @@ namespace Content.Shared.Movement.Components
         /// </summary>
         [DataField]
         public float MinimumFrictionSpeed = DefaultMinimumFrictionSpeed;
+
+        // ES START
+        [DataField]
+        public Angle BackwardsAngle = ESDefaultBackwardsAngle;
+        // ES END
 
         #endregion
 
