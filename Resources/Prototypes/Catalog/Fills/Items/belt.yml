@@ -96,8 +96,8 @@
         - id: WireBrush
 
 - type: entity
-  parent: ClothingBeltMedical
   id: ClothingBeltMedicalFilled
+  parent: ClothingBeltMedical
   suffix: Filled
   components:
   - type: EntityTableContainerFill
@@ -118,16 +118,16 @@
         - id: PillCanisterTricordrazine
 
 - type: entity
-  parent: ClothingBeltMedicalEMT
   id: ClothingBeltMedicalEMTFilled
-  suffix: Paramedic, Filled
+  parent: ClothingBeltMedicalEMT
+  suffix: Paramedic,Filled
   components:
   - type: EntityTableContainerFill
     containers:
       storagebase: !type:AllSelector
         children:
-        - id: Bloodpack
-          amount: 2
+        #- id: Bloodpack Funky commented
+        #  amount: 2 Funky commented
         - id: Gauze
         # Reagents focused on emergency response rather than outright healing
         - id: ChemistryBottleInaprovaline
