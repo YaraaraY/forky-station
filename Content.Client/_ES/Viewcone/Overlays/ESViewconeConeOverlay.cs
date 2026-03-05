@@ -37,6 +37,7 @@ public sealed class ESViewconeConeOverlay : Overlay
         IoCManager.InjectDependencies(this);
         _xform = _ent.System<SharedTransformSystem>();
         _viewconeShader = _proto.Index(ShaderPrototype).InstanceUnique();
+        ZIndex = -6;
     }
 
     protected override bool BeforeDraw(in OverlayDrawArgs args)
