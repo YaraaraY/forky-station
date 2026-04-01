@@ -1,13 +1,12 @@
 using Content.Client._ES.Viewcone.Overlays;
 using Content.Client.Eye;
-using Content.Shared._ES.Viewcone;
+using Content.Shared._ES.Viewcone.Components;
 using Content.Shared.MouseRotator;
 using Robust.Client.GameObjects;
 using Robust.Client.Graphics;
 using Robust.Client.Input;
 using Robust.Client.Player;
 using Robust.Shared.Map;
-using Robust.Shared.Physics;
 using Robust.Shared.Player;
 
 namespace Content.Client._ES.Viewcone;
