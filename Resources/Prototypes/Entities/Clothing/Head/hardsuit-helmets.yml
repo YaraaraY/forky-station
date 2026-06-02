@@ -82,12 +82,17 @@
     sprite: Clothing/Head/Hardsuits/engineering.rsi
     layers:
     - state: icon
+      map: [ "enum.ToggleableVisuals.Layer" ]
     - state: icon-unshaded
       shader: unshaded
+      map: [ "unshaded_base" ]
     - state: light-overlay
       visible: false
       shader: unshaded
       map: [ "light" ]
+    - state: icon-up
+      visible: false
+      map: [ "visor_icon" ]
   - type: HandheldLight
     addPrefix: false
   - type: ToggleableVisuals
@@ -139,6 +144,22 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
+  - type: HardsuitVisor
+    isActive: true
+    components:
+    - type: EyeProtection
+    - type: FlashImmunity
+    - type: WeldingMaskOverlay
+      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
+  - type: GenericVisualizer
+    visuals:
+      enum.HardsuitVisorVisuals.IsDown:
+        visor_icon:
+          False: {visible: false}
+          True: {visible: true, state: icon-up}
+        unshaded_base:
+          False: {visible: true}
+          True: {visible: false}
 
 #Spationaut Hardsuit
 - type: entity
@@ -1046,3 +1067,14 @@
     color: "#f4ffad"
     radius: 5
     energy: 2
+
+- type: entity
+  parent: BaseAction
+  id: ActionToggleHardsuitVisor
+  name: Toggle Visor
+  description: Flips the hardsuit visor up or down.
+  components:
+  - type: Action
+    itemIconStyle: BigItem
+  - type: InstantAction
+    event: !type:ToggleHardsuitVisorEvent
