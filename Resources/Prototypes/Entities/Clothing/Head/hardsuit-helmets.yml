@@ -8,12 +8,17 @@
     sprite: Clothing/Head/Hardsuits/atmospherics.rsi
     layers:
     - state: icon
+      map: [ "enum.ToggleableVisuals.Layer" ]
     - state: icon-unshaded
       shader: unshaded
+      map: [ "unshaded_base" ]
     - state: light-overlay
       visible: false
       shader: unshaded
       map: [ "light" ]
+    - state: icon-up
+      visible: false
+      map: [ "visor_icon" ]
   - type: HandheldLight
     addPrefix: false
   - type: ToggleableVisuals
@@ -70,6 +75,22 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
+  - type: HardsuitVisor
+    isActive: true
+    components:
+    - type: EyeProtection
+    - type: FlashImmunity
+    - type: WeldingMaskOverlay
+      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
+  - type: GenericVisualizer
+    visuals:
+      enum.HardsuitVisorVisuals.IsDown:
+        visor_icon:
+          False: {visible: false}
+          True: {visible: true, state: icon-up}
+        unshaded_base:
+          False: {visible: true}
+          True: {visible: false}
 
 #Engineering Hardsuit
 - type: entity
@@ -172,12 +193,17 @@
     sprite: Clothing/Head/Hardsuits/spatiohelm.rsi
     layers:
     - state: icon
+      map: [ "enum.ToggleableVisuals.Layer" ]
     - state: icon-unshaded
       shader: unshaded
+      map: [ "unshaded_base" ]
     - state: light-overlay
       visible: false
       shader: unshaded
       map: [ "light" ]
+    - state: icon-up
+      visible: false
+      map: [ "visor_icon" ]
   - type: HandheldLight
     addPrefix: false
   - type: ToggleableVisuals
@@ -228,6 +254,22 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
+  - type: HardsuitVisor
+    isActive: true
+    components:
+    - type: EyeProtection
+    - type: FlashImmunity
+    - type: WeldingMaskOverlay
+      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
+  - type: GenericVisualizer
+    visuals:
+      enum.HardsuitVisorVisuals.IsDown:
+        visor_icon:
+          False: {visible: false}
+          True: {visible: true, state: icon-up}
+        unshaded_base:
+          False: {visible: true}
+          True: {visible: false}
 
 #Salvage Hardsuit
 - type: entity
@@ -443,12 +485,17 @@
     sprite: Clothing/Head/Hardsuits/engineering-white.rsi
     layers:
     - state: icon
+      map: [ "enum.ToggleableVisuals.Layer" ]
     - state: icon-unshaded
       shader: unshaded
+      map: [ "unshaded_base" ]
     - state: light-overlay
       visible: false
       shader: unshaded
       map: [ "light" ]
+    - state: icon-up
+      visible: false
+      map: [ "visor_icon" ]
   - type: HandheldLight
     addPrefix: false
   - type: ToggleableVisuals
@@ -502,6 +549,22 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
+  - type: HardsuitVisor
+    isActive: true
+    components:
+    - type: EyeProtection
+    - type: FlashImmunity
+    - type: WeldingMaskOverlay
+      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlayWeak.png
+  - type: GenericVisualizer
+    visuals:
+      enum.HardsuitVisorVisuals.IsDown:
+        visor_icon:
+          False: {visible: false}
+          True: {visible: true, state: icon-up}
+        unshaded_base:
+          False: {visible: true}
+          True: {visible: false}
 
 #Chief Medical Officer's Hardsuit
 - type: entity
@@ -1068,6 +1131,8 @@
     radius: 5
     energy: 2
 
+
+# Hardsuit welding visor action, Funky
 - type: entity
   parent: BaseAction
   id: ActionToggleHardsuitVisor
@@ -1075,6 +1140,8 @@
   description: Flips the hardsuit visor up or down.
   components:
   - type: Action
-    itemIconStyle: BigItem
+    icon:
+      sprite: Clothing/Head/Welding/welding.rsi
+      state: icon
   - type: InstantAction
     event: !type:ToggleHardsuitVisorEvent
