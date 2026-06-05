@@ -2,6 +2,8 @@ using Content.Shared.Eye;
 using Content.Shared.Hands;
 using Content.Shared.Interaction;
 using Content.Shared.Inventory.Events;
+using Content.Shared.Actions;
+using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
 using Robust.Shared.Network;
 using Robust.Shared.Serialization;
@@ -13,7 +15,8 @@ public abstract class SharedTrayScannerSystem : EntitySystem
     [Dependency] private readonly INetManager _netMan = default!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedEyeSystem _eye = default!;
-
+    [Dependency] private readonly SharedActionsSystem _actions = default!;
+    [Dependency] private readonly SharedAudioSystem _audio = default!;
     public const float SubfloorRevealAlpha = 0.8f;
 
     public override void Initialize()
@@ -23,6 +26,7 @@ public abstract class SharedTrayScannerSystem : EntitySystem
         SubscribeLocalEvent<TrayScannerComponent, ComponentGetState>(OnTrayScannerGetState);
         SubscribeLocalEvent<TrayScannerComponent, ComponentHandleState>(OnTrayScannerHandleState);
         SubscribeLocalEvent<TrayScannerComponent, ActivateInWorldEvent>(OnTrayScannerActivate);
+        SubscribeLocalEvent<TrayScannerComponent, ToggleTrayScannerEvent>(OnToggleAction);
 
         SubscribeLocalEvent<TrayScannerComponent, GotEquippedHandEvent>(OnTrayHandEquipped);
         SubscribeLocalEvent<TrayScannerComponent, GotUnequippedHandEvent>(OnTrayHandUnequipped);
@@ -71,21 +75,48 @@ public abstract class SharedTrayScannerSystem : EntitySystem
     private void OnTrayHandUnequipped(Entity<TrayScannerComponent> ent, ref GotUnequippedHandEvent args)
     {
         OnUnequip(args.User);
+
+        if (ent.Comp.ToggleActionEntity != null)
+        {
+            _actions.RemoveAction(args.User, ent.Comp.ToggleActionEntity);
+            ent.Comp.ToggleActionEntity = null;
+        }
     }
 
     private void OnTrayHandEquipped(Entity<TrayScannerComponent> ent, ref GotEquippedHandEvent args)
     {
         OnEquip(args.User);
+
+        if (ent.Comp.ToggleAction != null)
+            _actions.AddAction(args.User, ref ent.Comp.ToggleActionEntity, ent.Comp.ToggleAction.Value, ent);
     }
 
     private void OnTrayUnequipped(Entity<TrayScannerComponent> ent, ref GotUnequippedEvent args)
     {
         OnUnequip(args.Equipee);
+
+        if (ent.Comp.ToggleActionEntity != null)
+        {
+            _actions.RemoveAction(args.Equipee, ent.Comp.ToggleActionEntity);
+            ent.Comp.ToggleActionEntity = null;
+        }
     }
 
     private void OnTrayEquipped(Entity<TrayScannerComponent> ent, ref GotEquippedEvent args)
     {
         OnEquip(args.Equipee);
+
+        if (ent.Comp.ToggleAction != null)
+            _actions.AddAction(args.Equipee, ref ent.Comp.ToggleActionEntity, ent.Comp.ToggleAction.Value, ent);
+    }
+
+    private void OnToggleAction(EntityUid uid, TrayScannerComponent scanner, ToggleTrayScannerEvent args)
+    {
+        if (args.Handled)
+            return;
+
+        ToggleScanner(uid, args.Performer, scanner);
+        args.Handled = true;
     }
 
     private void OnTrayScannerActivate(EntityUid uid, TrayScannerComponent scanner, ActivateInWorldEvent args)
@@ -93,8 +124,17 @@ public abstract class SharedTrayScannerSystem : EntitySystem
         if (args.Handled || !args.Complex)
             return;
 
-        SetScannerEnabled(uid, !scanner.Enabled, scanner);
+        ToggleScanner(uid, args.User, scanner);
         args.Handled = true;
+    }
+
+    private void ToggleScanner(EntityUid uid, EntityUid user, TrayScannerComponent scanner)
+    {
+        var isEnabled = !scanner.Enabled;
+        SetScannerEnabled(uid, isEnabled, scanner);
+
+        var sound = isEnabled ? scanner.SoundOn : scanner.SoundOff;
+        _audio.PlayPredicted(sound, uid, user);
     }
 
     private void SetScannerEnabled(EntityUid uid, bool enabled, TrayScannerComponent? scanner = null)

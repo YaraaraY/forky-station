@@ -7,13 +7,13 @@ using Robust.Shared.Serialization;
 namespace Content.Shared._Funkystation.Clothing.Components;
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-public sealed partial class HardsuitVisorComponent : Component
+public sealed partial class HelmetVisorComponent : Component
 {
     [DataField, AutoNetworkedField]
     public bool IsActive;
 
     [DataField]
-    public EntProtoId Action = "ActionToggleHardsuitVisor";
+    public EntProtoId Action = "ActionToggleHelmetVisor";
 
     [DataField]
     public EntityUid? ActionEntity;
@@ -34,12 +34,12 @@ public sealed partial class HardsuitVisorComponent : Component
     public ComponentRegistry Components = new();
 }
 
-public sealed partial class ToggleHardsuitVisorEvent : InstantActionEvent
+public sealed partial class ToggleHelmetVisorEvent : InstantActionEvent
 {
 }
 
 [Serializable, NetSerializable]
-public enum HardsuitVisorVisuals : byte
+public enum HelmetVisorVisuals : byte
 {
     IsDown
 }

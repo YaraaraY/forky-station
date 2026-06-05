@@ -55,8 +55,8 @@
 - type: entity
   parent: [ClothingEyesBase, BaseEngineeringContraband]
   id: ClothingEyesGlassesMeson
-  name: engineering goggles #less confusion
-  description: Green-tinted goggles using a proprietary polymer that provides protection from eye damage of all types.
+  name: NT-THz/G-09 Meson Goggles #more confusion
+  description: Nanotrasen-issue engineering goggles that utilize THz radiation and mesons to reveal sub-floor infrastructure, while protecting the eyes from sparks and debris.
   components:
   - type: Sprite
     sprite: Clothing/Eyes/Glasses/meson.rsi
@@ -68,6 +68,12 @@
     tags:
     - PetWearable
     - WhitelistChameleon
+  - type: TrayScanner
+    toggleAction: ActionToggleTrayScanner
+    soundOn:
+      path: /Audio/Items/flashlight_on.ogg
+    soundOff:
+      path: /Audio/Items/flashlight_off.ogg
 
 - type: entity
   parent: ClothingEyesBase
@@ -299,3 +305,17 @@
     tags:
     - HamsterWearable
     - WhitelistChameleon
+
+- type: entity
+  id: ActionToggleTrayScanner
+  parent: BaseAction
+  name: Toggle T-Ray Scanner
+  description: Turn the T-ray scanning functionality on or off.
+  components:
+  - type: Action
+    icon:
+      sprite: Objects/Tools/t-ray.rsi
+      state: tray-on
+  - type: InstantAction
+    icon: { sprite: Clothing/Eyes/Glasses/meson.rsi, state: icon }
+    event: !type:ToggleTrayScannerEvent

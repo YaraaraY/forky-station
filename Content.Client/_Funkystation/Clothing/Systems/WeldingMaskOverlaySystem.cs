@@ -1,8 +1,10 @@
 ﻿using Content.Shared._Funkystation.Clothing.Components;
 using Content.Shared.Inventory;
+using Content.Shared.Inventory.Events;
 using Robust.Client.Graphics;
 using Robust.Client.Player;
 using Robust.Client.ResourceManagement;
+using Robust.Shared.Player;
 
 namespace Content.Client._Funkystation.Clothing.Systems;
 
@@ -18,30 +20,80 @@ public sealed class WeldingMaskOverlaySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
+
         _overlay = new WeldingMaskOverlay(_cache);
+
+        SubscribeLocalEvent<WeldingMaskOverlayComponent, ComponentStartup>(OnStartup);
+        SubscribeLocalEvent<WeldingMaskOverlayComponent, ComponentShutdown>(OnShutdown);
+        SubscribeLocalEvent<WeldingMaskOverlayComponent, GotEquippedEvent>(OnEquip);
+        SubscribeLocalEvent<WeldingMaskOverlayComponent, GotUnequippedEvent>(OnUnequip);
+        SubscribeLocalEvent<LocalPlayerAttachedEvent>(OnPlayerAttached);
+        SubscribeLocalEvent<LocalPlayerDetachedEvent>(OnPlayerDetached);
     }
 
-    public override void FrameUpdate(float frameTime)
+    private void OnStartup(Entity<WeldingMaskOverlayComponent> ent, ref ComponentStartup args)
     {
-        base.FrameUpdate(frameTime);
+        RefreshOverlay();
+    }
 
+    private void OnShutdown(Entity<WeldingMaskOverlayComponent> ent, ref ComponentShutdown args)
+    {
+
+        RefreshOverlay(ignoreEnt: ent.Owner);
+    }
+
+    private void OnEquip(Entity<WeldingMaskOverlayComponent> ent, ref GotEquippedEvent args)
+    {
+
+        if (args.Equipee == _player.LocalSession?.AttachedEntity && (args.Slot == "head" || args.Slot == "mask"))
+            RefreshOverlay();
+    }
+
+    private void OnUnequip(Entity<WeldingMaskOverlayComponent> ent, ref GotUnequippedEvent args)
+    {
+        if (args.Equipee == _player.LocalSession?.AttachedEntity && (args.Slot == "head" || args.Slot == "mask"))
+            RefreshOverlay(ignoreEnt: ent.Owner);
+    }
+
+    private void OnPlayerAttached(LocalPlayerAttachedEvent args)
+    {
+        RefreshOverlay();
+    }
+
+    private void OnPlayerDetached(LocalPlayerDetachedEvent args)
+    {
+        RefreshOverlay();
+    }
+
+    private void RefreshOverlay(EntityUid? ignoreEnt = null)
+    {
         var localPlayer = _player.LocalSession?.AttachedEntity;
 
-        if (localPlayer == null || !_inventory.TryGetSlotEntity(localPlayer.Value, "head", out var headItem) )
+        if (localPlayer == null)
         {
             RemoveOverlay();
             return;
         }
 
-        if (TryComp<WeldingMaskOverlayComponent>(headItem.Value, out var comp))
+        if (_inventory.TryGetSlotEntity(localPlayer.Value, "head", out var headItem) &&
+            headItem != ignoreEnt &&
+            TryComp<WeldingMaskOverlayComponent>(headItem.Value, out var headComp))
         {
-            _overlay.CurrentTexturePath = comp.Texture;
+            _overlay.CurrentTexturePath = headComp.Texture;
             AddOverlay();
+            return;
         }
-        else
+
+        if (_inventory.TryGetSlotEntity(localPlayer.Value, "mask", out var maskItem) &&
+            maskItem != ignoreEnt &&
+            TryComp<WeldingMaskOverlayComponent>(maskItem.Value, out var maskComp))
         {
-            RemoveOverlay();
+            _overlay.CurrentTexturePath = maskComp.Texture;
+            AddOverlay();
+            return;
         }
+
+        RemoveOverlay();
     }
 
     private void AddOverlay()

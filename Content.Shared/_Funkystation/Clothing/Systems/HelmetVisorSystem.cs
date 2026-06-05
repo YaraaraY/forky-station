@@ -4,51 +4,49 @@ using Content.Shared.Clothing;
 using Content.Shared.Clothing.EntitySystems;
 using Content.Shared.Item;
 using Robust.Shared.Audio.Systems;
-using Robust.Shared.Network;
 
 namespace Content.Shared._Funkystation.Clothing.Systems;
 
-public sealed class HardsuitVisorSystem : EntitySystem
+public sealed class HelmetVisorSystem : EntitySystem
 {
     [Dependency] private readonly SharedActionsSystem _actions = null!;
     [Dependency] private readonly SharedItemSystem _item = null!;
     [Dependency] private readonly SharedAudioSystem _audio = null!;
     [Dependency] private readonly SharedAppearanceSystem _appearance = null!;
-    [Dependency] private readonly INetManager _net = null!;
 
     public override void Initialize()
     {
         base.Initialize();
 
-        SubscribeLocalEvent<HardsuitVisorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<HardsuitVisorComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<HardsuitVisorComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<HardsuitVisorComponent, ToggleHardsuitVisorEvent>(OnToggle);
-        SubscribeLocalEvent<HardsuitVisorComponent, GetEquipmentVisualsEvent>(OnGetVisuals, after: [typeof(ClothingSystem)]);
+        SubscribeLocalEvent<HelmetVisorComponent, MapInitEvent>(OnMapInit);
+        SubscribeLocalEvent<HelmetVisorComponent, ComponentShutdown>(OnShutdown);
+        SubscribeLocalEvent<HelmetVisorComponent, GetItemActionsEvent>(OnGetActions);
+        SubscribeLocalEvent<HelmetVisorComponent, ToggleHelmetVisorEvent>(OnToggle);
+        SubscribeLocalEvent<HelmetVisorComponent, GetEquipmentVisualsEvent>(OnGetVisuals, after: [typeof(ClothingSystem)]);
     }
 
-    private void OnMapInit(Entity<HardsuitVisorComponent> ent, ref MapInitEvent args)
+    private void OnMapInit(Entity<HelmetVisorComponent> ent, ref MapInitEvent args)
     {
         _actions.AddAction(ent.Owner, ref ent.Comp.ActionEntity, ent.Comp.Action);
         UpdateAppearance(ent);
 
-        if (_net.IsServer && !ent.Comp.IsActive)
+        if (!ent.Comp.IsActive)
             EntityManager.AddComponents(ent.Owner, ent.Comp.Components);
     }
 
-    private void OnShutdown(Entity<HardsuitVisorComponent> ent, ref ComponentShutdown args)
+    private void OnShutdown(Entity<HelmetVisorComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.ActionEntity != null)
             _actions.RemoveAction(ent.Owner, ent.Comp.ActionEntity);
     }
 
-    private void OnGetActions(Entity<HardsuitVisorComponent> ent, ref GetItemActionsEvent args)
+    private void OnGetActions(Entity<HelmetVisorComponent> ent, ref GetItemActionsEvent args)
     {
         if (ent.Comp.ActionEntity != null)
             args.AddAction(ent.Comp.ActionEntity.Value);
     }
 
-    private void OnToggle(Entity<HardsuitVisorComponent> ent, ref ToggleHardsuitVisorEvent args)
+    private void OnToggle(Entity<HelmetVisorComponent> ent, ref ToggleHelmetVisorEvent args)
     {
         args.Handled = true;
 
@@ -60,16 +58,13 @@ public sealed class HardsuitVisorSystem : EntitySystem
         UpdateAppearance(ent);
         _item.VisualsChanged(ent.Owner);
 
-        if (_net.IsServer)
-        {
-            if (!ent.Comp.IsActive)
-                EntityManager.AddComponents(ent.Owner, ent.Comp.Components);
-            else
-                EntityManager.RemoveComponents(ent.Owner, ent.Comp.Components);
-        }
+        if (!ent.Comp.IsActive)
+            EntityManager.AddComponents(ent.Owner, ent.Comp.Components);
+        else
+            EntityManager.RemoveComponents(ent.Owner, ent.Comp.Components);
     }
 
-    private void OnGetVisuals(Entity<HardsuitVisorComponent> ent, ref GetEquipmentVisualsEvent args)
+    private void OnGetVisuals(Entity<HelmetVisorComponent> ent, ref GetEquipmentVisualsEvent args)
     {
         var state = ent.Comp.IsActive ? ent.Comp.StateUp : ent.Comp.StateDown;
 
@@ -117,11 +112,11 @@ public sealed class HardsuitVisorSystem : EntitySystem
         args.Layers.Insert(insertIndex, (ent.Comp.VisualLayer, layer));
     }
 
-    private void UpdateAppearance(Entity<HardsuitVisorComponent> ent)
+    private void UpdateAppearance(Entity<HelmetVisorComponent> ent)
     {
         if (TryComp<AppearanceComponent>(ent, out var appearance))
         {
-            _appearance.SetData(ent, HardsuitVisorVisuals.IsDown, !ent.Comp.IsActive, appearance);
+            _appearance.SetData(ent, HelmetVisorVisuals.IsDown, !ent.Comp.IsActive, appearance);
         }
     }
 }

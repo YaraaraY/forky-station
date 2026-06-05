@@ -75,7 +75,7 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
-  - type: HardsuitVisor
+  - type: HelmetVisor
     isActive: true
     components:
     - type: EyeProtection
@@ -84,7 +84,7 @@
       texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
   - type: GenericVisualizer
     visuals:
-      enum.HardsuitVisorVisuals.IsDown:
+      enum.HelmetVisorVisuals.IsDown:
         visor_icon:
           False: {visible: false}
           True: {visible: true, state: icon-up}
@@ -165,7 +165,7 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
-  - type: HardsuitVisor
+  - type: HelmetVisor
     isActive: true
     components:
     - type: EyeProtection
@@ -174,7 +174,7 @@
       texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
   - type: GenericVisualizer
     visuals:
-      enum.HardsuitVisorVisuals.IsDown:
+      enum.HelmetVisorVisuals.IsDown:
         visor_icon:
           False: {visible: false}
           True: {visible: true, state: icon-up}
@@ -254,7 +254,7 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
-  - type: HardsuitVisor
+  - type: HelmetVisor
     isActive: true
     components:
     - type: EyeProtection
@@ -263,7 +263,7 @@
       texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
   - type: GenericVisualizer
     visuals:
-      enum.HardsuitVisorVisuals.IsDown:
+      enum.HelmetVisorVisuals.IsDown:
         visor_icon:
           False: {visible: false}
           True: {visible: true, state: icon-up}
@@ -549,7 +549,7 @@
     tags:
     - CorgiWearable
     - WhitelistChameleon
-  - type: HardsuitVisor
+  - type: HelmetVisor
     isActive: true
     components:
     - type: EyeProtection
@@ -558,7 +558,7 @@
       texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlayWeak.png
   - type: GenericVisualizer
     visuals:
-      enum.HardsuitVisorVisuals.IsDown:
+      enum.HelmetVisorVisuals.IsDown:
         visor_icon:
           False: {visible: false}
           True: {visible: true, state: icon-up}
@@ -1135,13 +1135,13 @@
 # Hardsuit welding visor action, Funky
 - type: entity
   parent: BaseAction
-  id: ActionToggleHardsuitVisor
+  id: ActionToggleHelmetVisor
   name: Toggle Visor
-  description: Flips the hardsuit visor up or down.
+  description: Flips the helmet visor up or down.
   components:
   - type: Action
     icon:
       sprite: Clothing/Head/Welding/welding.rsi
       state: icon
   - type: InstantAction
-    event: !type:ToggleHardsuitVisorEvent
+    event: !type:ToggleHelmetVisorEvent
