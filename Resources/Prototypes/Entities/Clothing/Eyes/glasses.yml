@@ -74,6 +74,10 @@
       path: /Audio/Items/flashlight_on.ogg
     soundOff:
       path: /Audio/Items/flashlight_off.ogg
+  - type: GoggleShader
+    shader: Goggles
+    color: '#5AB43CCC'
+    enabled: false
 
 - type: entity
   parent: ClothingEyesBase

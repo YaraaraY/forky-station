@@ -1,3 +1,4 @@
+using Content.Shared._Funkystation.Clothing.Components;
 using Content.Shared.Eye;
 using Content.Shared.Hands;
 using Content.Shared.Interaction;
@@ -144,6 +145,12 @@ public abstract class SharedTrayScannerSystem : EntitySystem
 
         scanner.Enabled = enabled;
         Dirty(uid, scanner);
+
+        if (TryComp<GoggleShaderComponent>(uid, out var goggleShader))
+        {
+            goggleShader.Enabled = enabled;
+            Dirty(uid, goggleShader);
+        }
 
         // We don't remove from _activeScanners on disabled, because the update function will handle that, as well as
         // managing the revealed subfloor entities
