@@ -1,7 +1,9 @@
 ﻿using Content.Shared._Funkystation.Clothing.Components;
+using Content.Shared.CCVar;
 using Content.Shared.Inventory;
 using Robust.Client.Graphics;
 using Robust.Client.Player;
+using Robust.Shared.Configuration;
 using Robust.Shared.Prototypes;
 
 namespace Content.Client._Funkystation.Clothing.Systems;
@@ -12,6 +14,7 @@ public sealed class GoggleShaderSystem : EntitySystem
     [Dependency] private readonly IPlayerManager _playerManager = null!;
     [Dependency] private readonly InventorySystem _inventory = null!;
     [Dependency] private readonly IPrototypeManager _prototype = null!;
+    [Dependency] private readonly IConfigurationManager _cfg = null!;
 
     private GoggleShaderOverlay _overlay = null!;
     private bool _overlayAdded;
@@ -32,6 +35,8 @@ public sealed class GoggleShaderSystem : EntitySystem
             ClearOverlay();
             return;
         }
+
+        _overlay.ReducedMotion = _cfg.GetCVar(CCVars.ReducedMotion);
 
         _overlay.ActiveShaders.Clear();
 

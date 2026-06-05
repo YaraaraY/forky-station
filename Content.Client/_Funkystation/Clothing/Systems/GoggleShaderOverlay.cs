@@ -11,6 +11,8 @@ public sealed class GoggleShaderOverlay(IPrototypeManager prototype) : Overlay
 
     public readonly List<(string Shader, Color Color)> ActiveShaders = new();
 
+    public bool ReducedMotion;
+
     protected override bool BeforeDraw(in OverlayDrawArgs args)
     {
         return ActiveShaders.Count > 0;
@@ -32,6 +34,8 @@ public sealed class GoggleShaderOverlay(IPrototypeManager prototype) : Overlay
             var instance = proto.InstanceUnique();
             instance.SetParameter("color", color);
             instance.SetParameter("SCREEN_TEXTURE", ScreenTexture);
+
+            instance.SetParameter("reducedMotion", ReducedMotion ? 1.0f : 0.0f);
 
             worldHandle.UseShader(instance);
             worldHandle.DrawRect(worldBounds, Color.White);

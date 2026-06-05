@@ -1,24 +1,28 @@
 ﻿uniform sampler2D SCREEN_TEXTURE;
 uniform lowp vec4 color;
+uniform lowp float reducedMotion; // 1.0 if CCVars.ReducedMotion is active, otherwise 0.0
 
 void fragment() {
     highp vec2 uv = FRAGCOORD.xy * SCREEN_PIXEL_SIZE.xy;
 
-    highp float zoom = 0.97;
-    highp vec2 centerOffset = (uv - 0.5) * zoom;
+    highp float zoom = mix(0.97, 1.0, reducedMotion);
+    highp float warpStrength = mix(0.06, 0.0, reducedMotion);
+    highp float scanlineSpeed = mix(1.5, 0.0, reducedMotion);
 
+    highp vec2 centerOffset = (uv - 0.5) * zoom;
     highp float radiusSquared = centerOffset.x * centerOffset.x + centerOffset.y * centerOffset.y;
-    highp vec2 distortedUv = 0.5 + centerOffset + centerOffset * (radiusSquared * 0.06);
+    highp vec2 distortedUv = 0.5 + centerOffset + centerOffset * (radiusSquared * warpStrength);
 
     distortedUv = clamp(distortedUv, 0.001, 0.999);
 
     lowp vec4 texColor = texture2D(SCREEN_TEXTURE, distortedUv);
     lowp vec3 tinted = texColor.rgb * color.rgb;
 
-    highp float scanline = sin(distortedUv.y * 220.0 + TIME * 1.5);
+    highp float scanline = sin(distortedUv.y * 220.0 + TIME * scanlineSpeed);
     scanline = mix(0.88, 1.0, (scanline + 1.0) * 0.5);
 
-    highp float flicker = 0.992 + 0.008 * sin(TIME * 45.0);
+    highp float flickerVal = 0.992 + 0.008 * sin(TIME * 45.0);
+    highp float flicker = mix(flickerVal, 1.0, reducedMotion);
 
     COLOR = vec4(tinted * scanline * flicker, texColor.a * color.a);
 }
