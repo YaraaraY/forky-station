@@ -321,5 +321,4 @@
       sprite: Objects/Tools/t-ray.rsi
       state: tray-on
   - type: InstantAction
-    icon: { sprite: Clothing/Eyes/Glasses/meson.rsi, state: icon }
     event: !type:ToggleTrayScannerEvent
