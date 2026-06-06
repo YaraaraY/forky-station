@@ -4,6 +4,7 @@ using Content.Shared.Hands;
 using Content.Shared.Interaction;
 using Content.Shared.Inventory.Events;
 using Content.Shared.Actions;
+using Content.Shared.Actions.Components;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.GameStates;
 using Robust.Shared.Network;
@@ -77,9 +78,13 @@ public abstract class SharedTrayScannerSystem : EntitySystem
     {
         OnUnequip(args.User);
 
-        if (ent.Comp.ToggleActionEntity != null)
+        if (ent.Comp.ToggleActionEntity is { } action)
         {
-            _actions.RemoveAction(args.User, ent.Comp.ToggleActionEntity);
+            if (TryComp(action, out TransformComponent? xform) && xform.ParentUid == args.User)
+                _actions.RemoveAction(args.User, action);
+            else
+                QueueDel(action);
+
             ent.Comp.ToggleActionEntity = null;
         }
     }
@@ -88,7 +93,7 @@ public abstract class SharedTrayScannerSystem : EntitySystem
     {
         OnEquip(args.User);
 
-        if (ent.Comp.ToggleAction != null)
+        if (ent.Comp.ToggleAction != null && HasComp<ActionsComponent>(args.User))
             _actions.AddAction(args.User, ref ent.Comp.ToggleActionEntity, ent.Comp.ToggleAction.Value, ent);
     }
 
@@ -96,9 +101,13 @@ public abstract class SharedTrayScannerSystem : EntitySystem
     {
         OnUnequip(args.Equipee);
 
-        if (ent.Comp.ToggleActionEntity != null)
+        if (ent.Comp.ToggleActionEntity is { } action)
         {
-            _actions.RemoveAction(args.Equipee, ent.Comp.ToggleActionEntity);
+            if (TryComp(action, out TransformComponent? xform) && xform.ParentUid == args.Equipee)
+                _actions.RemoveAction(args.Equipee, action);
+            else
+                QueueDel(action);
+
             ent.Comp.ToggleActionEntity = null;
         }
     }
@@ -107,7 +116,7 @@ public abstract class SharedTrayScannerSystem : EntitySystem
     {
         OnEquip(args.Equipee);
 
-        if (ent.Comp.ToggleAction != null)
+        if (ent.Comp.ToggleAction != null && HasComp<ActionsComponent>(args.Equipee))
             _actions.AddAction(args.Equipee, ref ent.Comp.ToggleActionEntity, ent.Comp.ToggleAction.Value, ent);
     }
 
@@ -146,7 +155,7 @@ public abstract class SharedTrayScannerSystem : EntitySystem
         scanner.Enabled = enabled;
         Dirty(uid, scanner);
 
-        if (TryComp<GoggleShaderComponent>(uid, out var goggleShader))
+        if (TryComp(uid, out GoggleShaderComponent? goggleShader))
         {
             goggleShader.Enabled = enabled;
             Dirty(uid, goggleShader);
@@ -155,7 +164,7 @@ public abstract class SharedTrayScannerSystem : EntitySystem
         // We don't remove from _activeScanners on disabled, because the update function will handle that, as well as
         // managing the revealed subfloor entities
 
-        if (TryComp<AppearanceComponent>(uid, out var appearance))
+        if (TryComp(uid, out AppearanceComponent? appearance))
         {
             _appearance.SetData(uid, TrayScannerVisual.Visual, scanner.Enabled ? TrayScannerVisual.On : TrayScannerVisual.Off, appearance);
         }
