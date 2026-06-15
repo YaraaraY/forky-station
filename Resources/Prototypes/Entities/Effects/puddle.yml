@@ -259,11 +259,6 @@
     solution: print
   - type: BadDrink
   - type: IgnoresFingerprints
-  - type: Drink
-    delay: 3
-    transferAmount: 0.5
-    solution: print
-    examinable: false
   - type: Tag
     tags:
     - DNASolutionScannable
