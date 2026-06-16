@@ -217,6 +217,7 @@
     tags:
     - DNASolutionScannable
 
+# Funky footprints
 - type: entity
   name: footprint
   id: Footprint

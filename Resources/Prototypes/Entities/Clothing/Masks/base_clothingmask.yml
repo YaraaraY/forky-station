@@ -12,7 +12,7 @@
   - type: StaticPrice
     price: 25
   - type: Appearance
-  - type: SolutionContainerManager
+  - type: SolutionContainerManager # Funky change
     solutions:
       stain:
         maxVol: 5
