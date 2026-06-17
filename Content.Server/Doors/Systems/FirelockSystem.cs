@@ -60,7 +60,8 @@ namespace Content.Server.Doors.Systems
                 // only bother to check pressure on doors that are some variation of closed.
                 if (door.State != DoorState.Closed
                     && door.State != DoorState.Welded
-                    && door.State != DoorState.Denying)
+                    && door.State != DoorState.Denying
+                    && door.State != DoorState.Open) // Funky
                 {
                     continue;
                 }
@@ -69,17 +70,28 @@ namespace Content.Server.Doors.Systems
                     && xformQuery.TryGetComponent(uid, out var xform)
                     && appearanceQuery.TryGetComponent(uid, out var appearance))
                 {
-                    var (pressure, fire) = CheckPressureAndFire(uid, firelock, xform, airtight, airtightQuery);
-                    _appearance.SetData(uid, DoorVisuals.ClosedLights, fire || pressure, appearance);
-                    firelock.Temperature = fire;
-                    firelock.Pressure = pressure;
-                    _appearance.SetData(uid, FirelockVisuals.PressureWarning, pressure, appearance);
-                    _appearance.SetData(uid, FirelockVisuals.TemperatureWarning, fire, appearance);
-                    Dirty(uid, firelock);
+                    var (pressure, fire) = CheckPressureAndFire(uid, firelock, xform, airtight, airtightQuery, door.State == DoorState.Open);
 
-                    if (pointLightQuery.TryComp(uid, out var pointLight))
+                    if (door.State == DoorState.Open)
                     {
-                        _pointLight.SetEnabled(uid, fire | pressure, pointLight);
+                        if (pressure || fire)
+                        {
+                            EmergencyPressureStop(uid, firelock, door);
+                        }
+                    }
+                    else
+                    {
+                        _appearance.SetData(uid, DoorVisuals.ClosedLights, fire || pressure, appearance);
+                        firelock.Temperature = fire;
+                        firelock.Pressure = pressure;
+                        _appearance.SetData(uid, FirelockVisuals.PressureWarning, pressure, appearance);
+                        _appearance.SetData(uid, FirelockVisuals.TemperatureWarning, fire, appearance);
+                        Dirty(uid, firelock);
+
+                        if (pointLightQuery.TryComp(uid, out var pointLight))
+                        {
+                            _pointLight.SetEnabled(uid, fire | pressure, pointLight);
+                        }
                     }
                 }
             }
@@ -113,13 +125,14 @@ namespace Content.Server.Doors.Systems
         }
 
         public (bool Pressure, bool Fire) CheckPressureAndFire(
-        EntityUid uid,
-        FirelockComponent firelock,
-        TransformComponent xform,
-        AirtightComponent airtight,
-        EntityQuery<AirtightComponent> airtightQuery)
+            EntityUid uid,
+            FirelockComponent firelock,
+            TransformComponent xform,
+            AirtightComponent airtight,
+            EntityQuery<AirtightComponent> airtightQuery,
+            bool checkEvenIfOpen = false)
         {
-            if (!airtight.AirBlocked)
+            if (!checkEvenIfOpen && !airtight.AirBlocked)
                 return (false, false);
 
             if (TryComp(uid, out DockingComponent? dock) && dock.Docked)
