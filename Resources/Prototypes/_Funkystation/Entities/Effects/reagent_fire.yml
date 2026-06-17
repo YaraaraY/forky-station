@@ -5,8 +5,9 @@
   - type: Transform
   - type: Sprite
     sprite: _Funkystation/Effects/reagentfire.rsi
-    state: "4"
-    shader: unshaded
+    layers:
+    - state: "4"
+      shader: unshaded
     visible: true
     drawdepth: Overlays
   - type: Appearance
@@ -14,8 +15,7 @@
 
 - type: particleEffect
   id: ReagentFireContinuous
-  parents: [ SfFireContinuous ]
-  renderLayer: 5
+  parent: SfFireContinuous
   sprite:
     sprite: _Starfall/Particles/generic.rsi
     state: dot
@@ -43,11 +43,12 @@
 
 - type: particleEffect
   id: ReagentFireSmoke
-  parents: [ SfFireSmoke ]
-  renderLayer: 1
-  gravity: -1.2
+  parent: SfFireSmoke
   sprite:
     sprite: Effects/chemsmoke.rsi
     state: chemsmoke
-  startColor: "#FFFFFF66" # Softened base opacity
+  renderLayer: 1
+  gravity: -1.2
+  spawnOffset: 0, 0.4
+  startColor: "#FFFFFF66"
   endColor: "#FFFFFF00"
