@@ -425,12 +425,16 @@ namespace Content.Server._Funkystation.ReagentFires.Systems
 
                 var fireVolume = 50f * flammability;
                 var fireEvent = new TileFireEvent(tileMix?.Temperature ?? (Atmospherics.T0C + 50f * flammability), fireVolume);
+
+                var xformQuery = GetEntityQuery<TransformComponent>();
                 foreach (var ent in standingEntities)
                 {
-                    if (ent == uid)
+                    if (ent == uid || Deleted(ent))
                         continue;
 
-                    var entXform = Transform(ent);
+                    if (!xformQuery.TryGetComponent(ent, out var entXform))
+                        continue;
+
                     if (_transform.GetGridTilePositionOrDefault((ent, entXform)) != tilePos)
                         continue;
 
@@ -439,6 +443,9 @@ namespace Content.Server._Funkystation.ReagentFires.Systems
                         var ignoreResistances = !HasComp<MobStateComponent>(ent);
                         _damageable.TryChangeDamage(ent, totalDamage, ignoreResistances: ignoreResistances);
                     }
+
+                    if (Deleted(ent))
+                        continue;
 
                     RaiseLocalEvent(ent, ref fireEvent);
                 }
