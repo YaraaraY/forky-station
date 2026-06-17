@@ -1,9 +1,11 @@
 ﻿using Content.Shared._Funkystation.Clothing.Components;
 using Content.Shared.CCVar;
 using Content.Shared.Inventory;
+using Content.Shared.Inventory.Events;
 using Robust.Client.Graphics;
 using Robust.Client.Player;
 using Robust.Shared.Configuration;
+using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 
 namespace Content.Client._Funkystation.Clothing.Systems;
@@ -17,70 +19,114 @@ public sealed class GoggleShaderSystem : EntitySystem
     [Dependency] private readonly IConfigurationManager _cfg = null!;
 
     private GoggleShaderOverlay _overlay = null!;
-    private bool _overlayAdded;
 
     public override void Initialize()
     {
         base.Initialize();
         _overlay = new GoggleShaderOverlay(_prototype);
+
+        _cfg.OnValueChanged(CCVars.ReducedMotion, value => _overlay.ReducedMotion = value, true);
+
+        SubscribeLocalEvent<GoggleShaderComponent, ComponentStartup>(OnStartup);
+        SubscribeLocalEvent<GoggleShaderComponent, ComponentShutdown>(OnShutdown);
+        SubscribeLocalEvent<GoggleShaderComponent, GotEquippedEvent>(OnEquip);
+        SubscribeLocalEvent<GoggleShaderComponent, GotUnequippedEvent>(OnUnequip);
+        SubscribeLocalEvent<GoggleShaderComponent, GoggleShaderToggledEvent>(OnGoggleShaderToggled);
+        SubscribeLocalEvent<LocalPlayerAttachedEvent>(OnPlayerAttached);
+        SubscribeLocalEvent<LocalPlayerDetachedEvent>(OnPlayerDetached);
     }
 
-    public override void Update(float frameTime)
+    private void OnStartup(Entity<GoggleShaderComponent> ent, ref ComponentStartup args)
     {
-        base.Update(frameTime);
+        RefreshOverlay();
+    }
 
-        var player = _playerManager.LocalEntity;
-        if (player == null)
+    private void OnShutdown(Entity<GoggleShaderComponent> ent, ref ComponentShutdown args)
+    {
+        RefreshOverlay(ignoreEnt: ent.Owner);
+    }
+
+    private void OnEquip(Entity<GoggleShaderComponent> ent, ref GotEquippedEvent args)
+    {
+        if (args.Equipee == _playerManager.LocalEntity && (args.Slot == "head" || args.Slot == "eyes"))
+            RefreshOverlay();
+    }
+
+    private void OnUnequip(Entity<GoggleShaderComponent> ent, ref GotUnequippedEvent args)
+    {
+        if (args.Equipee == _playerManager.LocalEntity && (args.Slot == "head" || args.Slot == "eyes"))
+            RefreshOverlay(ignoreEnt: ent.Owner);
+    }
+
+    private void OnGoggleShaderToggled(Entity<GoggleShaderComponent> ent, ref GoggleShaderToggledEvent args)
+    {
+        RefreshOverlay();
+    }
+
+    private void OnPlayerAttached(LocalPlayerAttachedEvent args)
+    {
+        RefreshOverlay();
+    }
+
+    private void OnPlayerDetached(LocalPlayerDetachedEvent args)
+    {
+        RefreshOverlay();
+    }
+
+    private void RefreshOverlay(EntityUid? ignoreEnt = null)
+    {
+        var localPlayer = _playerManager.LocalEntity;
+
+        if (localPlayer == null)
         {
-            ClearOverlay();
+            RemoveOverlay();
             return;
         }
 
-        _overlay.ReducedMotion = _cfg.GetCVar(CCVars.ReducedMotion);
-
         _overlay.ActiveShaders.Clear();
 
-        if (_inventory.TryGetSlotEntity(player.Value, "eyes", out var eyesEnt) &&
-            TryComp<GoggleShaderComponent>(eyesEnt, out var eyesGoggles) &&
-            eyesGoggles.Enabled)
+        if (_inventory.TryGetSlotEntity(localPlayer.Value, "eyes", out var eyesItem) &&
+            eyesItem != ignoreEnt &&
+            TryComp<GoggleShaderComponent>(eyesItem.Value, out var eyesComp) &&
+            eyesComp.Enabled)
         {
-            _overlay.ActiveShaders.Add((eyesGoggles.Shader, eyesGoggles.Color));
+            _overlay.ActiveShaders.Add((eyesComp.Shader, eyesComp.Color));
         }
 
-        if (_inventory.TryGetSlotEntity(player.Value, "head", out var headEnt) &&
-            TryComp<GoggleShaderComponent>(headEnt, out var headGoggles) &&
-            headGoggles.Enabled)
+        if (_inventory.TryGetSlotEntity(localPlayer.Value, "head", out var headItem) &&
+            headItem != ignoreEnt &&
+            TryComp<GoggleShaderComponent>(headItem.Value, out var headComp) &&
+            headComp.Enabled)
         {
-            _overlay.ActiveShaders.Add((headGoggles.Shader, headGoggles.Color));
+            _overlay.ActiveShaders.Add((headComp.Shader, headComp.Color));
         }
 
         if (_overlay.ActiveShaders.Count > 0)
         {
-            if (!_overlayAdded)
-            {
-                _overlayMan.AddOverlay(_overlay);
-                _overlayAdded = true;
-            }
+            AddOverlay();
         }
         else
         {
-            ClearOverlay();
+            RemoveOverlay();
         }
     }
 
-    private void ClearOverlay()
+    private void AddOverlay()
+    {
+        if (!_overlayMan.HasOverlay<GoggleShaderOverlay>())
+            _overlayMan.AddOverlay(_overlay);
+    }
+
+    private void RemoveOverlay()
     {
         _overlay.ActiveShaders.Clear();
-        if (_overlayAdded)
-        {
+        if (_overlayMan.HasOverlay<GoggleShaderOverlay>())
             _overlayMan.RemoveOverlay(_overlay);
-            _overlayAdded = false;
-        }
     }
 
     public override void Shutdown()
     {
         base.Shutdown();
-        ClearOverlay();
+        RemoveOverlay();
     }
 }

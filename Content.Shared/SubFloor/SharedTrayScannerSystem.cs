@@ -166,6 +166,9 @@ public abstract class SharedTrayScannerSystem : EntitySystem
         {
             goggleShader.Enabled = enabled;
             Dirty(uid, goggleShader);
+
+            var ev = new GoggleShaderToggledEvent(enabled);
+            RaiseLocalEvent(uid, ref ev);
         }
 
         // We don't remove from _activeScanners on disabled, because the update function will handle that, as well as
