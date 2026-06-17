@@ -140,9 +140,12 @@ namespace Content.Server.Doors.Systems
                 // Currently docking automatically opens the doors. But maybe in future, check the pressure difference before opening doors?
                 return (false, false);
             }
-
-            if (!HasComp<GridAtmosphereComponent>(xform.ParentUid))
+            if (!HasComp<GridAtmosphereComponent>(xform.ParentUid) ||
+                !HasComp<MapGridComponent>(xform.ParentUid) ||
+                !HasComp<MapAtmosphereComponent>(xform.MapUid))
+            {
                 return (false, false);
+            }
 
             var grid = Comp<MapGridComponent>(xform.ParentUid);
             var pos = _mapping.CoordinatesToTile(xform.ParentUid, grid, xform.Coordinates);
