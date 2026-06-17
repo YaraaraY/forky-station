@@ -61,7 +61,7 @@ namespace Content.Server.Doors.Systems
                 if (door.State != DoorState.Closed
                     && door.State != DoorState.Welded
                     && door.State != DoorState.Denying
-                    && door.State != DoorState.Open) // Funky
+                    && door.State != DoorState.Open) // Funky change
                 {
                     continue;
                 }
@@ -70,8 +70,9 @@ namespace Content.Server.Doors.Systems
                     && xformQuery.TryGetComponent(uid, out var xform)
                     && appearanceQuery.TryGetComponent(uid, out var appearance))
                 {
-                    var (pressure, fire) = CheckPressureAndFire(uid, firelock, xform, airtight, airtightQuery, door.State == DoorState.Open);
+                    var (pressure, fire) = CheckPressureAndFire(uid, firelock, xform, airtight, airtightQuery, door.State == DoorState.Open); // Funky change
 
+                    // Funky change
                     if (door.State == DoorState.Open)
                     {
                         if (pressure || fire)
@@ -130,9 +131,9 @@ namespace Content.Server.Doors.Systems
             TransformComponent xform,
             AirtightComponent airtight,
             EntityQuery<AirtightComponent> airtightQuery,
-            bool checkEvenIfOpen = false)
+            bool checkEvenIfOpen = false) // Funky change
         {
-            if (!checkEvenIfOpen && !airtight.AirBlocked)
+            if (!checkEvenIfOpen && !airtight.AirBlocked) // Funky change
                 return (false, false);
 
             if (TryComp(uid, out DockingComponent? dock) && dock.Docked)
@@ -140,6 +141,8 @@ namespace Content.Server.Doors.Systems
                 // Currently docking automatically opens the doors. But maybe in future, check the pressure difference before opening doors?
                 return (false, false);
             }
+
+            // Funky change
             if (!HasComp<GridAtmosphereComponent>(xform.ParentUid) ||
                 !HasComp<MapGridComponent>(xform.ParentUid) ||
                 !HasComp<MapAtmosphereComponent>(xform.MapUid))
