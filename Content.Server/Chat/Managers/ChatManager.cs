@@ -364,18 +364,13 @@ internal sealed partial class ChatManager : IChatManager
     // RMC Mentor Chat Funky Port
     private void SendMentorChat(ICommonSession player, string message)
     {
-        _sawmill.Info($"[DEBUG] SendMentorChat invoked for {player.Name}. Message: '{message}'");
-
         if (!_mentorManager.IsMentor(player.UserId))
         {
             _adminLogger.Add(LogType.Chat, LogImpact.Extreme, $"{player:Player} attempted to send mentor chat message but was not mentor");
-            _sawmill.Warning($"[DEBUG] SendMentorChat aborted: {player.Name} is not a mentor.");
             return;
         }
 
         var clients = _mentorManager.GetActiveMentors().Select(p => p.Channel).ToList();
-        _sawmill.Info($"[DEBUG] Found {clients.Count} active mentors to receive message.");
-
         var wrappedMessage = Loc.GetString("chat-manager-send-admin-chat-wrap-message",
             ("adminChannelName", "MENTOR"),
             ("playerName", player.Name), ("message", FormattedMessage.EscapeText(message)));
@@ -394,7 +389,6 @@ internal sealed partial class ChatManager : IChatManager
                 author: player.UserId);
         }
 
-        _sawmill.Info("[DEBUG] Sending message to Discord...");
         _discordLink.SendMessage(message, player.Name, ChatChannel.MentorChat);
         _adminLogger.Add(LogType.Chat, $"Mentor chat from {player:Player}: {message}");
     }

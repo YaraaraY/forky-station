@@ -1,12 +1,10 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.Administration.Managers;
 using Content.Server.Database;
 using Content.Server.Players.RateLimiting;
 using Content.Shared._RMC14.CCVar;
 using Content.Shared._RMC14.Mentor;
-using Content.Shared.Administration;
 using Content.Shared.Players.RateLimiting;
 using Content.Shared.Roles;
 using Robust.Server.Player;
@@ -32,7 +30,9 @@ public sealed class MentorManager : IPostInjectInit
     [Dependency] private readonly UserDbDataManager _userDb = default!;
 
     private const string RateLimitKey = "MentorHelp";
-    private static readonly ProtoId<JobPrototype> MentorJob = "CMSeniorEnlistedAdvisor";
+
+    // RMC Mentor Chat Funky Port
+    private static readonly ProtoId<JobPrototype> MentorJob = "Mentor";
 
     private readonly List<ICommonSession> _activeMentors = new();
     private readonly Dictionary<NetUserId, bool> _mentors = new();
@@ -42,13 +42,21 @@ public sealed class MentorManager : IPostInjectInit
 
     private async Task LoadData(ICommonSession player, CancellationToken cancel)
     {
-        // Debug override: Make every player a mentor
-        var isMentor = true;
+        var userId = player.UserId;
+
+        // RMC Mentor Chat Funky Port, Whitelist check & automatic Admin promotion
+        var isMentor = await _db.IsJobWhitelisted(player.UserId, MentorJob, cancel);
+
+        if (!isMentor)
+        {
+            var dbData = await _db.GetAdminDataForAsync(userId, cancel);
+            isMentor = dbData != null;
+        }
 
         _mentors[player.UserId] = isMentor;
-        _activeMentors.Add(player);
 
-        await Task.CompletedTask;
+        if (isMentor)
+            _activeMentors.Add(player);
     }
 
     private void FinishLoad(ICommonSession player)
