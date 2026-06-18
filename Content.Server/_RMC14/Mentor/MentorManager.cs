@@ -1,10 +1,12 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.Administration.Managers;
 using Content.Server.Database;
 using Content.Server.Players.RateLimiting;
 using Content.Shared._RMC14.CCVar;
 using Content.Shared._RMC14.Mentor;
+using Content.Shared.Administration;
 using Content.Shared.Players.RateLimiting;
 using Content.Shared.Roles;
 using Robust.Server.Player;
@@ -40,6 +42,8 @@ public sealed class MentorManager : IPostInjectInit
     private readonly Dictionary<NetUserId, List<NetUserId>> _destinationClaims = new();
     private readonly Dictionary<NetUserId, HashSet<NetUserId>> _mentorClaims = new();
 
+    private bool _rateLimitRegistered;
+
     private async Task LoadData(ICommonSession player, CancellationToken cancel)
     {
         var userId = player.UserId;
@@ -50,7 +54,18 @@ public sealed class MentorManager : IPostInjectInit
         if (!isMentor)
         {
             var dbData = await _db.GetAdminDataForAsync(userId, cancel);
-            isMentor = dbData != null;
+            var flags = AdminFlags.None;
+            if (dbData?.AdminRank?.Flags != null)
+            {
+                flags |= AdminFlagsHelper.NamesToFlags(dbData.AdminRank.Flags.Select(p => p.Flag));
+            }
+
+            if (dbData?.Flags != null)
+            {
+                flags |= AdminFlagsHelper.NamesToFlags(dbData.Flags.Select(p => p.Flag));
+            }
+
+            isMentor = flags.HasFlag(AdminFlags.MentorHelp);
         }
 
         _mentors[player.UserId] = isMentor;
@@ -93,6 +108,22 @@ public sealed class MentorManager : IPostInjectInit
         }
     }
 
+    private void EnsureRateLimit()
+    {
+        if (_rateLimitRegistered)
+            return;
+
+        _rateLimitRegistered = true;
+        _rateLimit.Register(
+            RateLimitKey,
+            new RateLimitRegistration(
+                RMCCVars.RMCMentorHelpRateLimitPeriod,
+                RMCCVars.RMCMentorHelpRateLimitCount,
+                _ => { }
+            )
+        );
+    }
+
     private void OnMentorSendMessage(MentorSendMessageMsg message)
     {
         var destination = new NetUserId(message.To);
@@ -118,7 +149,12 @@ public sealed class MentorManager : IPostInjectInit
 
     private void OnMentorHelpClientMessage(MentorHelpClientMsg message)
     {
+        EnsureRateLimit();
+
         if (!_player.TryGetSessionById(message.MsgChannel.UserId, out var author))
+            return;
+
+        if (_rateLimit.CountAction(author, RateLimitKey) != RateLimitStatus.Allowed)
             return;
 
         SendMentorMessage(author.UserId, author.Name, author, author.Name, message.Message, message.MsgChannel);
@@ -409,14 +445,6 @@ public sealed class MentorManager : IPostInjectInit
         _userDb.AddOnLoadPlayer(LoadData);
         _userDb.AddOnFinishLoad(FinishLoad);
         _userDb.AddOnPlayerDisconnect(ClientDisconnected);
-        _rateLimit.Register(
-            RateLimitKey,
-            new RateLimitRegistration(
-                RMCCVars.RMCMentorHelpRateLimitPeriod,
-                RMCCVars.RMCMentorHelpRateLimitCount,
-                _ => { }
-            )
-        );
 
         _player.PlayerStatusChanged += OnPlayerStatusChanged;
     }
