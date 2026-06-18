@@ -1,12 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Content.Server._RMC14.Mentor; // RMC Mentor Chat Funky Port
 using Content.Server.Administration.Logs;
 using Content.Server.Administration.Managers;
 using Content.Server.Administration.Systems;
 using Content.Server.Discord.DiscordLink;
 using Content.Server.Players.RateLimiting;
 using Content.Server.Preferences.Managers;
+using Content.Shared._RMC14.CCVar; // RMC Mentor Chat Funky Port
 using Content.Shared.Administration;
 using Content.Shared.CCVar;
 using Content.Shared.Chat;
@@ -46,6 +48,7 @@ internal sealed partial class ChatManager : IChatManager
     [Dependency] private readonly ISharedPlayerManager _player = default!;
     [Dependency] private readonly DiscordChatLink _discordLink = default!;
     [Dependency] private readonly ILogManager _logManager = default!;
+    [Dependency] private readonly MentorManager _mentorManager = default!; // RMC Mentor Chat Funky Port
 
     private ISawmill _sawmill = default!;
 
@@ -232,6 +235,29 @@ internal sealed partial class ChatManager : IChatManager
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Hook admin from {sender}: {message}");
     }
 
+    // RMC Mentor Chat Funky Port
+    public void SendHookMentor(string sender, string message)
+    {
+        var clients = _mentorManager.GetActiveMentors().Select(p => p.Channel);
+
+        var wrappedMessage = $"MENTOR: (D){sender}: {FormattedMessage.EscapeText(message)}";
+        foreach (var client in clients)
+        {
+            ChatMessageToOne(
+                ChatChannel.MentorChat,
+                message,
+                wrappedMessage,
+                source: EntityUid.Invalid,
+                hideChat: false,
+                client: client,
+                recordReplay: false,
+                audioPath: _netConfigManager.GetClientCVar(client, RMCCVars.RMCMentorChatSound),
+                audioVolume: _netConfigManager.GetClientCVar(client, RMCCVars.RMCMentorChatVolume));
+        }
+
+        _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Hook mentor from {sender}: {message}");
+    }
+
     #endregion
 
     #region Public OOC Chat API
@@ -261,6 +287,9 @@ internal sealed partial class ChatManager : IChatManager
                 break;
             case OOCChatType.Admin:
                 SendAdminChat(player, message);
+                break;
+            case OOCChatType.Mentor: // RMC Mentor Chat Funky Port
+                SendMentorChat(player, message);
                 break;
         }
     }
@@ -330,6 +359,44 @@ internal sealed partial class ChatManager : IChatManager
 
         _discordLink.SendMessage(message, player.Name, ChatChannel.AdminChat);
         _adminLogger.Add(LogType.Chat, $"Admin chat from {player:Player}: {message}");
+    }
+
+    // RMC Mentor Chat Funky Port
+    private void SendMentorChat(ICommonSession player, string message)
+    {
+        _sawmill.Info($"[DEBUG] SendMentorChat invoked for {player.Name}. Message: '{message}'");
+
+        if (!_mentorManager.IsMentor(player.UserId))
+        {
+            _adminLogger.Add(LogType.Chat, LogImpact.Extreme, $"{player:Player} attempted to send mentor chat message but was not mentor");
+            _sawmill.Warning($"[DEBUG] SendMentorChat aborted: {player.Name} is not a mentor.");
+            return;
+        }
+
+        var clients = _mentorManager.GetActiveMentors().Select(p => p.Channel).ToList();
+        _sawmill.Info($"[DEBUG] Found {clients.Count} active mentors to receive message.");
+
+        var wrappedMessage = Loc.GetString("chat-manager-send-admin-chat-wrap-message",
+            ("adminChannelName", "MENTOR"),
+            ("playerName", player.Name), ("message", FormattedMessage.EscapeText(message)));
+
+        foreach (var client in clients)
+        {
+            var isSource = client != player.Channel;
+            ChatMessageToOne(ChatChannel.MentorChat,
+                message,
+                wrappedMessage,
+                default,
+                false,
+                client,
+                audioPath: isSource ? _netConfigManager.GetClientCVar(client, RMCCVars.RMCMentorChatSound) : default,
+                audioVolume: isSource ? _netConfigManager.GetClientCVar(client, RMCCVars.RMCMentorChatVolume) : default,
+                author: player.UserId);
+        }
+
+        _sawmill.Info("[DEBUG] Sending message to Discord...");
+        _discordLink.SendMessage(message, player.Name, ChatChannel.MentorChat);
+        _adminLogger.Add(LogType.Chat, $"Mentor chat from {player:Player}: {message}");
     }
 
     #endregion
@@ -438,5 +505,6 @@ internal sealed partial class ChatManager : IChatManager
 public enum OOCChatType : byte
 {
     OOC,
-    Admin
+    Admin,
+    Mentor // RMC Mentor Chat Funky Port
 }
