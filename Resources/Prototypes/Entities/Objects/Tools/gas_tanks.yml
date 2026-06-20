@@ -35,6 +35,7 @@
   - type: Explosive
     explosionType: MicroBomb
     maxIntensity: 20
+  - type: ExplosionEffect # Funky RMC Explosions
   - type: MeleeWeapon
     wideAnimationRotation: 45
     attackRate: 0.8

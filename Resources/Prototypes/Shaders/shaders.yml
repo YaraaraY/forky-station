@@ -115,3 +115,9 @@
   id: Hologram
   kind: source
   path: "/Textures/Shaders/hologram.swsl"
+
+# Funky RMC Explosions
+- type: shader
+  id: ShockWave
+  kind: source
+  path: "/Textures/_Funkystation/Shaders/shock_wave.swsl"
