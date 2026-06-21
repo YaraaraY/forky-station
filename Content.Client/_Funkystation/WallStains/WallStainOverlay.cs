@@ -106,6 +106,9 @@ public sealed class WallStainOverlay : Overlay
                         if (!transformComponent.Anchored)
                             continue;
 
+                        if (_tagSystem.HasTag(uid, "DirectionalWindow"))
+                            continue;
+
                         if (!_tagSystem.HasTag(uid, "Wall") &&
                             !_tagSystem.HasTag(uid, "Window") &&
                             !_tagSystem.HasTag(uid, "Airlock"))
