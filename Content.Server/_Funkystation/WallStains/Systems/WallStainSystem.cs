@@ -215,7 +215,7 @@ public sealed class WallStainSystem : EntitySystem
         direction.X = Math.Clamp(direction.X, -1, 1);
         direction.Y = Math.Clamp(direction.Y, -1, 1);
 
-        var maxPour = FixedPoint2.Min(FixedPoint2.New(5), solComp.Value.Comp.Solution.Volume);
+        var maxPour = FixedPoint2.Min(FixedPoint2.New(15), solComp.Value.Comp.Solution.Volume);
         var pourSolution = solComp.Value.Comp.Solution.Clone().SplitSolution(maxPour);
 
         var transferred = ApplyStainToWall(wallUid, pourSolution, direction, fraction: 1.0f);
