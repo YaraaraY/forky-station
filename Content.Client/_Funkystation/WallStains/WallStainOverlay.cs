@@ -99,16 +99,20 @@ public sealed class WallStainOverlay : Overlay
 
                     foreach (var uid in _tempEntities)
                     {
+                        // We only want to draw stencil masks on entities that have a Sprite and Transform
                         if (!_transformQuery.TryGetComponent(uid, out var transformComponent) ||
                             !_entityManager.TryGetComponent<SpriteComponent>(uid, out _))
                             continue;
 
+                        // Andddd only draw stains onto anchored entities
                         if (!transformComponent.Anchored)
                             continue;
 
+                        // AAAAAAAAAAND directional windows don't cover the full tile, so skip them to avoid floating stains
                         if (_tagSystem.HasTag(uid, "DirectionalWindow"))
                             continue;
 
+                        // Finally, make sure the entity is one of the following:
                         if (!_tagSystem.HasTag(uid, "Wall") &&
                             !_tagSystem.HasTag(uid, "Window") &&
                             !_tagSystem.HasTag(uid, "Airlock"))

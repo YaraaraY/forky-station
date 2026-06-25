@@ -2,6 +2,7 @@
 using Content.Shared._Funkystation.ReagentFires;
 using Content.Shared._Funkystation.WallStains.Components;
 using Robust.Client.GameObjects;
+using Robust.Shared.Map;
 
 namespace Content.Client._Funkystation.WallStains.Systems;
 
@@ -11,7 +12,16 @@ public sealed class WallStainFireVisualsSystem : EntitySystem
     [Dependency] private readonly SharedTransformSystem _transform = null!;
     [Dependency] private readonly AppearanceSystem _appearance = default!;
 
-    private readonly Dictionary<EntityUid, (ActiveEmitter? Glow, ActiveEmitter? Fire, ActiveEmitter? Embers, ActiveEmitter? Slag, ActiveEmitter? Sparks, ActiveEmitter? Fumes)> _emitters = new();
+    private struct StainEmitters
+    {
+        public ActiveEmitter? Fire;
+        public ActiveEmitter? Embers;
+        public ActiveEmitter? Slag;
+        public ActiveEmitter? Sparks;
+        public ActiveEmitter? Fumes;
+    }
+
+    private readonly Dictionary<EntityUid, StainEmitters> _emitters = new();
 
     public override void Initialize()
     {
@@ -64,83 +74,48 @@ public sealed class WallStainFireVisualsSystem : EntitySystem
         }
     }
 
+    private void UpdateEmitter(ref ActiveEmitter? emitter, string effectId, MapCoordinates coords, EntityUid uid, float intensity, Color color)
+    {
+        if (emitter == null || emitter.Exhausted)
+            emitter = _particles.SpawnEffect(effectId, coords, uid);
+
+        if (emitter != null)
+        {
+            emitter.Intensity = intensity;
+            emitter.ColorOverride = color;
+        }
+    }
+
     private void UpdateVisuals(EntityUid uid)
     {
         if (!_emitters.TryGetValue(uid, out var pair))
-            pair = (null, null, null, null, null, null);
+            pair = new StainEmitters();
 
         var coords = _transform.GetMapCoordinates(uid);
-        var updated = false;
 
-        if (pair.Fire == null || pair.Fire.Exhausted)
-        {
-            pair.Fire = _particles.SpawnEffect("WallFire", coords, uid);
-            updated = true;
-        }
+        var fireState = 4;
+        if (_appearance.TryGetData<int>(uid, ReagentPuddleFireVisuals.FireState, out var state))
+            fireState = state;
 
-        if (pair.Embers == null || pair.Embers.Exhausted)
-        {
-            pair.Embers = _particles.SpawnEffect("WallFireEmbers", coords, uid);
-            updated = true;
-        }
-
-        if (pair.Slag == null || pair.Slag.Exhausted)
-        {
-            pair.Slag = _particles.SpawnEffect("WallFireSlag", coords, uid);
-            updated = true;
-        }
-
-        if (pair.Sparks == null || pair.Sparks.Exhausted)
-        {
-            pair.Sparks = _particles.SpawnEffect("WallFireSparks", coords, uid);
-            updated = true;
-        }
-
-        if (pair.Fumes == null || pair.Fumes.Exhausted)
-        {
-            pair.Fumes = _particles.SpawnEffect("WallFireFumes", coords, uid);
-            updated = true;
-        }
-
-        if (updated)
-            _emitters[uid] = pair;
+        var color = Color.White;
+        if (_appearance.TryGetData<Color>(uid, ReagentPuddleFireVisuals.FireColor, out var c))
+            color = c;
 
         if (TryComp<SpriteComponent>(uid, out var sprite))
         {
-            if (_appearance.TryGetData<int>(uid, ReagentPuddleFireVisuals.FireState, out var fireState))
-            {
-                sprite.LayerSetState(0, fireState.ToString());
-
-                var baseIntensity = fireState == 6 ? 2.0f : fireState == 5 ? 1.5f : 1.0f;
-                if (pair.Fire != null)
-                    pair.Fire.Intensity = baseIntensity;
-                if (pair.Embers != null)
-                    pair.Embers.Intensity = baseIntensity;
-
-                var metalFireIntensity = fireState >= 5 ? baseIntensity : 0f;
-                if (pair.Slag != null)
-                    pair.Slag.Intensity = metalFireIntensity;
-                if (pair.Sparks != null)
-                    pair.Sparks.Intensity = metalFireIntensity;
-                if (pair.Fumes != null)
-                    pair.Fumes.Intensity = metalFireIntensity;
-            }
-
-            if (_appearance.TryGetData<Color>(uid, ReagentPuddleFireVisuals.FireColor, out var color))
-            {
-                sprite.Color = color;
-
-                if (pair.Fire != null)
-                    pair.Fire.ColorOverride = color;
-                if (pair.Embers != null)
-                    pair.Embers.ColorOverride = color;
-                if (pair.Slag != null)
-                    pair.Slag.ColorOverride = color;
-                if (pair.Sparks != null)
-                    pair.Sparks.ColorOverride = color;
-                if (pair.Fumes != null)
-                    pair.Fumes.ColorOverride = color.WithAlpha(0.35f);
-            }
+            sprite.LayerSetState(0, fireState.ToString());
+            sprite.Color = color;
         }
+
+        var baseIntensity = fireState == 6 ? 2.0f : fireState == 5 ? 1.5f : 1.0f;
+        var metalFireIntensity = fireState >= 5 ? baseIntensity : 0f;
+
+        UpdateEmitter(ref pair.Fire, "WallFire", coords, uid, baseIntensity, color);
+        UpdateEmitter(ref pair.Embers, "WallFireEmbers", coords, uid, baseIntensity, color);
+        UpdateEmitter(ref pair.Slag, "WallFireSlag", coords, uid, metalFireIntensity, color);
+        UpdateEmitter(ref pair.Sparks, "WallFireSparks", coords, uid, metalFireIntensity, color);
+        UpdateEmitter(ref pair.Fumes, "WallFireFumes", coords, uid, metalFireIntensity, color.WithAlpha(0.35f));
+
+        _emitters[uid] = pair;
     }
 }
