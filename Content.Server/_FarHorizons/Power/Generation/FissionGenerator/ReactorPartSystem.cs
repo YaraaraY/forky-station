@@ -203,20 +203,17 @@ public sealed partial class ReactorPartSystem : SharedReactorPartSystem
 
             burncomp.IsDamageActive = component.Temperature > Atmospherics.T0C + _hotTemp;
 
-            if (burncomp.IsDamageActive)
-            {
-                var damage = Math.Max((component.Temperature - Atmospherics.T0C - _hotTemp) / _burnDiv, 0);
+            var damage = Math.Max((component.Temperature - Atmospherics.T0C - _hotTemp) / _burnDiv, 0);
 
-                // Giant string of if/else that makes sure it will interfere only as much as it needs to
-                if (burncomp.Damage == null)
-                    burncomp.Damage = new() { DamageDict = new() { { "Heat", damage } } };
-                else if (burncomp.Damage.DamageDict == null)
-                    burncomp.Damage.DamageDict = new() { { "Heat", damage } };
-                else if (!burncomp.Damage.DamageDict.ContainsKey("Heat"))
-                    burncomp.Damage.DamageDict.Add("Heat", damage);
-                else
-                    burncomp.Damage.DamageDict["Heat"] = damage;
-            }
+            // Giant string of if/else that makes sure it will interfere only as much as it needs to
+            if (burncomp.Damage == null)
+                burncomp.Damage = new() { DamageDict = new() { { "Heat", damage } } };
+            else if (burncomp.Damage.DamageDict == null)
+                burncomp.Damage.DamageDict = new() { { "Heat", damage } };
+            else if (!burncomp.Damage.DamageDict.ContainsKey("Heat"))
+                burncomp.Damage.DamageDict.Add("Heat", damage);
+            else
+                burncomp.Damage.DamageDict["Heat"] = damage;
 
             Dirty(uid, burncomp);
         }
