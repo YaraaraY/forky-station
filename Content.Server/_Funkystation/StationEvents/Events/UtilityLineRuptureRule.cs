@@ -12,14 +12,14 @@ using Robust.Shared.Random;
 
 namespace Content.Server._Funkystation.StationEvents.Events;
 
-public sealed class UtilityLineRuptureRule : StationEventSystem<UtilityLineRuptureRuleComponent>
+public sealed partial class UtilityLineRuptureRule : StationEventSystem<UtilityLineRuptureRuleComponent>
 {
-    [Dependency] private readonly NavMapSystem _navMap = null!;
-    [Dependency] private readonly SharedTransformSystem _transform = null!;
-    [Dependency] private readonly ChatSystem _chat = null!;
-    [Dependency] private readonly IGameTiming _timing = null!;
-    [Dependency] private readonly PuddleSystem _puddle = null!;
-    [Dependency] private readonly IRobustRandom _random = null!;
+    [Dependency] private NavMapSystem _navMap = null!;
+    [Dependency] private SharedTransformSystem _transform = null!;
+    [Dependency] private ChatSystem _chat = null!;
+    [Dependency] private IGameTiming _timing = null!;
+    [Dependency] private PuddleSystem _puddle = null!;
+    [Dependency] private IRobustRandom _random = null!;
 
     protected override void Started(EntityUid uid, UtilityLineRuptureRuleComponent component, GameRuleComponent gameRule, GameRuleStartedEvent args)
     {
