@@ -6,10 +6,10 @@ using Robust.Shared.Prototypes;
 
 namespace Content.Client._Funkystation.Explosion;
 
-public sealed class ExplosionShockWaveOverlay : Overlay, IEntityEventSubscriber
+public sealed partial class ExplosionShockWaveOverlay : Overlay, IEntityEventSubscriber
 {
-    [Dependency] private readonly IEntityManager _entMan = default!;
-    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
+    [Dependency] private IEntityManager _entMan = null!;
+    [Dependency] private IPrototypeManager _prototypeManager = null!;
 
     private SharedTransformSystem? _xformSystem;
 

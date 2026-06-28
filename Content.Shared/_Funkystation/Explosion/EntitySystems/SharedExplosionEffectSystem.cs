@@ -4,10 +4,10 @@ using Robust.Shared.Random;
 
 namespace Content.Shared._Funkystation.Explosion.EntitySystems;
 
-public abstract class SharedExplosionEffectSystem : EntitySystem
+public abstract partial class SharedExplosionEffectSystem : EntitySystem
 {
-    [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly ThrowingSystem _throwing = default!;
+    [Dependency] private IRobustRandom _random = null!;
+    [Dependency] private ThrowingSystem _throwing = null!;
 
     public override void Initialize()
     {
