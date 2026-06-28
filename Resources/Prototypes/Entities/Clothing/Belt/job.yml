@@ -136,6 +136,9 @@
       - TrashBagBlue
       - GoldenPlunger
       - WireBrush
+      - Screwdriver # Funky Start
+      - Powerdrill
+      - Rag # Funky End
       - LightReplacer
       - CleanerGrenade
   - type: ItemMapper

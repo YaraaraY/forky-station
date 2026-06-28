@@ -342,6 +342,7 @@
     - type: Tag
       tags:
         - Mop
+        - Rag
     - type: Fiber
       fiberColor: fibers-white
     - type: DnaSubstanceTrace
