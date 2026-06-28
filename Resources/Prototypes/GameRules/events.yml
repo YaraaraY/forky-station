@@ -674,11 +674,9 @@
   - type: AntagSpawner
     prototype: PlayerBorgSyndicateDerelictGhostRole
   - type: AntagSelection
-    definitions:
-    - spawnerPrototype: SpawnPointGhostDerelictSyndicateAssaultCyborg
-      min: 1
-      max: 1
-      pickPlayer: false
+    antags:
+    - !type:FixedAntagCount
+      proto: DerelictSyndicateAssaultCyborg
 
 # Funky Station
 - type: entity
@@ -695,6 +693,3 @@
     delay:
       min: 0
       max: 0
-    antags:
-    - !type:FixedAntagCount
-      proto: DerelictSyndicateAssaultCyborg
