@@ -19,11 +19,16 @@ public sealed partial class WallStainOverlay : Overlay
     private static readonly ProtoId<ShaderPrototype> StencilMaskShader = "StencilMask";
     private static readonly ProtoId<ShaderPrototype> StencilEqualDrawShader = "StencilEqualDraw";
 
+    private static readonly ProtoId<TagPrototype> DirectionalWindowTag = "DirectionalWindow";
+    private static readonly ProtoId<TagPrototype> WallTag = "Wall";
+    private static readonly ProtoId<TagPrototype> WindowTag = "Window";
+    private static readonly ProtoId<TagPrototype> AirlockTag = "Airlock";
+
     [Dependency] private IClyde _clyde = null!;
     [Dependency] private IEntityManager _entityManager = null!;
     [Dependency] private IPrototypeManager _prototypeManager = null!;
     [Dependency] private IGameTiming _gameTiming = null!;
-    [Dependency] public readonly IMapManager MapManager = null!;
+    [Dependency] public IMapManager MapManager = null!;
 
     private readonly TransformSystem _transformSystem;
     private readonly SpriteSystem _spriteSystem;
@@ -109,13 +114,13 @@ public sealed partial class WallStainOverlay : Overlay
                             continue;
 
                         // AAAAAAAAAAND directional windows don't cover the full tile, so skip them to avoid floating stains
-                        if (_tagSystem.HasTag(uid, "DirectionalWindow"))
+                        if (_tagSystem.HasTag(uid, DirectionalWindowTag))
                             continue;
 
                         // Finally, make sure the entity is one of the following:
-                        if (!_tagSystem.HasTag(uid, "Wall") &&
-                            !_tagSystem.HasTag(uid, "Window") &&
-                            !_tagSystem.HasTag(uid, "Airlock"))
+                        if (!_tagSystem.HasTag(uid, WallTag) &&
+                            !_tagSystem.HasTag(uid, WindowTag) &&
+                            !_tagSystem.HasTag(uid, AirlockTag))
                         {
                             continue;
                         }

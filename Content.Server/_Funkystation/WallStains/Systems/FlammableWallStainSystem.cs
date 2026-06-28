@@ -69,6 +69,14 @@ public sealed partial class FlammableWallStainSystem : EntitySystem
                     {
                         if (wallTile + stain.Direction == fireTile || offset == Vector2i.Zero)
                         {
+                            if (_solution.TryGetSolution(child, stain.SolutionName, out var solComp))
+                                fireComp.Flammability = solComp.Value.Comp.Solution.GetSolutionFlammability(_proto);
+                            else
+                                fireComp.Flammability = 0;
+
+                            if (fireComp.Flammability <= 0)
+                                continue;
+
                             var ignitionTemp = 573.15f - (50f * fireComp.Flammability);
                             if (args.Temperature >= ignitionTemp)
                                 toIgnite.Add((child, fireComp));
@@ -86,8 +94,22 @@ public sealed partial class FlammableWallStainSystem : EntitySystem
 
     private void OnTileFire(EntityUid uid, FlammableWallStainComponent component, ref TileFireEvent args)
     {
-        if (component.OnFire || component.Flammability <= 0f)
+        if (component.OnFire)
             return;
+
+        if (TryComp<WallStainComponent>(uid, out var stain) &&
+            _solution.TryGetSolution(uid, stain.SolutionName, out var solComp))
+        {
+            component.Flammability = solComp.Value.Comp.Solution.GetSolutionFlammability(_proto);
+        }
+        else
+        {
+            component.Flammability = 0;
+        }
+
+        if (component.Flammability <= 0f)
+            return;
+
         var ignitionTemp = 573.15f - (50f * component.Flammability);
         if (args.Temperature >= ignitionTemp)
             Ignite(uid, component);
@@ -107,7 +129,7 @@ public sealed partial class FlammableWallStainSystem : EntitySystem
 
     private void Ignite(EntityUid uid, FlammableWallStainComponent fireComp)
     {
-        if (fireComp.OnFire)
+        if (fireComp.OnFire || fireComp.Flammability <= 0) // Extra safety check!
             return;
 
         fireComp.OnFire = true;
@@ -186,14 +208,9 @@ public sealed partial class FlammableWallStainSystem : EntitySystem
             activeStains.Add((uid, fireComp, stain, xform));
         }
 
-        foreach (var (uid, _, _, _) in activeStains)
+        foreach (var (uid, currentFireComp, currentStain, currentXform) in activeStains)
         {
             if (Deleted(uid))
-                continue;
-
-            if (!TryComp<FlammableWallStainComponent>(uid, out var currentFireComp) ||
-                !TryComp<WallStainComponent>(uid, out var currentStain) ||
-                !TryComp<TransformComponent>(uid, out var currentXform))
                 continue;
 
             if (!_solution.TryGetSolution(uid, currentStain.SolutionName, out var solComp))
@@ -316,7 +333,18 @@ public sealed partial class FlammableWallStainSystem : EntitySystem
 
                             if (TryComp<FlammableWallStainComponent>(child, out var adjacentFire) && !adjacentFire.OnFire)
                             {
-                                adjacentStainsToIgnite.Add((child, adjacentFire));
+                                if (TryComp<WallStainComponent>(child, out var adjacentStain) &&
+                                    _solution.TryGetSolution(child, adjacentStain.SolutionName, out var adjSol))
+                                {
+                                    adjacentFire.Flammability = adjSol.Value.Comp.Solution.GetSolutionFlammability(_proto);
+                                }
+                                else
+                                {
+                                    adjacentFire.Flammability = 0;
+                                }
+
+                                if (adjacentFire.Flammability > 0)
+                                    adjacentStainsToIgnite.Add((child, adjacentFire));
                             }
                         }
                     }

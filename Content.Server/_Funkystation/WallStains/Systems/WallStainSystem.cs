@@ -6,6 +6,7 @@ using Content.Shared.Chemistry;
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Chemistry.Reaction;
+using Content.Shared.Chemistry.Reagent;
 using Content.Shared.DoAfter;
 using Content.Shared.FixedPoint;
 using Content.Shared.Fluids;
@@ -24,6 +25,13 @@ namespace Content.Server._Funkystation.WallStains.Systems;
 
 public sealed partial class WallStainSystem : EntitySystem
 {
+    private static readonly ProtoId<TagPrototype> WallTag = "Wall";
+    private static readonly ProtoId<TagPrototype> WindowTag = "Window";
+    private static readonly ProtoId<TagPrototype> SoapTag = "Soap";
+
+    private static readonly ProtoId<ReagentPrototype> WaterReagent = "Water";
+    private static readonly ProtoId<ReagentPrototype> SpaceCleanerReagent = "SpaceCleaner";
+
     [Dependency] private SharedMapSystem _map = null!;
     [Dependency] private SharedTransformSystem _transform = null!;
     [Dependency] private SharedSolutionContainerSystem _solution = null!;
@@ -36,7 +44,7 @@ public sealed partial class WallStainSystem : EntitySystem
     [Dependency] private SharedPuddleSystem _puddle = null!;
     [Dependency] private SharedAudioSystem _audio = null!;
 
-    private ReactiveReagentEffectEntry _stainCleanEffectEntry = null!;
+    private Shared.Chemistry.Reaction.ReactiveReagentEffectEntry _stainCleanEffectEntry = null!;
 
     private float _evaporationAccumulator;
 
@@ -44,7 +52,7 @@ public sealed partial class WallStainSystem : EntitySystem
     {
         base.Initialize();
 
-        _stainCleanEffectEntry = new ReactiveReagentEffectEntry()
+        _stainCleanEffectEntry = new Shared.Chemistry.Reaction.ReactiveReagentEffectEntry()
         {
             Methods = [ReactionMethod.Touch],
             Reagents = ["SpaceCleaner", "Bleach"],
@@ -69,7 +77,7 @@ public sealed partial class WallStainSystem : EntitySystem
         if (solution.Volume <= 0)
             return;
 
-        var gridUid = coords.GetGridUid(EntityManager);
+        var gridUid = _transform.GetGrid(coords);
         if (!TryComp<MapGridComponent>(gridUid, out var grid))
             return;
 
@@ -99,7 +107,7 @@ public sealed partial class WallStainSystem : EntitySystem
 
     private bool IsWall(EntityUid uid)
     {
-        return HasComp<AirtightComponent>(uid) || _tag.HasTag(uid, "Wall") || _tag.HasTag(uid, "Window");
+        return HasComp<AirtightComponent>(uid) || _tag.HasTag(uid, WallTag) || _tag.HasTag(uid, WindowTag);
     }
 
     private FixedPoint2 ApplyStainToWall(EntityUid wallUid, Solution solution, Vector2i direction, float fraction = 1.0f)
@@ -178,7 +186,7 @@ public sealed partial class WallStainSystem : EntitySystem
             return;
 
         var solution = solComp.Value.Comp.Solution;
-        if (solution.GetTotalPrototypeQuantity("Water") == solution.Volume)
+        if (solution.GetTotalPrototypeQuantity(WaterReagent) == solution.Volume)
         {
             _popup.PopupEntity(Loc.GetString("wall-stain-pour-water-blocked"), args.Target.Value, args.User);
             return;
@@ -297,7 +305,7 @@ public sealed partial class WallStainSystem : EntitySystem
                 if (totalVolume <= 0)
                     continue;
                 _solution.RemoveAllSolution(solComp.Value);
-                _solution.TryAddReagent(solComp.Value, "Water", totalVolume, out _);
+                _solution.TryAddReagent(solComp.Value, WaterReagent, totalVolume, out _);
                 UpdateVisuals(child, stain);
             }
 
@@ -326,7 +334,7 @@ public sealed partial class WallStainSystem : EntitySystem
 
     private bool IsCleaningTool(EntityUid uid)
     {
-        return HasComp<AbsorbentComponent>(uid) || _tag.HasTag(uid, "Soap");
+        return HasComp<AbsorbentComponent>(uid) || _tag.HasTag(uid, SoapTag);
     }
 
     private void UpdateVisuals(EntityUid uid, WallStainComponent? comp = null)
@@ -339,7 +347,7 @@ public sealed partial class WallStainSystem : EntitySystem
 
         var color = solution.GetColor(_prototype);
         comp.Color = color.WithAlpha(color.A * 0.6f);
-        comp.StainState = solution.ContainsPrototype("Water") || solution.ContainsPrototype("SpaceCleaner") ? "drip" : "splatter";
+        comp.StainState = solution.ContainsPrototype(WaterReagent) || solution.ContainsPrototype(SpaceCleanerReagent) ? "drip" : "splatter";
         Dirty(uid, comp);
     }
 
@@ -366,8 +374,8 @@ public sealed partial class WallStainSystem : EntitySystem
                 continue;
             }
 
-            var waterQty = solution.GetTotalPrototypeQuantity("Water");
-            var cleanerQty = solution.GetTotalPrototypeQuantity("SpaceCleaner");
+            var waterQty = solution.GetTotalPrototypeQuantity(WaterReagent);
+            var cleanerQty = solution.GetTotalPrototypeQuantity(SpaceCleanerReagent);
 
             if (waterQty > 0 || cleanerQty > 0)
             {
@@ -376,14 +384,14 @@ public sealed partial class WallStainSystem : EntitySystem
                 if (waterQty > 0)
                 {
                     var toRemove = FixedPoint2.Min(evaporationAmount, waterQty);
-                    _solution.RemoveReagent(solComp.Value, "Water", toRemove);
+                    _solution.RemoveReagent(solComp.Value, WaterReagent, toRemove);
                     evaporationAmount -= toRemove;
                 }
 
                 if (evaporationAmount > 0 && cleanerQty > 0)
                 {
                     var toRemove = FixedPoint2.Min(evaporationAmount, cleanerQty);
-                    _solution.RemoveReagent(solComp.Value, "SpaceCleaner", toRemove);
+                    _solution.RemoveReagent(solComp.Value, SpaceCleanerReagent, toRemove);
                 }
 
                 _solution.UpdateChemicals(solComp.Value);
