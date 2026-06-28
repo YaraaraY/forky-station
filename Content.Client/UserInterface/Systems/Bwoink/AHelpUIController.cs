@@ -40,7 +40,7 @@ public sealed partial class AHelpUIController: UIController, IOnSystemChanged<Bw
     [Dependency] private IClyde _clyde = default!;
     [Dependency] private IUserInterfaceManager _uiManager = default!;
     [Dependency] private IInputManager _input = default!;
-    [Dependency] private readonly StaffHelpUIController _staffHelp = default!;
+    [Dependency] private StaffHelpUIController _staffHelp = default!;
     [UISystemDependency] private readonly AudioSystem _audio = default!;
 
     private BwoinkSystem? _bwoinkSystem;

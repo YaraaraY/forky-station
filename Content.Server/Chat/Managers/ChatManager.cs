@@ -48,7 +48,7 @@ internal sealed partial class ChatManager : IChatManager
     [Dependency] private ISharedPlayerManager _player = default!;
     [Dependency] private DiscordChatLink _discordLink = default!;
     [Dependency] private ILogManager _logManager = default!;
-    [Dependency] private readonly MentorManager _mentorManager = default!; // RMC Mentor Chat Funky Port
+    [Dependency] private MentorManager _mentorManager = default!; // RMC Mentor Chat Funky Port
 
     private ISawmill _sawmill = default!;
 

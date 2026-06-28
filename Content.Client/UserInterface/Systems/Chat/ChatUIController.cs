@@ -61,7 +61,7 @@ public sealed partial class ChatUIController : UIController
     [Dependency] private IReplayRecordingManager _replayRecording = default!;
 
     // RMC Mentor Chat Funky Port
-    [Dependency] private readonly StaffHelpUIController _staffHelpUI = default!;
+    [Dependency] private StaffHelpUIController _staffHelpUI = default!;
 
     [UISystemDependency] private readonly ExamineSystem? _examine = default;
     [UISystemDependency] private readonly GhostSystem? _ghost = default;
