@@ -12,7 +12,7 @@ using Robust.Shared.Timing;
 namespace Content.Client._ES.PainFlash;
 
 /// <inheritdoc/>
-public partial class ESPainFlashSystem : ESSharedPainFlashSystem
+public sealed partial class ESPainFlashSystem : ESSharedPainFlashSystem
 {
     [Dependency] private IConfigurationManager _config = default!;
     [Dependency] private IPlayerManager _player = default!;
