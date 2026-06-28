@@ -11,6 +11,8 @@ public sealed partial class ExplosionShockWaveOverlay : Overlay, IEntityEventSub
     [Dependency] private IEntityManager _entMan = null!;
     [Dependency] private IPrototypeManager _prototypeManager = null!;
 
+    private static readonly ProtoId<ShaderPrototype> ShockWaveShaderId = "ShockWave";
+
     private SharedTransformSystem? _xformSystem;
 
     public override OverlaySpace Space => OverlaySpace.WorldSpace;
@@ -23,7 +25,7 @@ public sealed partial class ExplosionShockWaveOverlay : Overlay, IEntityEventSub
     public ExplosionShockWaveOverlay()
     {
         IoCManager.InjectDependencies(this);
-        _shader = _prototypeManager.Index<ShaderPrototype>("ShockWave").Instance().Duplicate();
+        _shader = _prototypeManager.Index(ShockWaveShaderId).Instance().Duplicate();
     }
 
     private readonly Vector2[] _positions = new Vector2[MaxCount];
@@ -70,13 +72,13 @@ public sealed partial class ExplosionShockWaveOverlay : Overlay, IEntityEventSub
         if (ScreenTexture == null || args.Viewport.Eye == null)
             return;
 
-        _shader?.SetParameter("renderScale", args.Viewport.RenderScale * args.Viewport.Eye.Scale);
-        _shader?.SetParameter("count", _count);
-        _shader?.SetParameter("position", _positions);
-        _shader?.SetParameter("falloffPower", _falloffPower);
-        _shader?.SetParameter("sharpness", _sharpness);
-        _shader?.SetParameter("width", _width);
-        _shader?.SetParameter("SCREEN_TEXTURE", ScreenTexture);
+        _shader.SetParameter("renderScale", args.Viewport.RenderScale * args.Viewport.Eye.Scale);
+        _shader.SetParameter("count", _count);
+        _shader.SetParameter("position", _positions);
+        _shader.SetParameter("falloffPower", _falloffPower);
+        _shader.SetParameter("sharpness", _sharpness);
+        _shader.SetParameter("width", _width);
+        _shader.SetParameter("SCREEN_TEXTURE", ScreenTexture);
 
         var worldHandle = args.WorldHandle;
         worldHandle.UseShader(_shader);
