@@ -6,11 +6,11 @@ using Robust.Shared.Map;
 
 namespace Content.Client._Funkystation.WallStains.Systems;
 
-public sealed class WallStainFireVisualsSystem : EntitySystem
+public sealed partial class WallStainFireVisualsSystem : EntitySystem
 {
-    [Dependency] private readonly ParticleSystem _particles = null!;
-    [Dependency] private readonly SharedTransformSystem _transform = null!;
-    [Dependency] private readonly AppearanceSystem _appearance = default!;
+    [Dependency] private ParticleSystem _particles = null!;
+    [Dependency] private SharedTransformSystem _transform = null!;
+    [Dependency] private AppearanceSystem _appearance = default!;
 
     private struct StainEmitters
     {

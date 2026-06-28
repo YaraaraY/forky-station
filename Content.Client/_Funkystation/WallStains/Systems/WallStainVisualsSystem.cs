@@ -4,9 +4,9 @@ using Robust.Client.GameObjects;
 
 namespace Content.Client._Funkystation.WallStains.Systems;
 
-public sealed class WallStainVisualsSystem : EntitySystem
+public sealed partial class WallStainVisualsSystem : EntitySystem
 {
-    [Dependency] private readonly SharedAppearanceSystem _appearance = null!;
+    [Dependency] private SharedAppearanceSystem _appearance = null!;
 
     public override void Initialize()
     {

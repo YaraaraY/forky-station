@@ -22,19 +22,19 @@ using Robust.Shared.Random;
 
 namespace Content.Server._Funkystation.WallStains.Systems;
 
-public sealed class WallStainSystem : EntitySystem
+public sealed partial class WallStainSystem : EntitySystem
 {
-    [Dependency] private readonly SharedMapSystem _map = null!;
-    [Dependency] private readonly SharedTransformSystem _transform = null!;
-    [Dependency] private readonly SharedSolutionContainerSystem _solution = null!;
-    [Dependency] private readonly ForensicsSystem _forensics = null!;
-    [Dependency] private readonly SharedDoAfterSystem _doAfter = null!;
-    [Dependency] private readonly SharedPopupSystem _popup = null!;
-    [Dependency] private readonly TagSystem _tag = null!;
-    [Dependency] private readonly IRobustRandom _random = null!;
-    [Dependency] private readonly IPrototypeManager _prototype = null!;
-    [Dependency] private readonly SharedPuddleSystem _puddle = null!;
-    [Dependency] private readonly SharedAudioSystem _audio = null!;
+    [Dependency] private SharedMapSystem _map = null!;
+    [Dependency] private SharedTransformSystem _transform = null!;
+    [Dependency] private SharedSolutionContainerSystem _solution = null!;
+    [Dependency] private ForensicsSystem _forensics = null!;
+    [Dependency] private SharedDoAfterSystem _doAfter = null!;
+    [Dependency] private SharedPopupSystem _popup = null!;
+    [Dependency] private TagSystem _tag = null!;
+    [Dependency] private IRobustRandom _random = null!;
+    [Dependency] private IPrototypeManager _prototype = null!;
+    [Dependency] private SharedPuddleSystem _puddle = null!;
+    [Dependency] private SharedAudioSystem _audio = null!;
 
     private ReactiveReagentEffectEntry _stainCleanEffectEntry = null!;
 

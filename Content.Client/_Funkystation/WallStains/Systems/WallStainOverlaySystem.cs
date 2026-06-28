@@ -2,9 +2,9 @@
 
 namespace Content.Client._Funkystation.WallStains.Systems;
 
-public sealed class WallStainOverlaySystem : EntitySystem
+public sealed partial class WallStainOverlaySystem : EntitySystem
 {
-    [Dependency] private readonly IOverlayManager _overlayManager = null!;
+    [Dependency] private IOverlayManager _overlayManager = null!;
 
     private WallStainOverlay _overlay = null!;
 

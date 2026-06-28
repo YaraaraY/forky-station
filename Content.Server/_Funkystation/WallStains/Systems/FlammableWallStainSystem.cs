@@ -17,18 +17,18 @@ using Robust.Shared.Prototypes;
 
 namespace Content.Server._Funkystation.WallStains.Systems;
 
-public sealed class FlammableWallStainSystem : EntitySystem
+public sealed partial class FlammableWallStainSystem : EntitySystem
 {
-    [Dependency] private readonly AtmosphereSystem _atmos = null!;
-    [Dependency] private readonly SharedTransformSystem _transform = null!;
-    [Dependency] private readonly SharedSolutionContainerSystem _solution = null!;
-    [Dependency] private readonly IPrototypeManager _proto = null!;
-    [Dependency] private readonly DamageableSystem _damageable = null!;
-    [Dependency] private readonly SharedAudioSystem _audio = null!;
-    [Dependency] private readonly SharedPointLightSystem _light = null!;
-    [Dependency] private readonly EntityLookupSystem _lookup = null!;
-    [Dependency] private readonly SharedAppearanceSystem _appearance = null!;
-    [Dependency] private readonly SharedMapSystem _map = null!;
+    [Dependency] private AtmosphereSystem _atmos = null!;
+    [Dependency] private SharedTransformSystem _transform = null!;
+    [Dependency] private SharedSolutionContainerSystem _solution = null!;
+    [Dependency] private IPrototypeManager _proto = null!;
+    [Dependency] private DamageableSystem _damageable = null!;
+    [Dependency] private SharedAudioSystem _audio = null!;
+    [Dependency] private SharedPointLightSystem _light = null!;
+    [Dependency] private EntityLookupSystem _lookup = null!;
+    [Dependency] private SharedAppearanceSystem _appearance = null!;
+    [Dependency] private SharedMapSystem _map = null!;
 
     public override void Initialize()
     {
@@ -86,7 +86,7 @@ public sealed class FlammableWallStainSystem : EntitySystem
 
     private void OnTileFire(EntityUid uid, FlammableWallStainComponent component, ref TileFireEvent args)
     {
-        if (component.OnFire)
+        if (component.OnFire || component.Flammability <= 0f)
             return;
         var ignitionTemp = 573.15f - (50f * component.Flammability);
         if (args.Temperature >= ignitionTemp)

@@ -13,16 +13,16 @@ using Robust.Shared.Utility;
 
 namespace Content.Client._Funkystation.WallStains;
 
-public sealed class WallStainOverlay : Overlay
+public sealed partial class WallStainOverlay : Overlay
 {
     private static readonly ProtoId<ShaderPrototype> UnshadedShader = "unshaded";
     private static readonly ProtoId<ShaderPrototype> StencilMaskShader = "StencilMask";
     private static readonly ProtoId<ShaderPrototype> StencilEqualDrawShader = "StencilEqualDraw";
 
-    [Dependency] private readonly IClyde _clyde = null!;
-    [Dependency] private readonly IEntityManager _entityManager = null!;
-    [Dependency] private readonly IPrototypeManager _prototypeManager = null!;
-    [Dependency] private readonly IGameTiming _gameTiming = null!;
+    [Dependency] private IClyde _clyde = null!;
+    [Dependency] private IEntityManager _entityManager = null!;
+    [Dependency] private IPrototypeManager _prototypeManager = null!;
+    [Dependency] private IGameTiming _gameTiming = null!;
     [Dependency] public readonly IMapManager MapManager = null!;
 
     private readonly TransformSystem _transformSystem;
