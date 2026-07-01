@@ -1,0 +1,25 @@
+<DefaultWindow xmlns="https://spacestation14.io"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         Title="{Loc 'document-printer-title'}"
+                         MinSize="640 440">
+    <BoxContainer Orientation="Horizontal" HorizontalExpand="True" VerticalExpand="True">
+        <ScrollContainer MinWidth="160" VerticalExpand="True" HScrollEnabled="False">
+            <BoxContainer Name="CategoryList"
+                          Orientation="Vertical"
+                          HorizontalExpand="True" />
+        </ScrollContainer>
+
+        <PanelContainer MinWidth="1" StyleClasses="LowDivider" />
+
+        <BoxContainer Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True" Margin="6 0 0 0">
+            <LineEdit Name="SearchBar"
+                      PlaceHolder="{Loc 'document-printer-search-placeholder'}"
+                      Margin="0 0 0 6" />
+
+            <ScrollContainer HorizontalExpand="True" VerticalExpand="True">
+                <BoxContainer Name="DocumentList" Orientation="Vertical" />
+            </ScrollContainer>
+        </BoxContainer>
+
+    </BoxContainer>
+</DefaultWindow>

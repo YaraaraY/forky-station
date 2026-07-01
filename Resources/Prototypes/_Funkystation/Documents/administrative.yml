@@ -1,0 +1,9 @@
+- type: document
+  id: DocCommandPromotion
+  name: doc-command-promotion-name
+  description: doc-command-promotion-desc
+  category: DocCatAdministrative
+  paperPrototype: Paper
+  content: doc-command-promotion-content
+  access:
+    - Command

@@ -1,0 +1,63 @@
+- type: documentCategory
+  id: DocCatAdministrative
+  name: doc-category-administrative
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 0
+
+- type: documentCategory
+  id: DocCatLegal
+  name: doc-category-legal
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 1
+
+- type: documentCategory
+  id: DocCatEngineering
+  name: doc-category-engineering
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 2
+
+- type: documentCategory
+  id: DocCatMedical
+  name: doc-category-medical
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 3
+
+- type: documentCategory
+  id: DocCatLogistics
+  name: doc-category-logistics
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 4
+
+- type: documentCategory
+  id: DocCatResearch
+  name: doc-category-research
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 5
+
+- type: documentCategory
+  id: DocCatInternalAffairs
+  name: doc-category-ia
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 6
+
+- type: documentCategory
+  id: DocCatMisc
+  name: doc-category-misc
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 999

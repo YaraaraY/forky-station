@@ -1,0 +1,57 @@
+﻿# Base printer — not spawnable directly, holds shared components/UI wiring.
+- type: entity
+  parent: BaseMachinePowered
+  id: BaseDocumentPrinter
+  name: Model XF-880 document printer
+  suffix: DO NOT MAP
+  description: A vital fixture of administrative offices station-wide, the NanoTrasen "Xero-Flux" line of document printers has ever been a workhorse of bureaucracy.
+  components:
+  - type: Sprite
+    sprite: Structures/Machines/fax_machine.rsi
+    state: idle
+  - type: ActivatableUI
+    key: enum.DocumentPrinterUiKey.Key
+  - type: UserInterface
+    interfaces:
+      enum.DocumentPrinterUiKey.Key:
+        type: DocumentPrinterBoundUserInterface
+
+- type: entity
+  parent: BaseDocumentPrinter
+  id: DocumentPrinterXO
+  suffix: Executive Officer
+  components:
+  - type: DocumentPrinter
+    availableDocuments:
+    - DocCommandPromotion
+    - DocGeneralComplaint
+
+- type: entity
+  parent: BaseDocumentPrinter
+  id: DocumentPrinterLibrary
+  suffix: Public Use
+  components:
+  - type: DocumentPrinter
+    availableDocuments:
+    - DocGeneralComplaint
+    - DocAnomalyLog
+    - DocAutopsy
+    - DocMaterialRequest
+    - DocDepartmentAudit
+    - DocBuildingPermit
+
+- type: entity
+  parent: BaseDocumentPrinter
+  id: DocumentPrinterBridge
+  suffix: Bridge
+  components:
+  - type: DocumentPrinter
+    availableDocuments:
+    - DocGeneralComplaint
+    - DocCommandPromotion
+    - DocNda
+    - DocAnomalyLog
+    - DocAutopsy
+    - DocMaterialRequest
+    - DocDepartmentAudit
+    - DocBuildingPermit
