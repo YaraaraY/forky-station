@@ -24,5 +24,6 @@ paper-signature-sign-button = Sign
 paper-form-dialog-ok = OK
 paper-form-dialog-cancel = Cancel
 paper-signature-unknown = Unknown
+paper-ui-no-pen = You need to be holding a writing utensil to write.
 
 paper-tamper-proof-modified-message = This page was written using tamper-proof ink.
