@@ -30,6 +30,7 @@ public sealed partial class DuoEmoteSystem : SharedDuoEmoteSystem
     [Dependency] private EntityLookupSystem _lookup = null!;
     [Dependency] private SharedTransformSystem _xform = null!;
     [Dependency] private SpriteSystem _sprite = null!;
+    [Dependency] private DuoEmoteAnimationSystem _emoteAnim = null!;
 
     private const string LungeAnimationKey = "duo-emote-lunge";
 
@@ -80,16 +81,30 @@ public sealed partial class DuoEmoteSystem : SharedDuoEmoteSystem
             }
 
             _sprite.LayerSetSprite(entity, layerKey, proto.EffectSprite);
-
+            spriteComp.LayerSetShader(LayerMapGet(entity, layerKey), "unshaded");
         }
+    }
+
+    private int LayerMapGet(Entity<SpriteComponent?> sprite, string key)
+    {
+        _sprite.LayerMapTryGet(sprite, key, out var index, false);
+        return index;
     }
 
     private void OnLungeEvent(DuoEmoteLungeEvent ev)
     {
         var initiator = GetEntity(ev.Initiator);
         var partner = GetEntity(ev.Partner);
+
+        // Base lunge animation
         PlayLunge(initiator, partner);
         PlayLunge(partner, initiator);
+
+        // Trigger custom animation hook
+        if (!string.IsNullOrEmpty(ev.Animation))
+        {
+            _emoteAnim.TryPlayAnimation(ev.Animation, initiator, partner);
+        }
     }
 
     private void PlayLunge(EntityUid uid, EntityUid toward)

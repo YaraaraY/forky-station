@@ -36,4 +36,7 @@ public sealed partial class DuoEmotePrototype : IPrototype
 
     [DataField]
     public bool RequireTail { get; private set; }
+
+    [DataField]
+    public string? Animation { get; private set; }
 }

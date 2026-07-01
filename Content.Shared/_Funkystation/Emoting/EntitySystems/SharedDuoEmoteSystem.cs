@@ -157,7 +157,7 @@ public abstract partial class SharedDuoEmoteSystem : EntitySystem
             if (sound != null)
                 _audio.PlayPvs(sound, initiatorUid);
 
-            RaiseNetworkEvent(new DuoEmoteLungeEvent(GetNetEntity(initiatorUid), GetNetEntity(partnerUid)));
+            RaiseNetworkEvent(new DuoEmoteLungeEvent(GetNetEntity(initiatorUid), GetNetEntity(partnerUid), proto.Animation));
         }
 
         CancelDuoEmote(initiator);

@@ -81,6 +81,7 @@
   id: TailSwipe
   name: duo-emote-tailswipe-perform
   requireTail: true # will only show & work with other species with tails
+  animation: Spin
   icon:
     sprite: _Funkystation/Effects/duo_emotes.rsi
     state: icon-tailswipe
