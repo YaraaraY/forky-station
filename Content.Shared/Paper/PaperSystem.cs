@@ -337,6 +337,7 @@ public sealed partial class PaperSystem : EntitySystem
         // Get the identity entity (ID card, etc.)
         var identityEntity = player;
         if (TryComp<IdentityComponent>(player, out var identity) &&
+            identity.IdentityEntitySlot != null &&
             identity.IdentityEntitySlot.ContainedEntity is { } idEntity)
         {
             identityEntity = idEntity;
@@ -344,13 +345,6 @@ public sealed partial class PaperSystem : EntitySystem
 
         // Get name from identity or fallback to entity name
         name = MetaData(identityEntity).EntityName;
-
-        // Get rank from RankComponent
-        if (TryComp<RankComponent>(player, out var rankComp))
-        {
-            var rankSystem = EntityManager.System<SharedRankSystem>();
-            rank = rankSystem.GetRankString(player, isShort: true) ?? string.Empty;
-        }
 
         // Get role from mind system
         if (TryComp<MindContainerComponent>(player, out var mindContainer) &&

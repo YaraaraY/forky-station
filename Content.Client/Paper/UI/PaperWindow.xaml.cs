@@ -284,7 +284,6 @@ namespace Content.Client.Paper.UI
                 }
                 return;
             }
-            WrittenTextLabel.SetMessage(msg, UserFormattableTags.BaseAllowedTags, DefaultTextColor);
 
             // Reset form and signature counters before processing to ensure consistent indexing
             // This is crucial because the tag handlers maintain state between renders
