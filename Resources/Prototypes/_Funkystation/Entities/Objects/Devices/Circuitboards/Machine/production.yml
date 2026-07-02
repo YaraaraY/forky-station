@@ -41,3 +41,31 @@
       Steel: 1
       Manipulator: 2
       Cable: 2
+
+- type: entity
+  parent: BaseMachineCircuitboard
+  id: DocumentPrinterBridgeCircuitboard
+  suffix: Bridge
+  name: Model XF-880 document printer machine board
+  description: A machine printed circuit board for a heavy-duty document printer. This one is tagged "Bridge".
+  components:
+  - type: MachineBoard
+    prototype: DocumentPrinterBridge
+    stackRequirements:
+      Steel: 1
+      Manipulator: 2
+      Cable: 2
+
+- type: entity
+  parent: BaseMachineCircuitboard
+  id: DocumentPrinterXOCircuitboard
+  suffix: XO
+  name: Model XF-880 document printer machine board
+  description: A machine printed circuit board for a heavy-duty document printer. This one is tagged "XO".
+  components:
+  - type: MachineBoard
+    prototype: DocumentPrinterXO
+    stackRequirements:
+      Steel: 1
+      Manipulator: 2
+      Cable: 2

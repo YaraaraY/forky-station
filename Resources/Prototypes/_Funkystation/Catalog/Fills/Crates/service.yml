@@ -27,4 +27,4 @@
     - id: CableApcStack10
     - id: MicroManipulatorStockPart
       amount: 2
-    - id: DocumentPrinterCircuitboard
+    - id: DocumentPrinterBridgeCircuitboard

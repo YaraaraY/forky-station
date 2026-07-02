@@ -110,6 +110,8 @@
   id: DocumentPrinterXO
   suffix: Executive Officer
   components:
+  - type: Machine
+    board: DocumentPrinterXOCircuitboard
   - type: DocumentPrinter
     availableDocuments:
     - DocCommandPromotion
@@ -147,10 +149,14 @@
   id: DocumentPrinterBridge
   suffix: Bridge
   components:
+  - type: Machine
+    board: DocumentPrinterBridgeCircuitboard
   - type: DocumentPrinter
     availableDocuments:
     - DocGeneralComplaint
     - DocCommandPromotion
+    - DocJobTransfer
+    - DocDemotionNotice
     - DocNda
     - DocAnomalyLog
     - DocAutopsy
