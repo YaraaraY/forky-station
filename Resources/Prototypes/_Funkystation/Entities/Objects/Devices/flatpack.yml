@@ -14,4 +14,4 @@
   description: A robust piece of bureaucratic equipment, mechanically compressed into a small flatpack.
   components:
   - type: Flatpack
-    entity: DocumentPrinterLibrary
+    entity: DocumentPrinterPublic

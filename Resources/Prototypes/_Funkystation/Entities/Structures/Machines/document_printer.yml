@@ -59,6 +59,13 @@
   - type: Machine
     board: DocumentPrinterCircuitboard
   - type: FurnitureWheels
+  - type: DocumentPrinter
+    paperSlot:
+      insertSound: /Audio/Machines/scanning.ogg
+      ejectSound: /Audio/Machines/tray_eject.ogg
+      whitelist:
+        components:
+        - FaxableObject
   - type: StationAiWhitelist
   - type: Wires
     alwaysRandomize: true
@@ -101,7 +108,7 @@
 # For public use (no command or otherwise "classified" documents)
 - type: entity
   parent: BaseDocumentPrinter
-  id: DocumentPrinterLibrary
+  id: DocumentPrinterPublic
   suffix: Public Use
   components:
   - type: DocumentPrinter
@@ -110,7 +117,6 @@
     - DocAnomalyLog
     - DocAutopsy
     - DocMaterialRequest
-    - DocDepartmentAudit
     - DocBuildingPermit
     emagDocuments:
     - DocSyndicateRecruitment

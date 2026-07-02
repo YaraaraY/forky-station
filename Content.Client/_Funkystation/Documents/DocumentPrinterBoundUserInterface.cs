@@ -17,6 +17,8 @@ public sealed class DocumentPrinterBoundUserInterface(EntityUid owner, Enum uiKe
 
         _menu = this.CreateWindow<DocumentPrinterMenu>();
         _menu.OnPrintRequested += docId => SendMessage(new DocumentPrinterPrintMessage(docId));
+        _menu.OnCopyRequested += () => SendMessage(new DocumentPrinterCopyMessage());
+        _menu.OnEjectRequested += () => SendMessage(new DocumentPrinterEjectMessage());
     }
 
     protected override void UpdateState(BoundUserInterfaceState state)

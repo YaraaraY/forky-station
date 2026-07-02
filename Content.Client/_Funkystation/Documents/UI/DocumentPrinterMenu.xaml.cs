@@ -22,10 +22,11 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
 
     private readonly SpriteSystem _spriteSystem;
     public event Action<string>? OnPrintRequested;
+    public event Action? OnCopyRequested;
+    public event Action? OnEjectRequested;
 
     private DocumentPrinterBoundUserInterfaceState? _lastState;
     private string? _currentCategory;
-    private bool _tabsBuilt;
 
     public DocumentPrinterMenu()
     {
@@ -34,20 +35,41 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
         _spriteSystem = _entMan.System<SpriteSystem>();
 
         SearchBar.OnTextChanged += _ => RefreshDocumentList();
+        CopyButton.OnPressed += _ => OnCopyRequested?.Invoke();
+        EjectButton.OnPressed += _ => OnEjectRequested?.Invoke();
     }
 
+    private HashSet<string> _lastCategoryIds = new();
     public void UpdateState(DocumentPrinterBoundUserInterfaceState state)
     {
         _lastState = state;
 
-        // tabs are static
-        if (!_tabsBuilt)
+        var newCategoryIds = state.DocumentsByCategory.Keys.ToHashSet();
+        if (!newCategoryIds.SetEquals(_lastCategoryIds))
         {
+            var previousSelection = _currentCategory;
             BuildTabs(state);
-            _tabsBuilt = true;
+            _lastCategoryIds = newCategoryIds;
+
+            // Keep the user on the same tab if it still exists, rather than
+            // silently snapping them back to the first category.
+            if (previousSelection != null && newCategoryIds.Contains(previousSelection))
+                SelectCategory(previousSelection);
         }
 
+        UpdateCopyPanel(state);
         RefreshDocumentList();
+    }
+
+    private void UpdateCopyPanel(DocumentPrinterBoundUserInterfaceState state)
+    {
+        CopySlotLabel.Text = state.IsPaperInserted
+            ? Loc.GetString("document-printer-copy-inserted",
+                ("name", state.InsertedPaperName ?? Loc.GetString("document-printer-copy-unknown-paper")))
+            : Loc.GetString("document-printer-copy-empty");
+
+        EjectButton.Disabled = !state.IsPaperInserted;
+        CopyButton.Disabled = !state.CanCopy;
     }
 
     private void BuildTabs(DocumentPrinterBoundUserInterfaceState state)

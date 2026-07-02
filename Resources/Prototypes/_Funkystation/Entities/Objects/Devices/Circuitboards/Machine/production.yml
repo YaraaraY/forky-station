@@ -36,7 +36,7 @@
   description: A machine printed circuit board for a heavy-duty document printer.
   components:
   - type: MachineBoard
-    prototype: DocumentPrinterLibrary
+    prototype: DocumentPrinterPublic
     stackRequirements:
       Steel: 1
       Manipulator: 2

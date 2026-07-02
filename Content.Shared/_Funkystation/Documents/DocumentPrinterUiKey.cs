@@ -24,10 +24,17 @@ public sealed class DocumentEntry(
 }
 
 [Serializable, NetSerializable]
-public sealed class DocumentPrinterBoundUserInterfaceState(Dictionary<string, List<DocumentEntry>> documentsByCategory)
+public sealed class DocumentPrinterBoundUserInterfaceState(
+    Dictionary<string, List<DocumentEntry>> documentsByCategory,
+    bool isPaperInserted,
+    string? insertedPaperName,
+    bool canCopy)
     : BoundUserInterfaceState
 {
     public readonly Dictionary<string, List<DocumentEntry>> DocumentsByCategory = documentsByCategory;
+    public readonly bool IsPaperInserted = isPaperInserted;
+    public readonly string? InsertedPaperName = insertedPaperName;
+    public readonly bool CanCopy = canCopy;
 }
 
 [Serializable, NetSerializable]
@@ -35,3 +42,15 @@ public sealed class DocumentPrinterPrintMessage(string documentId) : BoundUserIn
 {
     public readonly string DocumentId = documentId;
 }
+
+/// <summary>
+/// Copy whatever paper is currently in the printer's slot
+/// </summary>
+[Serializable, NetSerializable]
+public sealed class DocumentPrinterCopyMessage : BoundUserInterfaceMessage;
+
+/// <summary>
+/// Tells player to eject whatever paper is in its slot
+/// </summary>
+[Serializable, NetSerializable]
+public sealed class DocumentPrinterEjectMessage : BoundUserInterfaceMessage;

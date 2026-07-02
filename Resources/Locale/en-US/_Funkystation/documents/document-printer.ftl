@@ -3,6 +3,13 @@ document-printer-search-placeholder = Search documents...
 document-printer-print-button = Print
 document-printer-no-results = No documents match your search.
 document-printer-locked-tooltip = Requires: {$access}
+
+document-printer-copy-empty = No paper inserted.
+document-printer-copy-inserted = Inserted {$name}
+document-printer-copy-unknown-paper = Unknown document
+document-printer-copy-button = Copy
+document-printer-eject-button = Eject
+
 wires-board-name-document-printer = Document Printer
 wire-name-document-printer-manager = MNGR
 wire-name-document-printer-access = ACC

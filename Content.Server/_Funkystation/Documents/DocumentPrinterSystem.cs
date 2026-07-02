@@ -1,19 +1,24 @@
 using System.Linq;
 using Content.Shared.Access.Systems;
+using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Emag.Components;
 using Content.Shared.Emag.Systems;
 using Content.Shared._Funkystation.Documents;
 using Content.Shared._Funkystation.Documents.Components;
+using Content.Shared.Labels.Components;
+using Content.Shared.Labels.EntitySystems;
+using Content.Shared.NameModifier.Components;
 using Content.Shared.Paper;
 using Robust.Server.GameObjects;
 using Robust.Shared.Audio.Systems;
+using Robust.Shared.Containers;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Timing;
 
 namespace Content.Server._Funkystation.Documents;
 
 /// <summary>
-/// Handles document printer UI state and printing
+/// Handles document printer UI state, printing, and copying inserted paper
 /// </summary>
 public sealed partial class DocumentPrinterSystem : EntitySystem
 {
@@ -24,17 +29,68 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     [Dependency] private SharedAudioSystem _audio = null!;
     [Dependency] private SharedAppearanceSystem _appearance = null!;
     [Dependency] private IGameTiming _timing = null!;
+    [Dependency] private ItemSlotsSystem _itemSlots = null!;
+    [Dependency] private LabelSystem _label = null!;
+    [Dependency] private MetaDataSystem _metaData = null!;
+
+    private const string PaperSlotId = "Paper";
 
     public override void Initialize()
     {
         base.Initialize();
 
+        SubscribeLocalEvent<DocumentPrinterComponent, ComponentInit>(OnComponentInit);
+        SubscribeLocalEvent<DocumentPrinterComponent, ComponentRemove>(OnComponentRemove);
+        SubscribeLocalEvent<DocumentPrinterComponent, EntInsertedIntoContainerMessage>(OnSlotChanged);
+        SubscribeLocalEvent<DocumentPrinterComponent, EntRemovedFromContainerMessage>(OnSlotChanged);
         SubscribeLocalEvent<DocumentPrinterComponent, BoundUIOpenedEvent>(OnUiOpened);
         SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterPrintMessage>(OnPrintRequested);
+        SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterCopyMessage>(OnCopyRequested);
+        SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterEjectMessage>(OnEjectRequested);
         SubscribeLocalEvent<DocumentPrinterComponent, GotEmaggedEvent>(OnEmagged);
     }
 
+    public void RefreshUi(EntityUid uid)
+    {
+        if (TryComp<DocumentPrinterComponent>(uid, out var comp))
+            UpdateUiState(uid, comp, uid);
+    }
 
+    public override void Update(float frameTime)
+    {
+        base.Update(frameTime);
+
+        var query = EntityQueryEnumerator<DocumentPrinterComponent>();
+        while (query.MoveNext(out var uid, out var comp))
+        {
+            if (!_ui.IsUiOpen(uid, DocumentPrinterUiKey.Key))
+                continue;
+
+            if (comp.NextPrintTime != TimeSpan.Zero && _timing.CurTime >= comp.NextPrintTime)
+            {
+                comp.NextPrintTime = TimeSpan.Zero;
+                UpdateUiState(uid, comp, uid);
+            }
+        }
+    }
+
+    private void OnComponentInit(EntityUid uid, DocumentPrinterComponent comp, ComponentInit args)
+    {
+        _itemSlots.AddItemSlot(uid, PaperSlotId, comp.PaperSlot);
+    }
+
+    private void OnComponentRemove(EntityUid uid, DocumentPrinterComponent comp, ComponentRemove args)
+    {
+        _itemSlots.RemoveItemSlot(uid, comp.PaperSlot);
+    }
+
+    private void OnSlotChanged(EntityUid uid, DocumentPrinterComponent comp, ContainerModifiedMessage args)
+    {
+        if (args.Container.ID != comp.PaperSlot.ID)
+            return;
+
+        UpdateUiState(uid, comp, uid);
+    }
 
     private void OnUiOpened(EntityUid uid, DocumentPrinterComponent comp, BoundUIOpenedEvent args)
     {
@@ -47,6 +103,7 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
             return;
 
         args.Handled = true;
+        UpdateUiState(uid, comp, args.UserUid);
     }
 
     /// <summary>
@@ -101,7 +158,20 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
                 doc.RequiredAccess ?? new List<string>()));
         }
 
-        _ui.SetUiState(uid, DocumentPrinterUiKey.Key, new DocumentPrinterBoundUserInterfaceState(grouped));
+        var paperEntity = comp.PaperSlot.Item;
+        var isPaperInserted = paperEntity is { } inserted && HasComp<PaperComponent>(inserted);
+        var canCopy = isPaperInserted && _timing.CurTime >= comp.NextPrintTime;
+
+        string? paperName = null;
+        if (isPaperInserted && paperEntity is { } paper)
+        {
+            TryComp<NameModifierComponent>(paper, out var nameMod);
+            paperName = nameMod?.BaseName ?? MetaData(paper).EntityName;
+        }
+
+        _ui.SetUiState(uid,
+            DocumentPrinterUiKey.Key,
+            new DocumentPrinterBoundUserInterfaceState(grouped, isPaperInserted, paperName, canCopy));
     }
 
     /// <summary>
@@ -126,7 +196,7 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         if (_timing.CurTime < comp.NextPrintTime)
             return;
 
-        if (!comp.AvailableDocuments.Contains(msg.DocumentId))
+        if (!GetActiveDocumentIds(uid, comp).Contains(msg.DocumentId))
             return;
 
         if (!_proto.TryIndex<DocumentPrototype>(msg.DocumentId, out var doc))
@@ -156,5 +226,83 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         });
 
         UpdateUiState(uid, comp, actor);
+    }
+
+    /// <summary>
+    /// Duplicates whatever paper is in the copy slot
+    /// </summary>
+    private void OnCopyRequested(EntityUid uid, DocumentPrinterComponent comp, DocumentPrinterCopyMessage msg)
+    {
+        var actor = msg.Actor;
+
+        if (_timing.CurTime < comp.NextPrintTime)
+            return;
+
+        var source = comp.PaperSlot.Item;
+        if (source is not { } sourceUid)
+            return;
+
+        if (!TryComp<PaperComponent>(sourceUid, out var sourcePaper))
+            return;
+
+        if (!TryComp(sourceUid, out MetaDataComponent? sourceMeta))
+            return;
+
+        TryComp<LabelComponent>(sourceUid, out var sourceLabel);
+        TryComp<NameModifierComponent>(sourceUid, out var sourceNameMod);
+
+        var content = sourcePaper.Content;
+        var stampState = sourcePaper.StampState;
+        var stampedBy = sourcePaper.StampedBy;
+        var locked = sourcePaper.EditingDisabled;
+        var name = sourceNameMod?.BaseName ?? sourceMeta.EntityName;
+        var label = sourceLabel?.CurrentLabel;
+        var protoId = sourceMeta.EntityPrototype?.ID ?? comp.CopyPaperId.ToString();
+
+        comp.NextPrintTime = _timing.CurTime + comp.PrintCooldown;
+
+        _appearance.SetData(uid, DocumentPrinterVisuals.VisualState, DocumentPrinterVisualState.Printing);
+        _audio.PlayPvs(comp.PrintSound, uid);
+
+        var coords = Transform(uid).Coordinates;
+        var printDelay = comp.PrintDelay;
+
+        Timer.Spawn(printDelay,
+            () =>
+        {
+            if (!Exists(uid))
+                return;
+
+            var printed = Spawn(protoId, coords);
+
+            if (TryComp<PaperComponent>(printed, out var newPaper))
+            {
+                _paper.SetContent((printed, newPaper), content);
+
+                if (stampState != null)
+                {
+                    foreach (var stamp in stampedBy)
+                    {
+                        _paper.TryStamp((printed, newPaper), stamp, stampState);
+                    }
+                }
+
+                newPaper.EditingDisabled = locked;
+            }
+
+            _metaData.SetEntityName(printed, name);
+
+            if (label is { } l)
+                _label.Label(printed, l);
+
+            _appearance.SetData(uid, DocumentPrinterVisuals.VisualState, DocumentPrinterVisualState.Normal);
+        });
+
+        UpdateUiState(uid, comp, actor);
+    }
+
+    private void OnEjectRequested(EntityUid uid, DocumentPrinterComponent comp, DocumentPrinterEjectMessage msg)
+    {
+        _itemSlots.TryEjectToHands(uid, comp.PaperSlot, msg.Actor);
     }
 }

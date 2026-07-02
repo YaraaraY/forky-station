@@ -1,5 +1,7 @@
+using Content.Shared.Containers.ItemSlots;
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
+using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype.List;
 
 namespace Content.Shared._Funkystation.Documents.Components;
@@ -60,4 +62,16 @@ public sealed partial class DocumentPrinterComponent : Component
 
     [DataField("printSound")]
     public SoundSpecifier PrintSound = new SoundPathSpecifier("/Audio/Machines/printer.ogg");
+
+    /// <summary>
+    /// Slot paper is inserted into to be copied
+    /// </summary>
+    [DataField(required: true)]
+    public ItemSlot PaperSlot = new();
+
+    /// <summary>
+    /// Fallback paper prototype just in case...
+    /// </summary>
+    [DataField]
+    public EntProtoId CopyPaperId = "Paper";
 }

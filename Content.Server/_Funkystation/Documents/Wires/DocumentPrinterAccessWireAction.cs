@@ -22,6 +22,8 @@ public sealed partial class DocumentPrinterAccessWireAction : BaseToggleWireActi
         {
             EntityManager.System<AccessReaderSystem>().SetActive((owner, reader), setting);
         }
+
+        EntityManager.System<DocumentPrinterSystem>().RefreshUi(owner);
     }
 
     public override bool GetValue(EntityUid owner)

@@ -15,6 +15,8 @@ public sealed partial class DocumentPrinterManagerWireAction : BaseToggleWireAct
     {
         if (EntityManager.TryGetComponent<DocumentPrinterComponent>(owner, out var comp))
             comp.ManagerWireCut = !setting;
+
+        EntityManager.System<DocumentPrinterSystem>().RefreshUi(owner);
     }
 
     public override bool GetValue(EntityUid owner)
