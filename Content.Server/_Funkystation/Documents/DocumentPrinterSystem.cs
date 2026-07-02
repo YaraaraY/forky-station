@@ -1,10 +1,12 @@
 using System.Linq;
 using Content.Shared.Access.Systems;
 using Content.Shared._Funkystation.Documents;
+using Content.Shared._Funkystation.Documents.Components;
 using Content.Shared.Paper;
 using Robust.Server.GameObjects;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Timing;
 
 namespace Content.Server._Funkystation.Documents;
 
@@ -18,16 +20,18 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     [Dependency] private AccessReaderSystem _accessReader = null!;
     [Dependency] private UserInterfaceSystem _ui = null!;
     [Dependency] private SharedAudioSystem _audio = null!;
+    [Dependency] private SharedAppearanceSystem _appearance = null!;
+    [Dependency] private IGameTiming _timing = null!;
 
     public override void Initialize()
     {
         base.Initialize();
 
-        SubscribeLocalEvent<Shared._Funkystation.Documents.Components.DocumentPrinterComponent, BoundUIOpenedEvent>(OnUiOpened);
-        SubscribeLocalEvent<Shared._Funkystation.Documents.Components.DocumentPrinterComponent, DocumentPrinterPrintMessage>(OnPrintRequested);
+        SubscribeLocalEvent<DocumentPrinterComponent, BoundUIOpenedEvent>(OnUiOpened);
+        SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterPrintMessage>(OnPrintRequested);
     }
 
-    private void OnUiOpened(EntityUid uid, Shared._Funkystation.Documents.Components.DocumentPrinterComponent comp, BoundUIOpenedEvent args)
+    private void OnUiOpened(EntityUid uid, DocumentPrinterComponent comp, BoundUIOpenedEvent args)
     {
         UpdateUiState(uid, comp, args.Actor);
     }
@@ -35,7 +39,7 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     /// <summary>
     /// Rebuilds and pushes the full document list for this printer
     /// </summary>
-    private void UpdateUiState(EntityUid uid, Shared._Funkystation.Documents.Components.DocumentPrinterComponent comp, EntityUid actor)
+    private void UpdateUiState(EntityUid uid, DocumentPrinterComponent comp, EntityUid actor)
     {
         var grouped = new Dictionary<string, List<DocumentEntry>>();
 
@@ -72,9 +76,12 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         return doc.RequiredAccess.Any(s => tags.Contains(s));
     }
 
-    private void OnPrintRequested(EntityUid uid, Shared._Funkystation.Documents.Components.DocumentPrinterComponent comp, DocumentPrinterPrintMessage msg)
+    private void OnPrintRequested(EntityUid uid, DocumentPrinterComponent comp, DocumentPrinterPrintMessage msg)
     {
         var actor = msg.Actor;
+
+        if (_timing.CurTime < comp.NextPrintTime)
+            return;
 
         if (!comp.AvailableDocuments.Contains(msg.DocumentId))
             return;
@@ -85,11 +92,25 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         if (!IsDocAccessible(actor, doc))
             return;
 
-        var coords = Transform(uid).Coordinates;
-        var paper = Spawn(doc.PaperPrototype, coords);
+        comp.NextPrintTime = _timing.CurTime + comp.PrintCooldown;
 
-        _paper.SetContent(paper, Loc.GetString(doc.Content));
+        _appearance.SetData(uid, DocumentPrinterVisuals.VisualState, DocumentPrinterVisualState.Printing);
         _audio.PlayPvs(comp.PrintSound, uid);
+
+        var coords = Transform(uid).Coordinates;
+        var printDelay = comp.PrintDelay;
+
+        Timer.Spawn(printDelay,
+            () =>
+        {
+            if (!Exists(uid))
+                return;
+
+            var paper = Spawn(doc.PaperPrototype, coords);
+            _paper.SetContent(paper, Loc.GetString(doc.Content));
+
+            _appearance.SetData(uid, DocumentPrinterVisuals.VisualState, DocumentPrinterVisualState.Normal);
+        });
 
         UpdateUiState(uid, comp, actor);
     }

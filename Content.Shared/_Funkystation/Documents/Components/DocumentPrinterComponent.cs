@@ -22,6 +22,18 @@ public sealed partial class DocumentPrinterComponent : Component
     [DataField("printDelay")]
     public TimeSpan PrintDelay = TimeSpan.FromSeconds(4);
 
+    /// <summary>
+    /// Minimum time between separate print jobs on this printer
+    /// </summary>
+    [DataField("printCooldown")]
+    public TimeSpan PrintCooldown = TimeSpan.FromSeconds(6);
+
+    /// <summary>
+    /// The game time before which further print requests on this printer are rejected
+    /// </summary>
+    [ViewVariables]
+    public TimeSpan NextPrintTime;
+
     [DataField("printSound")]
     public SoundSpecifier PrintSound = new SoundPathSpecifier("/Audio/Machines/printer.ogg");
 }

@@ -1,20 +1,43 @@
-﻿# Base printer — not spawnable directly, holds shared components/UI wiring.
-- type: entity
+﻿- type: entity
   parent: BaseMachinePowered
   id: BaseDocumentPrinter
+  categories: [ HideSpawnMenu ]
   name: Model XF-880 document printer
   suffix: DO NOT MAP
   description: A vital fixture of administrative offices station-wide, the NanoTrasen "Xero-Flux" line of document printers has ever been a workhorse of bureaucracy.
   components:
   - type: Sprite
-    sprite: Structures/Machines/fax_machine.rsi
-    state: idle
+    sprite: _Funkystation/Structures/Machines/document_printer.rsi
+    drawdepth: SmallObjects
+    layers:
+    - state: icon
+      map: [ "enum.DocumentPrinterVisuals.VisualState" ]
+    - state: icon-unshaded
+      shader: unshaded
+      visible: false
+      map: [ "enum.DocumentPrinterVisuals.Unshaded" ]
+  - type: Appearance
   - type: ActivatableUI
     key: enum.DocumentPrinterUiKey.Key
+  - type: ActivatableUIRequiresPower
   - type: UserInterface
     interfaces:
       enum.DocumentPrinterUiKey.Key:
         type: DocumentPrinterBoundUserInterface
+  - type: GenericVisualizer
+    visuals:
+      enum.PowerDeviceVisuals.Powered:
+        enum.DocumentPrinterVisuals.VisualState:
+          True: { state: idle }
+          False: { state: icon }
+        enum.DocumentPrinterVisuals.Unshaded:
+          True: { visible: true }
+          False: { visible: false }
+      enum.DocumentPrinterVisuals.VisualState:
+        enum.DocumentPrinterVisuals.VisualState:
+          Printing: { state: printing }
+          Normal: { state: idle }
+  - type: FurnitureWheels
 
 - type: entity
   parent: BaseDocumentPrinter
@@ -24,6 +47,8 @@
   - type: DocumentPrinter
     availableDocuments:
     - DocCommandPromotion
+    - DocJobTransfer
+    - DocDemotionNotice
     - DocGeneralComplaint
 
 - type: entity

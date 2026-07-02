@@ -120,16 +120,26 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
     {
         DocumentList.RemoveAllChildren();
 
-        if (_lastState is null || _currentCategory is null)
-            return;
-
-        if (!_lastState.DocumentsByCategory.TryGetValue(_currentCategory, out var docs))
+        if (_lastState is null)
             return;
 
         var query = SearchBar.Text.Trim();
-        var filtered = string.IsNullOrEmpty(query)
-            ? docs
-            : docs.Where(d => d.Name.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        List<DocumentEntry> filtered;
+        if (string.IsNullOrEmpty(query))
+        {
+            if (_currentCategory is null || !_lastState.DocumentsByCategory.TryGetValue(_currentCategory, out var docs))
+                return;
+
+            filtered = docs;
+        }
+        else
+        {
+            filtered = _lastState.DocumentsByCategory.Values
+                .SelectMany(docs => docs)
+                .Where(d => d.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
 
         foreach (var doc in filtered)
         {
