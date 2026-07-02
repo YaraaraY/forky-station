@@ -17,6 +17,10 @@
         - MachineMask
         layer:
         - MachineLayer
+  - type: Transform
+    noRot: false
+  - type: Rotatable
+    rotateWhileAnchored: true
   - type: Sprite
     sprite: _Funkystation/Structures/Machines/document_printer.rsi
     drawdepth: SmallObjects

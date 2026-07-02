@@ -6,7 +6,7 @@ using Robust.Shared.Utility;
 
 namespace Content.Server._Funkystation.FurnitureWheels;
 
-public sealed partial class BedWheelsSystem : EntitySystem
+public sealed partial class FurnitureWheelsSystem : EntitySystem
 {
     [Dependency] private SharedTransformSystem _transform = null!;
     [Dependency] private PullingSystem _pulling = null!;
