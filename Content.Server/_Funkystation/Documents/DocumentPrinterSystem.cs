@@ -13,6 +13,7 @@ using Content.Shared.Labels.Components;
 using Content.Shared.Labels.EntitySystems;
 using Content.Shared.NameModifier.Components;
 using Content.Shared.Paper;
+using Content.Shared.Popups;
 using Content.Shared.Wires;
 using Robust.Server.GameObjects;
 using Robust.Shared.Audio;
@@ -217,7 +218,7 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         comp.Jammed = true;
         _appearance.SetData(uid, DocumentPrinterVisuals.VisualState, DocumentPrinterVisualState.Jammed);
         _audio.PlayPvs(comp.JamSound, uid);
-        _popup.PopupEntity(Loc.GetString("document-printer-jam-occurred"), uid);
+        _popup.PopupEntity(Loc.GetString("document-printer-jam-occurred"), uid, PopupType.LargeCaution);
         UpdateUiState(uid, comp, actor);
     }
 
