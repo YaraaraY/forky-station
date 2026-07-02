@@ -61,3 +61,22 @@
     sprite: Interface/Actions/actions_fakemindshield.rsi
     state: icon-on
   priority: 999
+
+# Only ever appears if the printer has been emagged
+- type: documentCategory
+  id: DocCatContraband
+  name: doc-category-contraband
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 900
+  scrambleName: true
+
+# Only ever appears once the printer's manager wire has been cut
+- type: documentCategory
+  id: DocCatUnregulatedForms
+  name: doc-category-unregulated-forms
+  icon:
+    sprite: Interface/Actions/actions_fakemindshield.rsi
+    state: icon-on
+  priority: 950

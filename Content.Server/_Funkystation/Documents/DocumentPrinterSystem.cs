@@ -1,5 +1,7 @@
 using System.Linq;
 using Content.Shared.Access.Systems;
+using Content.Shared.Emag.Components;
+using Content.Shared.Emag.Systems;
 using Content.Shared._Funkystation.Documents;
 using Content.Shared._Funkystation.Documents.Components;
 using Content.Shared.Paper;
@@ -29,11 +31,49 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
 
         SubscribeLocalEvent<DocumentPrinterComponent, BoundUIOpenedEvent>(OnUiOpened);
         SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterPrintMessage>(OnPrintRequested);
+        SubscribeLocalEvent<DocumentPrinterComponent, GotEmaggedEvent>(OnEmagged);
     }
+
+
 
     private void OnUiOpened(EntityUid uid, DocumentPrinterComponent comp, BoundUIOpenedEvent args)
     {
         UpdateUiState(uid, comp, args.Actor);
+    }
+
+    private void OnEmagged(EntityUid uid, DocumentPrinterComponent comp, ref GotEmaggedEvent args)
+    {
+        if (comp.EmagDocuments.Count == 0)
+            return;
+
+        args.Handled = true;
+    }
+
+    /// <summary>
+    /// Every document ID currently printable on this printer
+    /// </summary>
+    private IEnumerable<string> GetActiveDocumentIds(EntityUid uid, DocumentPrinterComponent comp)
+    {
+        foreach (var id in comp.AvailableDocuments)
+        {
+            yield return id;
+        }
+
+        if (HasComp<EmaggedComponent>(uid))
+        {
+            foreach (var id in comp.EmagDocuments)
+            {
+                yield return id;
+            }
+        }
+
+        if (comp.ManagerWireCut)
+        {
+            foreach (var id in comp.ManagerDocuments)
+            {
+                yield return id;
+            }
+        }
     }
 
     /// <summary>
@@ -43,12 +83,12 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     {
         var grouped = new Dictionary<string, List<DocumentEntry>>();
 
-        foreach (var docId in comp.AvailableDocuments)
+        foreach (var docId in GetActiveDocumentIds(uid, comp))
         {
             if (!_proto.TryIndex<DocumentPrototype>(docId, out var doc))
                 continue;
 
-            var accessible = IsDocAccessible(actor, doc);
+            var accessible = IsDocAccessible(comp, actor, doc);
 
             if (!grouped.TryGetValue(doc.Category, out var list))
                 grouped[doc.Category] = list = new List<DocumentEntry>();
@@ -67,8 +107,11 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     /// <summary>
     /// Checks a document's RequiredAccess against the player's access
     /// </summary>
-    private bool IsDocAccessible(EntityUid actor, DocumentPrototype doc)
+    private bool IsDocAccessible(DocumentPrinterComponent comp, EntityUid actor, DocumentPrototype doc)
     {
+        if (comp.AccessBroken)
+            return true;
+
         if (doc.RequiredAccess is not { Count: > 0 })
             return true;
 
@@ -89,7 +132,7 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         if (!_proto.TryIndex<DocumentPrototype>(msg.DocumentId, out var doc))
             return;
 
-        if (!IsDocAccessible(actor, doc))
+        if (!IsDocAccessible(comp, actor, doc))
             return;
 
         comp.NextPrintTime = _timing.CurTime + comp.PrintCooldown;

@@ -1,21 +1,37 @@
 ﻿- type: entity
-  parent: BaseMachinePowered
+  parent: [ BaseMachinePowered, ConstructibleMachine ]
   id: BaseDocumentPrinter
   categories: [ HideSpawnMenu ]
   name: Model XF-880 document printer
   suffix: DO NOT MAP
   description: A vital fixture of administrative offices station-wide, the NanoTrasen "Xero-Flux" line of document printers has ever been a workhorse of bureaucracy.
   components:
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.4,-0.4,0.4,0.4"
+        density: 190
+        mask:
+        - MachineMask
+        layer:
+        - MachineLayer
   - type: Sprite
     sprite: _Funkystation/Structures/Machines/document_printer.rsi
     drawdepth: SmallObjects
     layers:
     - state: icon
+    - state: printing
+      visible: false
       map: [ "enum.DocumentPrinterVisuals.VisualState" ]
     - state: icon-unshaded
       shader: unshaded
       visible: false
       map: [ "enum.DocumentPrinterVisuals.Unshaded" ]
+    - state: panel
+      map: [ "enum.WiresVisualLayers.MaintenancePanel" ]
+      visible: false
   - type: Appearance
   - type: ActivatableUI
     key: enum.DocumentPrinterUiKey.Key
@@ -24,21 +40,43 @@
     interfaces:
       enum.DocumentPrinterUiKey.Key:
         type: DocumentPrinterBoundUserInterface
+      enum.WiresUiKey.Key:
+        type: WiresBoundUserInterface
   - type: GenericVisualizer
     visuals:
       enum.PowerDeviceVisuals.Powered:
-        enum.DocumentPrinterVisuals.VisualState:
-          True: { state: idle }
-          False: { state: icon }
         enum.DocumentPrinterVisuals.Unshaded:
           True: { visible: true }
           False: { visible: false }
       enum.DocumentPrinterVisuals.VisualState:
         enum.DocumentPrinterVisuals.VisualState:
-          Printing: { state: printing }
-          Normal: { state: idle }
+          Printing: { visible: true }
+          Normal: { visible: false }
+  - type: Machine
+    board: DocumentPrinterCircuitboard
   - type: FurnitureWheels
+  - type: StationAiWhitelist
+  - type: Wires
+    alwaysRandomize: true
+    boardName: wires-board-name-document-printer
+    layoutId: DocumentPrinter
+  - type: WiresPanel
+  - type: WiresVisuals
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 100
+      behaviors:
+      - !type:PlaySoundBehavior
+        sound:
+          collection: MetalBreak
+      - !type:ChangeConstructionNodeBehavior
+        node: machineFrame
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
 
+# For HOP- I mean XO (Should have only documents useful for someone manning the HOP line)
 - type: entity
   parent: BaseDocumentPrinter
   id: DocumentPrinterXO
@@ -50,7 +88,13 @@
     - DocJobTransfer
     - DocDemotionNotice
     - DocGeneralComplaint
+    emagDocuments:
+    - DocSyndicateRecruitment
+    managerDocuments:
+    - DocClownAAForm
+    - DocXOMurder
 
+# For public use (no command or otherwise "classified" documents)
 - type: entity
   parent: BaseDocumentPrinter
   id: DocumentPrinterLibrary
@@ -64,7 +108,13 @@
     - DocMaterialRequest
     - DocDepartmentAudit
     - DocBuildingPermit
+    emagDocuments:
+    - DocSyndicateRecruitment
+    managerDocuments:
+    - DocClownAAForm
+    - DocXOMurder
 
+# For Command (should have all documents except CC specific ones)
 - type: entity
   parent: BaseDocumentPrinter
   id: DocumentPrinterBridge
@@ -80,3 +130,18 @@
     - DocMaterialRequest
     - DocDepartmentAudit
     - DocBuildingPermit
+    emagDocuments:
+    - DocSyndicateRecruitment
+    managerDocuments:
+    - DocClownAAForm
+    - DocXOMurder
+
+# for CentComm, should only have CC documents (To be mapped in CC, used by admins and CCIs)
+- type: entity
+  parent: BaseDocumentPrinter
+  id: DocumentPrinterCC
+  suffix: CentComm
+  components:
+  - type: DocumentPrinter
+    availableDocuments:
+    - DocGeneralComplaint

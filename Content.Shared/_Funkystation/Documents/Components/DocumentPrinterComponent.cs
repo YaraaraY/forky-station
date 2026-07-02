@@ -17,6 +17,18 @@ public sealed partial class DocumentPrinterComponent : Component
     public List<string> AvailableDocuments = new();
 
     /// <summary>
+    /// Additional documents unlocked once this printer has been emagged
+    /// </summary>
+    [DataField("emagDocuments", customTypeSerializer: typeof(PrototypeIdListSerializer<DocumentPrototype>))]
+    public List<string> EmagDocuments = new();
+
+    /// <summary>
+    /// Additional documents unlocked once the manager wire has been cut
+    /// </summary>
+    [DataField("managerDocuments", customTypeSerializer: typeof(PrototypeIdListSerializer<DocumentPrototype>))]
+    public List<string> ManagerDocuments = new();
+
+    /// <summary>
     /// Delay between pressing print and the paper appearing
     /// </summary>
     [DataField("printDelay")]
@@ -33,6 +45,18 @@ public sealed partial class DocumentPrinterComponent : Component
     /// </summary>
     [ViewVariables]
     public TimeSpan NextPrintTime;
+
+    /// <summary>
+    /// True once the manager wire has been cut
+    /// </summary>
+    [ViewVariables]
+    public bool ManagerWireCut;
+
+    /// <summary>
+    /// True once access bypassed
+    /// </summary>
+    [ViewVariables]
+    public bool AccessBroken;
 
     [DataField("printSound")]
     public SoundSpecifier PrintSound = new SoundPathSpecifier("/Audio/Machines/printer.ogg");

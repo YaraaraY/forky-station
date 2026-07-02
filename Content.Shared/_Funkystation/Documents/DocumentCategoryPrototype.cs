@@ -29,4 +29,10 @@ public sealed partial class DocumentCategoryPrototype : IPrototype
     /// </summary>
     [DataField("priority")]
     public int Priority { get; private set; }
+
+    /// <summary>
+    /// Tabs with this will have a scrambled, glitchy name
+    /// </summary>
+    [DataField("scrambleName")]
+    public bool ScrambleName;
 }
