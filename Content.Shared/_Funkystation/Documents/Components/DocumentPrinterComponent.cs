@@ -1,4 +1,5 @@
 using Content.Shared.Containers.ItemSlots;
+using Content.Shared.Tools;
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
@@ -74,4 +75,46 @@ public sealed partial class DocumentPrinterComponent : Component
     /// </summary>
     [DataField]
     public EntProtoId CopyPaperId = "Paper";
+
+    /// <summary>
+    /// 1 in number chance of a paper jam on each completed print or copy job. 0 or less disables jams.
+    /// </summary>
+    [DataField]
+    public int JamOneInChance = 60;
+
+    /// <summary>
+    /// True while jammed. Blocks all printing until cleared
+    /// </summary>
+    [ViewVariables]
+    public bool Jammed;
+
+    /// <summary>
+    /// How long the doAfter to clear a jam takes
+    /// </summary>
+    [DataField]
+    public TimeSpan JamClearDelay = TimeSpan.FromSeconds(60);
+
+    /// <summary>
+    /// Tool quality required to clear a jam
+    /// </summary>
+    [DataField]
+    public ProtoId<ToolQualityPrototype> JamClearToolQuality = "Anchoring";
+
+    /// <summary>
+    /// Sound when a jam happens
+    /// </summary>
+    [DataField]
+    public SoundSpecifier JamSound = new SoundPathSpecifier("/Audio/_Funkystation/Machines/document_printer_jam.ogg");
+
+    /// <summary>
+    /// Sound during the doAfter clearing the jam
+    /// </summary>
+    [DataField]
+    public SoundSpecifier JamLoopSound = new SoundPathSpecifier("/Audio/_Funkystation/Machines/document_printer_unjam_loop.ogg");
+
+    /// <summary>
+    /// Handle to the currently-playing unjam loop sound, so it can be stopped on doAfter end
+    /// </summary>
+    [ViewVariables]
+    public EntityUid? JamLoopSoundEntity;
 }

@@ -9,7 +9,9 @@ namespace Content.Shared._Funkystation.Documents;
 public enum DocumentPrinterVisuals : byte
 {
     VisualState,
-    Unshaded
+    Unshaded,
+    JamOverlay,
+    JamOverlayUnshaded
 }
 
 /// <summary>
@@ -19,5 +21,6 @@ public enum DocumentPrinterVisuals : byte
 public enum DocumentPrinterVisualState : byte
 {
     Normal,
-    Printing
+    Printing,
+    Jammed
 }

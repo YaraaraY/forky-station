@@ -2,64 +2,64 @@
   id: DocCatAdministrative
   name: doc-category-administrative
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: admin
   priority: 0
 
 - type: documentCategory
   id: DocCatLegal
   name: doc-category-legal
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: legal
   priority: 1
 
 - type: documentCategory
   id: DocCatEngineering
   name: doc-category-engineering
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: engineering
   priority: 2
 
 - type: documentCategory
   id: DocCatMedical
   name: doc-category-medical
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: medical
   priority: 3
 
 - type: documentCategory
   id: DocCatLogistics
   name: doc-category-logistics
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: logistics
   priority: 4
 
 - type: documentCategory
   id: DocCatResearch
   name: doc-category-research
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: research
   priority: 5
 
 - type: documentCategory
   id: DocCatInternalAffairs
   name: doc-category-ia
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: internalaffairs
   priority: 6
 
 - type: documentCategory
   id: DocCatMisc
   name: doc-category-misc
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: misc
   priority: 999
 
 # Only ever appears if the printer has been emagged
@@ -67,8 +67,8 @@
   id: DocCatContraband
   name: doc-category-contraband
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: syndicate
   priority: 900
   scrambleName: true
 
@@ -77,6 +77,6 @@
   id: DocCatUnregulatedForms
   name: doc-category-unregulated-forms
   icon:
-    sprite: Interface/Actions/actions_fakemindshield.rsi
-    state: icon-on
+    sprite: _Funkystation/Interface/category_icons.rsi
+    state: unregulated
   priority: 950

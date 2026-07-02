@@ -28,13 +28,17 @@ public sealed class DocumentPrinterBoundUserInterfaceState(
     Dictionary<string, List<DocumentEntry>> documentsByCategory,
     bool isPaperInserted,
     string? insertedPaperName,
-    bool canCopy)
+    bool canCopy,
+    bool canPrint,
+    bool isJammed)
     : BoundUserInterfaceState
 {
     public readonly Dictionary<string, List<DocumentEntry>> DocumentsByCategory = documentsByCategory;
     public readonly bool IsPaperInserted = isPaperInserted;
     public readonly string? InsertedPaperName = insertedPaperName;
     public readonly bool CanCopy = canCopy;
+    public readonly bool CanPrint = canPrint;
+    public readonly bool IsJammed = isJammed;
 }
 
 [Serializable, NetSerializable]

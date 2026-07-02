@@ -34,6 +34,32 @@
       ]
     },
     {
+      "name": "jammed",
+      "directions": 4
+    },
+    {
+      "name": "jammed-unshaded",
+      "directions": 4,
+      "delays": [
+        [
+          0.25,
+          0.25
+        ],
+        [
+          0.25,
+          0.25
+        ],
+        [
+          0.25,
+          0.25
+        ],
+        [
+          0.25,
+          0.25
+        ]
+      ]
+    },
+    {
       "name": "panel",
       "directions": 4
     },

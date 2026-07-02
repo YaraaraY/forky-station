@@ -1,18 +1,25 @@
 using System.Linq;
+using Content.Server.Popups;
+using Content.Server.Tools;
 using Content.Shared.Access.Systems;
 using Content.Shared.Containers.ItemSlots;
+using Content.Shared.DoAfter;
 using Content.Shared.Emag.Components;
 using Content.Shared.Emag.Systems;
 using Content.Shared._Funkystation.Documents;
 using Content.Shared._Funkystation.Documents.Components;
+using Content.Shared.Interaction;
 using Content.Shared.Labels.Components;
 using Content.Shared.Labels.EntitySystems;
 using Content.Shared.NameModifier.Components;
 using Content.Shared.Paper;
+using Content.Shared.Wires;
 using Robust.Server.GameObjects;
+using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
 using Robust.Shared.Timing;
 
 namespace Content.Server._Funkystation.Documents;
@@ -32,6 +39,10 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     [Dependency] private ItemSlotsSystem _itemSlots = null!;
     [Dependency] private LabelSystem _label = null!;
     [Dependency] private MetaDataSystem _metaData = null!;
+    [Dependency] private IRobustRandom _random = null!;
+    [Dependency] private ToolSystem _toolSystem = null!;
+    [Dependency] private SharedDoAfterSystem _doAfter = null!;
+    [Dependency] private PopupSystem _popup = null!;
 
     private const string PaperSlotId = "Paper";
 
@@ -43,17 +54,15 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         SubscribeLocalEvent<DocumentPrinterComponent, ComponentRemove>(OnComponentRemove);
         SubscribeLocalEvent<DocumentPrinterComponent, EntInsertedIntoContainerMessage>(OnSlotChanged);
         SubscribeLocalEvent<DocumentPrinterComponent, EntRemovedFromContainerMessage>(OnSlotChanged);
+
         SubscribeLocalEvent<DocumentPrinterComponent, BoundUIOpenedEvent>(OnUiOpened);
         SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterPrintMessage>(OnPrintRequested);
         SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterCopyMessage>(OnCopyRequested);
         SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterEjectMessage>(OnEjectRequested);
         SubscribeLocalEvent<DocumentPrinterComponent, GotEmaggedEvent>(OnEmagged);
-    }
 
-    public void RefreshUi(EntityUid uid)
-    {
-        if (TryComp<DocumentPrinterComponent>(uid, out var comp))
-            UpdateUiState(uid, comp, uid);
+        SubscribeLocalEvent<DocumentPrinterComponent, InteractUsingEvent>(OnInteractUsing);
+        SubscribeLocalEvent<DocumentPrinterComponent, DocumentPrinterJamClearDoAfterEvent>(OnJamClearDoAfter);
     }
 
     public override void Update(float frameTime)
@@ -69,7 +78,11 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
             if (comp.NextPrintTime != TimeSpan.Zero && _timing.CurTime >= comp.NextPrintTime)
             {
                 comp.NextPrintTime = TimeSpan.Zero;
-                UpdateUiState(uid, comp, uid);
+
+                foreach (var actor in _ui.GetActors(uid, DocumentPrinterUiKey.Key))
+                {
+                    UpdateUiState(uid, comp, actor);
+                }
             }
         }
     }
@@ -160,7 +173,6 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
 
         var paperEntity = comp.PaperSlot.Item;
         var isPaperInserted = paperEntity is { } inserted && HasComp<PaperComponent>(inserted);
-        var canCopy = isPaperInserted && _timing.CurTime >= comp.NextPrintTime;
 
         string? paperName = null;
         if (isPaperInserted && paperEntity is { } paper)
@@ -169,9 +181,12 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
             paperName = nameMod?.BaseName ?? MetaData(paper).EntityName;
         }
 
+        var canPrint = !comp.Jammed && _timing.CurTime >= comp.NextPrintTime;
+        var canCopy = isPaperInserted && canPrint;
+
         _ui.SetUiState(uid,
             DocumentPrinterUiKey.Key,
-            new DocumentPrinterBoundUserInterfaceState(grouped, isPaperInserted, paperName, canCopy));
+            new DocumentPrinterBoundUserInterfaceState(grouped, isPaperInserted, paperName, canCopy, canPrint, comp.Jammed));
     }
 
     /// <summary>
@@ -189,11 +204,28 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         return doc.RequiredAccess.Any(s => tags.Contains(s));
     }
 
+    /// <summary>
+    /// Jam roll, called once per completed print/copy job
+    /// </summary>
+    private bool RollJam(DocumentPrinterComponent comp)
+    {
+        return comp.JamOneInChance > 0 && _random.Next(comp.JamOneInChance) == 0;
+    }
+
+    private void TriggerJam(EntityUid uid, DocumentPrinterComponent comp, EntityUid actor)
+    {
+        comp.Jammed = true;
+        _appearance.SetData(uid, DocumentPrinterVisuals.VisualState, DocumentPrinterVisualState.Jammed);
+        _audio.PlayPvs(comp.JamSound, uid);
+        _popup.PopupEntity(Loc.GetString("document-printer-jam-occurred"), uid);
+        UpdateUiState(uid, comp, actor);
+    }
+
     private void OnPrintRequested(EntityUid uid, DocumentPrinterComponent comp, DocumentPrinterPrintMessage msg)
     {
         var actor = msg.Actor;
 
-        if (_timing.CurTime < comp.NextPrintTime)
+        if (comp.Jammed || _timing.CurTime < comp.NextPrintTime)
             return;
 
         if (!GetActiveDocumentIds(uid, comp).Contains(msg.DocumentId))
@@ -219,6 +251,12 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
             if (!Exists(uid))
                 return;
 
+            if (RollJam(comp))
+            {
+                TriggerJam(uid, comp, actor);
+                return;
+            }
+
             var paper = Spawn(doc.PaperPrototype, coords);
             _paper.SetContent(paper, Loc.GetString(doc.Content));
 
@@ -235,7 +273,7 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     {
         var actor = msg.Actor;
 
-        if (_timing.CurTime < comp.NextPrintTime)
+        if (comp.Jammed || _timing.CurTime < comp.NextPrintTime)
             return;
 
         var source = comp.PaperSlot.Item;
@@ -273,6 +311,12 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
             if (!Exists(uid))
                 return;
 
+            if (RollJam(comp))
+            {
+                TriggerJam(uid, comp, actor);
+                return;
+            }
+
             var printed = Spawn(protoId, coords);
 
             if (TryComp<PaperComponent>(printed, out var newPaper))
@@ -304,5 +348,65 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
     private void OnEjectRequested(EntityUid uid, DocumentPrinterComponent comp, DocumentPrinterEjectMessage msg)
     {
         _itemSlots.TryEjectToHands(uid, comp.PaperSlot, msg.Actor);
+    }
+
+    public void RefreshUi(EntityUid uid)
+    {
+        if (TryComp<DocumentPrinterComponent>(uid, out var comp))
+            UpdateUiState(uid, comp, uid);
+    }
+
+    private void OnInteractUsing(EntityUid uid, DocumentPrinterComponent comp, InteractUsingEvent args)
+    {
+        if (args.Handled || !comp.Jammed)
+            return;
+
+        if (!TryComp<WiresPanelComponent>(uid, out var panel) || !panel.Open)
+        {
+            _popup.PopupEntity(Loc.GetString("document-printer-jam-panel-closed"), uid, args.User);
+            return;
+        }
+
+        if (!_toolSystem.HasQuality(args.Used, comp.JamClearToolQuality))
+            return;
+
+        var doAfterArgs = new DoAfterArgs(EntityManager, args.User, comp.JamClearDelay, new DocumentPrinterJamClearDoAfterEvent(), uid, target: uid, used: args.Used)
+        {
+            BreakOnMove = true,
+            BreakOnDamage = true,
+            NeedHand = true,
+            BreakOnHandChange = true,
+        };
+
+        if (_doAfter.TryStartDoAfter(doAfterArgs))
+        {
+            comp.JamLoopSoundEntity = _audio.PlayPvs(comp.JamLoopSound, uid, AudioParams.Default.WithLoop(true))?.Entity;
+            args.Handled = true;
+        }
+    }
+
+    private void OnJamClearDoAfter(EntityUid uid, DocumentPrinterComponent comp, DocumentPrinterJamClearDoAfterEvent args)
+    {
+        StopJamLoopSound(comp);
+
+        if (args.Cancelled || args.Handled || !comp.Jammed)
+            return;
+
+        comp.Jammed = false;
+        _appearance.SetData(uid, DocumentPrinterVisuals.VisualState, DocumentPrinterVisualState.Normal);
+        _popup.PopupEntity(Loc.GetString("document-printer-jam-cleared"), uid);
+        _audio.PlayPvs(comp.PrintSound, uid);
+
+        args.Handled = true;
+        UpdateUiState(uid, comp, args.User);
+    }
+
+    private void StopJamLoopSound(DocumentPrinterComponent comp)
+    {
+        if (comp.JamLoopSoundEntity is { } soundEnt)
+        {
+            _audio.Stop(soundEnt);
+            comp.JamLoopSoundEntity = null;
+        }
     }
 }

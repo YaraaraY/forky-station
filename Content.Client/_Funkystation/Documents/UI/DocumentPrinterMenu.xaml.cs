@@ -63,10 +63,17 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
 
     private void UpdateCopyPanel(DocumentPrinterBoundUserInterfaceState state)
     {
-        CopySlotLabel.Text = state.IsPaperInserted
-            ? Loc.GetString("document-printer-copy-inserted",
-                ("name", state.InsertedPaperName ?? Loc.GetString("document-printer-copy-unknown-paper")))
-            : Loc.GetString("document-printer-copy-empty");
+        if (state.IsJammed)
+        {
+            CopySlotLabel.Text = Loc.GetString("document-printer-jammed");
+        }
+        else
+        {
+            CopySlotLabel.Text = state.IsPaperInserted
+                ? Loc.GetString("document-printer-copy-inserted",
+                    ("name", state.InsertedPaperName ?? Loc.GetString("document-printer-copy-unknown-paper")))
+                : Loc.GetString("document-printer-copy-empty");
+        }
 
         EjectButton.Disabled = !state.IsPaperInserted;
         CopyButton.Disabled = !state.CanCopy;
@@ -101,7 +108,7 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
             content.AddChild(new TextureRect
             {
                 Texture = _spriteSystem.Frame0(cat.Icon),
-                TextureScale = new Vector2(0.75f, 0.75f),
+                TextureScale = new Vector2(1.0f, 1.0f),
                 Stretch = TextureRect.StretchMode.KeepAspectCentered,
                 VerticalAlignment = VAlignment.Center
             });
@@ -196,7 +203,7 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
 
         foreach (var doc in filtered)
         {
-            DocumentList.AddChild(BuildDocumentRow(doc));
+            DocumentList.AddChild(BuildDocumentRow(doc, _lastState.CanPrint));
         }
 
         if (filtered.Count == 0)
@@ -210,7 +217,7 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
         }
     }
 
-    private Control BuildDocumentRow(DocumentEntry doc)
+    private Control BuildDocumentRow(DocumentEntry doc, bool canPrint)
     {
         var row = new PanelContainer
         {
@@ -252,7 +259,7 @@ public sealed partial class DocumentPrinterMenu : DefaultWindow
         var printButton = new Button
         {
             Text = Loc.GetString("document-printer-print-button"),
-            Disabled = !doc.Accessible
+            Disabled = !doc.Accessible || !canPrint
         };
 
         var docId = doc.Id;

@@ -10,6 +10,11 @@ document-printer-copy-unknown-paper = Unknown document
 document-printer-copy-button = Copy
 document-printer-eject-button = Eject
 
+document-printer-jammed = Paper jam! Requires maintenance.
+document-printer-jam-occurred = The printer grinds and jams up!
+document-printer-jam-cleared = The jam is cleared.
+document-printer-jam-panel-closed = You need to open the maintenance panel first.
+
 wires-board-name-document-printer = Document Printer
 wire-name-document-printer-manager = MNGR
 wire-name-document-printer-access = ACC

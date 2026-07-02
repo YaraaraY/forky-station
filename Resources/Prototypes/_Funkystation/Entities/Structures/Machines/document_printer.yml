@@ -33,6 +33,13 @@
       shader: unshaded
       visible: false
       map: [ "enum.DocumentPrinterVisuals.Unshaded" ]
+    - state: jammed
+      visible: false
+      map: [ "enum.DocumentPrinterVisuals.JamOverlay" ]
+    - state: jammed-unshaded
+      shader: unshaded
+      visible: false
+      map: [ "enum.DocumentPrinterVisuals.JamOverlayUnshaded" ]
     - state: panel
       map: [ "enum.WiresVisualLayers.MaintenancePanel" ]
       visible: false
@@ -55,11 +62,21 @@
       enum.DocumentPrinterVisuals.VisualState:
         enum.DocumentPrinterVisuals.VisualState:
           Printing: { visible: true }
+          Jammed: { visible: false }
+          Normal: { visible: false }
+        enum.DocumentPrinterVisuals.JamOverlay:
+          Jammed: { visible: true }
+          Printing: { visible: false }
+          Normal: { visible: false }
+        enum.DocumentPrinterVisuals.JamOverlayUnshaded:
+          Jammed: { visible: true }
+          Printing: { visible: false }
           Normal: { visible: false }
   - type: Machine
     board: DocumentPrinterCircuitboard
   - type: FurnitureWheels
   - type: DocumentPrinter
+    jamOneInChance: 30
     paperSlot:
       insertSound: /Audio/Machines/scanning.ogg
       ejectSound: /Audio/Machines/tray_eject.ogg
