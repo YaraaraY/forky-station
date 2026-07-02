@@ -45,6 +45,7 @@
       projectiles: !type:ContainerSlot
   - type: ContainerAmmoProvider
     container: projectiles
+  - type: ESCrosshairProvider
 
 - type: entity
   id: BowImprovised
