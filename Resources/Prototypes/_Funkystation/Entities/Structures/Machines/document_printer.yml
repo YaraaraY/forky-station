@@ -75,14 +75,19 @@
   - type: Machine
     board: DocumentPrinterCircuitboard
   - type: FurnitureWheels
+  - type: ContainerContainer
+      containers:
+        Paper: !type:ContainerSlot
   - type: DocumentPrinter
     jamOneInChance: 30
-    paperSlot:
-      insertSound: /Audio/Machines/scanning.ogg
-      ejectSound: /Audio/Machines/tray_eject.ogg
-      whitelist:
-        components:
-        - FaxableObject
+  - type: ItemSlots
+    slots:
+      Paper:
+        insertSound: /Audio/Machines/scanning.ogg
+        ejectSound: /Audio/Machines/tray_eject.ogg
+        whitelist:
+          components:
+          - FaxableObject
   - type: StationAiWhitelist
   - type: Wires
     alwaysRandomize: true

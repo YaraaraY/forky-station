@@ -67,7 +67,7 @@ public sealed partial class DocumentPrinterComponent : Component
     /// <summary>
     /// Slot paper is inserted into to be copied
     /// </summary>
-    [DataField(required: true)]
+    [ViewVariables]
     public ItemSlot PaperSlot = new();
 
     /// <summary>

@@ -52,7 +52,6 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<DocumentPrinterComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<DocumentPrinterComponent, ComponentRemove>(OnComponentRemove);
         SubscribeLocalEvent<DocumentPrinterComponent, EntInsertedIntoContainerMessage>(OnSlotChanged);
         SubscribeLocalEvent<DocumentPrinterComponent, EntRemovedFromContainerMessage>(OnSlotChanged);
 
@@ -90,12 +89,8 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
 
     private void OnComponentInit(EntityUid uid, DocumentPrinterComponent comp, ComponentInit args)
     {
-        _itemSlots.AddItemSlot(uid, PaperSlotId, comp.PaperSlot);
-    }
-
-    private void OnComponentRemove(EntityUid uid, DocumentPrinterComponent comp, ComponentRemove args)
-    {
-        _itemSlots.RemoveItemSlot(uid, comp.PaperSlot);
+        if (_itemSlots.TryGetSlot(uid, PaperSlotId, out var slot))
+            comp.PaperSlot = slot;
     }
 
     private void OnSlotChanged(EntityUid uid, DocumentPrinterComponent comp, ContainerModifiedMessage args)
