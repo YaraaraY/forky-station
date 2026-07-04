@@ -89,6 +89,9 @@ public sealed partial class DocumentPrinterSystem : EntitySystem
 
     private void OnComponentInit(EntityUid uid, DocumentPrinterComponent comp, ComponentInit args)
     {
+        if (!HasComp<ItemSlotsComponent>(uid))
+            return;
+
         if (_itemSlots.TryGetSlot(uid, PaperSlotId, out var slot))
             comp.PaperSlot = slot;
     }
