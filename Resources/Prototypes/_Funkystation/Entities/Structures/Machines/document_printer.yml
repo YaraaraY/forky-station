@@ -76,8 +76,8 @@
     board: DocumentPrinterCircuitboard
   - type: FurnitureWheels
   - type: ContainerContainer
-      containers:
-        Paper: !type:ContainerSlot
+    containers:
+      Paper: !type:ContainerSlot
   - type: DocumentPrinter
     jamOneInChance: 30
   - type: ItemSlots
