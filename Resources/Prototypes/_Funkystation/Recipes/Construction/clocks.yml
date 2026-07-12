@@ -1,14 +1,11 @@
 ﻿- type: construction
-  name: cat clock
+  name: construction-recipe-cat-clock-name
   id: CatClock
   graph: CatClockGraph
   startNode: start
   targetNode: clock
   category: construction-category-furniture
-  description: A cute little cat clock that reminds you time is always moving forward.
-  icon:
-    sprite: _Funkystation/Objects/Devices/cat_clock.rsi
-    state: cat_clock
+  description: construction-recipe-cat-clock-desc
   objectType: Structure
   placementMode: SnapgridCenter
   canBuildInImpassable: true
@@ -16,16 +13,13 @@
   - !type:WallmountCondition
 
 - type: construction
-  name: analog clock
+  name: construction-recipe-analog-clock-name
   id: AnalogClock
   graph: AnalogClockGraph
   startNode: start
   targetNode: clock
   category: construction-category-furniture
-  description: A boring old analog clock. It seems slightly out of sync.
-  icon:
-    sprite: _Funkystation/Objects/Devices/analog_clock.rsi
-    state: analog_clock
+  description: construction-recipe-analog-clock-desc
   objectType: Structure
   placementMode: SnapgridCenter
   canBuildInImpassable: true
