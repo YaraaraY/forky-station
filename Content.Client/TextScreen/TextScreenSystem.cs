@@ -352,6 +352,9 @@ public sealed partial class TextScreenSystem : VisualizerSystem<TextScreenVisual
             else
             {
                 var curTime = _gameTiming.CurTime.Subtract(_gameTicker.RoundStartTimeSpan);
+                if (curTime < TimeSpan.Zero)
+                    curTime = TimeSpan.Zero;
+
                 timeString = curTime.ToString("hh\\:mm");
             }
 

@@ -947,7 +947,7 @@ public sealed partial class AccessReaderSystem : EntitySystem
                 ent.Comp.AccessLog.Dequeue();
         }
 
-        // Funky Change
+        // Funky Change start
         TimeSpan loggedTime;
         if (accessTime != null)
         {
@@ -958,17 +958,18 @@ public sealed partial class AccessReaderSystem : EntitySystem
             var station = _station.GetOwningStation(ent);
             if (station != null && TryComp<StationTimeComponent>(station.Value, out var timeComp))
             {
-
                 var st = _stationTime.GetStationTime((station.Value, timeComp));
                 loggedTime = st.TimeOfDay;
             }
             else
             {
-                loggedTime = _gameTiming.CurTime.Subtract(_gameTicker.RoundStartTimeSpan);
+                var curTime = _gameTiming.CurTime.Subtract(_gameTicker.RoundStartTimeSpan);
+                loggedTime = curTime < TimeSpan.Zero ? TimeSpan.Zero : curTime;
             }
         }
 
-        ent.Comp.AccessLog.Enqueue(new AccessRecord(loggedTime, name)); // Funky Change
+        ent.Comp.AccessLog.Enqueue(new AccessRecord(loggedTime, name));
+        // Funky Change end
 
         Dirty(ent);
     }
