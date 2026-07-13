@@ -6,10 +6,10 @@ namespace Content.Shared._Funkystation.StationTime.Components;
 public sealed partial class StationTimeComponent : Component
 {
     // server's DateTime.UtcNow.Ticks at the moment of sync
-    [DataField, AutoNetworkedField]
+    [ViewVariables, AutoNetworkedField]
     public long RealUtcTicksAtSync;
 
     // shared simulation clock (IGameTiming.CurTime) at that same moment
-    [DataField, AutoNetworkedField]
+    [ViewVariables, AutoNetworkedField]
     public TimeSpan CurTimeAtSync;
 }

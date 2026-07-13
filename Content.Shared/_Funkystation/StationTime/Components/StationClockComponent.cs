@@ -22,7 +22,7 @@ public sealed partial class StationClockComponent : Component
     [DataField]
     public float TemperatureUpdateInterval = 5f;
 
-    [DataField, AutoNetworkedField]
+    [ViewVariables, AutoNetworkedField]
     public float? LastTemperatureCelsius;
 
     [ViewVariables]
@@ -38,11 +38,4 @@ public sealed partial class StationClockComponent : Component
     // played whenever the clock is toggled on or off
     [DataField]
     public SoundSpecifier? ToggleSound;
-
-    // looped ambient sound
-    [DataField]
-    public SoundSpecifier? LoopSound;
-
-    [ViewVariables]
-    public EntityUid? LoopSoundStream;
 }
