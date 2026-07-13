@@ -208,7 +208,8 @@ public sealed partial class NewsSystem : SharedNewsSystem
         }
 
         // Funky Change Start
-        var shareTimeString = _ticker.RoundDuration().ToString(@"hh\:mm\:ss");
+        var rd = _ticker.RoundDuration();
+        var shareTimeString = rd < TimeSpan.Zero ? "00:00:00" : $"{(int)rd.TotalHours:D2}:{rd.Minutes:D2}:{rd.Seconds:D2}";
         var station = _station.GetOwningStation(uid);
         if (station != null && TryComp<StationTimeComponent>(station.Value, out var timeComp))
         {
