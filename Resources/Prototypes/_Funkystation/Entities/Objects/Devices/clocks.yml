@@ -16,7 +16,11 @@
     showTemperature: false
     toggleSound:
       path: /Audio/Machines/lightswitch.ogg
-    loopSound:
+  - type: AmbientSound
+    enabled: true
+    volume: -5
+    range: 5
+    sound:
       path: /Audio/_Funkystation/Machines/clock_ticking.ogg
   - type: Construction
     graph: CatClockGraph
@@ -40,7 +44,11 @@
     showTemperature: false
     toggleSound:
       path: /Audio/Machines/lightswitch.ogg
-    loopSound:
+  - type: AmbientSound
+    enabled: true
+    volume: -5
+    range: 5
+    sound:
       path: /Audio/_Funkystation/Machines/clock_ticking.ogg
   - type: Construction
     graph: AnalogClockGraph

@@ -355,7 +355,7 @@ public sealed partial class TextScreenSystem : VisualizerSystem<TextScreenVisual
                 if (curTime < TimeSpan.Zero)
                     curTime = TimeSpan.Zero;
 
-                timeString = curTime.ToString("hh\\:mm");
+                timeString = TimeToString(curTime, false, screen.HourFormat, screen.MinuteFormat, screen.SecondFormat);
             }
 
             if (screen.LastClockTime == timeString)

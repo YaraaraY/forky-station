@@ -12,10 +12,16 @@ public sealed partial class StationTimeSystem : EntitySystem
         if (!Resolve(ent, ref ent.Comp))
             return default;
 
-        var syncedUtc = new DateTime(ent.Comp.RealUtcTicksAtSync, DateTimeKind.Utc);
+        var syncedUtc = new DateTime(Math.Max(ent.Comp.RealUtcTicksAtSync, DateTime.MinValue.Ticks), DateTimeKind.Utc);
         var elapsed = _timing.CurTime - ent.Comp.CurTimeAtSync;
-        var realNow = syncedUtc + elapsed;
 
+        var ticks = syncedUtc.Ticks + elapsed.Ticks;
+        if (ticks < DateTime.MinValue.Ticks)
+            ticks = DateTime.MinValue.Ticks;
+        if (ticks > DateTime.MaxValue.Ticks)
+            ticks = DateTime.MaxValue.Ticks;
+
+        var realNow = new DateTime(ticks, DateTimeKind.Utc);
         // it's 2984
         return new DateTime(2984,
             realNow.Month,

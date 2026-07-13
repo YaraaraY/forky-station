@@ -3,6 +3,7 @@ using Content.Shared.Examine;
 using Content.Shared.Interaction;
 using Content.Shared.Station;
 using Robust.Shared.Audio.Systems;
+using Content.Shared.Audio;
 
 namespace Content.Shared._Funkystation.StationTime.EntitySystems;
 
@@ -11,6 +12,7 @@ public sealed partial class StationClockSystem : EntitySystem
     [Dependency] private StationTimeSystem _stationTime = null!;
     [Dependency] private SharedStationSystem _station = null!;
     [Dependency] private SharedAudioSystem _audio = null!;
+    [Dependency] private SharedAmbientSoundSystem _ambient = null!;
 
     public override void Initialize()
     {
@@ -26,6 +28,11 @@ public sealed partial class StationClockSystem : EntitySystem
 
         comp.Enabled = !comp.Enabled;
         Dirty(uid, comp);
+
+        if (TryComp<AmbientSoundComponent>(uid, out var ambient))
+        {
+            _ambient.SetAmbience(uid, comp.Enabled, ambient);
+        }
 
         _audio.PlayPredicted(comp.ToggleSound, uid, args.User);
 
