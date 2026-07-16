@@ -122,7 +122,7 @@
     layers:
       Hair: HEAD
   - type: ESViewconeModifier # Funky
-    angleModifier: -45
+    angleModifier: -35
   - type: StainBlocker # Funky
     slots: [ MASK ]
 
@@ -151,7 +151,7 @@
       Hair: HEAD
       Snout: HEAD
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: StainBlocker # Funky
     slots: [ MASK ]
 
@@ -234,7 +234,7 @@
     layers:
       Hair: HEAD
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: StainBlocker # Funky
     slots: [ MASK ]
 
@@ -298,7 +298,7 @@
       Hair: HEAD
       Snout: HEAD
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: StainBlocker # Funky
     slots: [ MASK ]
 
@@ -334,7 +334,7 @@
       Snout: HEAD
   - type: BreathMask
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: StainBlocker # Funky
     slots: [ MASK ]
 

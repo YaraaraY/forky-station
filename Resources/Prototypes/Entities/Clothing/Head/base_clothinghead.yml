@@ -151,7 +151,7 @@
     - HeadSide
     - FacialHair
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: StainBlocker # Funky
     slots: [MASK]
 
@@ -213,7 +213,7 @@
     - sprite: _Funkystation/Effects/blood.rsi
       state: helmetbloodicon
   - type: ESViewconeModifier # Funky
-    angleModifier: -75
+    angleModifier: -60
   - type: StainBlocker # Funky
     slots: [MASK]
 

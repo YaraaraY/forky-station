@@ -15,7 +15,7 @@ public sealed class ViewconeCCVars : CVars
 
     // base viewcone angle in degrees, before modifiers
     public static readonly CVarDef<float> ViewconeBaseAngle =
-        CVarDef.Create("funkystation.viewcone_base_angle", 250f, CVar.SERVER | CVar.REPLICATED);
+        CVarDef.Create("funkystation.viewcone_base_angle", 210f, CVar.SERVER | CVar.REPLICATED);
 
     // whether moving opposite your facing direction forces walk
     public static readonly CVarDef<bool> ForceWalkBackwards =

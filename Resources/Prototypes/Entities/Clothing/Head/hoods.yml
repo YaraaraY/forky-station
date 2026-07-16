@@ -26,7 +26,7 @@
       HeadTop: HEAD
       HeadSide: HEAD
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: StainBlocker # Funky
     slots: [ MASK ]
 
@@ -178,7 +178,7 @@
     - HeadTop
     - HeadSide
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: StainBlocker # Funky
     slots: [ MASK ]
 

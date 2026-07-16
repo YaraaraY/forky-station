@@ -20,7 +20,7 @@
       Snout: Mask
     hideOnToggle: true
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
 
 - type: entity
   parent: [ClothingMaskGas, BaseSecurityContraband]
@@ -64,7 +64,7 @@
         Piercing: 0.95
         Heat: 0.95
   - type: ESViewconeModifier # Funky
-    angleModifier: -45
+    angleModifier: -35
 
 - type: entity
   parent: ClothingMaskGas
@@ -125,7 +125,7 @@
         Piercing: 0.95
         Heat: 0.95
   - type: ESViewconeModifier # Funky
-    angleModifier: -45
+    angleModifier: -35
 
 - type: entity
   parent: ClothingMaskPullableBase
@@ -749,7 +749,7 @@
   - type: FlashImmunity
   - type: EyeProtection
   - type: ESViewconeModifier # Funky
-    angleModifier: -110
+    angleModifier: -90
   - type: PhysicalComposition
     materialComposition:
       Steel: 200

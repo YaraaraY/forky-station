@@ -48,8 +48,8 @@ namespace Content.Shared.CombatMode
         ///     to entities with this flag enabled that enter combat mode, and vice versa for removal.
         /// </summary>
         [DataField, AutoNetworkedField]
-        // Funky changed to true, added access
+        // Funky, added access
         [Access(typeof(SharedCombatModeSystem), typeof(ViewconeAlwaysFaceCursorSystem))]
-        public bool ToggleMouseRotator = true;
+        public bool ToggleMouseRotator;
     }
 }

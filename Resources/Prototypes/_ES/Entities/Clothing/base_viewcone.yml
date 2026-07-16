@@ -4,27 +4,27 @@
   abstract: true
   components:
   - type: ESViewconeModifier
-    angleModifier: -45
+    angleModifier: -35
 
 - type: entity
   id: BaseClothingViewconeMedium
   abstract: true
   components:
   - type: ESViewconeModifier
-    angleModifier: -75
+    angleModifier: -60
 
 - type: entity
   id: BaseClothingViewconeLarge
   abstract: true
   components:
   - type: ESViewconeModifier
-    angleModifier: -110
+    angleModifier: -90
 
 - type: entity
   id: BaseClothingViewconeBlinding
   abstract: true
   components:
   - type: ESViewconeModifier
-    angleModifier: -360
+    angleModifier: -160
 
 

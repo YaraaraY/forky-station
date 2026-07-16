@@ -29,7 +29,7 @@
     - type: IdentityBlocker
     - type: EyeProtection
     - type: ESViewconeModifier
-      angleModifier: -360
+      angleModifier: -160
   - type: ItemTogglePrefix
     prefixOn: null
     prefixOff: up

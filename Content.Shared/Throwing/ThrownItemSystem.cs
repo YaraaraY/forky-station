@@ -28,7 +28,6 @@ namespace Content.Shared.Throwing
         [Dependency] private SharedPhysicsSystem _physics = default!;
         [Dependency] private SharedGravitySystem _gravity = default!;
         // ES START
-        [Dependency] private SharedTransformSystem _transform = default!;
         [Dependency] private ESViewconeEffectSystem _effect = default!;
 
         public static EntProtoId LandViewconeEffect = "ESViewconeEffectAttack";
@@ -135,9 +134,6 @@ namespace Content.Shared.Throwing
                 _adminLogger.Add(LogType.Landed, LogImpact.Low, $"{ToPrettyString(uid):entity} thrown by {ToPrettyString(thrownItem.Thrower.Value):thrower} landed.");
 
             // ES START
-            _transform.SetLocalRotation(uid, Angle.Zero);
-            _physics.SetAngularVelocity(uid, 0f, body: physics);
-
             // play effect if there was a thrower
             if (thrownItem.Thrower != null)
                 _effect.SpawnEffect(uid, LandViewconeEffect);
