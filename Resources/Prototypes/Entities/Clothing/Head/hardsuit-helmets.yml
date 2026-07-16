@@ -72,8 +72,8 @@
     components:
     - type: EyeProtection
     - type: FlashImmunity
-    - type: WeldingMaskOverlay
-      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
+    - type: ESViewconeModifier
+      angleModifier: -360
   - type: GenericVisualizer
     visuals:
       enum.HelmetVisorVisuals.IsDown:
@@ -154,8 +154,8 @@
     components:
     - type: EyeProtection
     - type: FlashImmunity
-    - type: WeldingMaskOverlay
-      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
+    - type: ESViewconeModifier
+      angleModifier: -360
   - type: GenericVisualizer
     visuals:
       enum.HelmetVisorVisuals.IsDown:
@@ -228,8 +228,8 @@
     components:
     - type: EyeProtection
     - type: FlashImmunity
-    - type: WeldingMaskOverlay
-      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlay.png
+    - type: ESViewconeModifier
+      angleModifier: -360
   - type: GenericVisualizer
     visuals:
       enum.HelmetVisorVisuals.IsDown:
@@ -504,8 +504,8 @@
     components:
     - type: EyeProtection
     - type: FlashImmunity
-    - type: WeldingMaskOverlay
-      texture: /Textures/_Funkystation/Clothing/Head/Welding/weldingOverlayWeak.png
+    - type: ESViewconeModifier
+      angleModifier: -110
   - type: GenericVisualizer
     visuals:
       enum.HelmetVisorVisuals.IsDown:

@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Content.Shared._ES.Viewcone;
+using Content.Shared._Funkystation.CCVar; // Funky
+using Robust.Shared.Configuration; // Funky
 using Content.Shared.ActionBlocker;
 using Content.Shared.CCVar;
 using Content.Shared.Friction;
@@ -14,7 +16,6 @@ using Content.Shared.Shuttles.Components;
 using Content.Shared.Tag;
 using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
-using Robust.Shared.Configuration;
 using Robust.Shared.Containers;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
@@ -300,7 +301,9 @@ public abstract partial class SharedMoverController : VirtualController
                 var cosAngle = Vector2.Dot(velNorm, rotNorm);
                 var threshold = new Angle(MathF.PI) - (backwardsAngle / 2);
 
-                forceWalk = cosAngle < Math.Cos(threshold.Theta);
+                // Funky
+                forceWalk = _configManager.GetCVar(ViewconeCCVars.ForceWalkBackwards)
+                            && cosAngle < Math.Cos(threshold.Theta);
                 wishDir = AssertValidWish(mover, walkSpeed, sprintSpeed, forceWalk);
             }
             // ES END

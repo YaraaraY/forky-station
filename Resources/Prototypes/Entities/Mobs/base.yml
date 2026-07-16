@@ -150,8 +150,6 @@
     mustBeDead: true
   - type: ESViewcone
   - type: ESViewconeOccludable
-  - type: MouseRotator
-  - type: NoRotateOnMove
 
 # Used for mobs that can enter combat mode and can attack.
 - type: entity

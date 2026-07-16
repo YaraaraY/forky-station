@@ -1,11 +1,13 @@
 using Content.Client._ES.Viewcone.Overlays;
 using Content.Client.Eye;
 using Content.Shared._ES.Viewcone.Components;
+using Content.Shared._Funkystation.CCVar; // Funky
 using Content.Shared.MouseRotator;
 using Robust.Client.GameObjects;
 using Robust.Client.Graphics;
 using Robust.Client.Input;
 using Robust.Client.Player;
+using Robust.Shared.Configuration; // Funky
 using Robust.Shared.Map;
 using Robust.Shared.Player;
 
@@ -15,13 +17,14 @@ namespace Content.Client._ES.Viewcone;
 ///     Handles adding and removing the viewcone overlays, as well as ferrying data between them
 ///     Also handles calculating desired view angle for active viewcones so overlays can use it
 /// </summary>
-public sealed class ESViewconeOverlayManagementSystem : EntitySystem
+public sealed partial class ESViewconeOverlayManagementSystem : EntitySystem
 {
     [Dependency] private IPlayerManager _playerManager = default!;
     [Dependency] private IOverlayManager _overlayMan = default!;
     [Dependency] private IInputManager _input = default!;
     [Dependency] private IEyeManager _eye = default!;
     [Dependency] private SharedTransformSystem _xform = default!;
+    [Dependency] private IConfigurationManager _cfg = default!; // Funky
     private ESViewconeConeOverlay _coneOverlay = default!;
     private ESViewconeSetAlphaOverlay _setAlphaOverlay = default!;
     private ESViewconeResetAlphaOverlay _resetAlphaOverlay = default!;
@@ -50,7 +53,23 @@ public sealed class ESViewconeOverlayManagementSystem : EntitySystem
         _coneOverlay = new();
         _setAlphaOverlay = new();
         _resetAlphaOverlay = new();
+
+        Subs.CVar(_cfg, ViewconeCCVars.ViewconeEnabled, OnViewconeEnabledChanged); // Funky
     }
+
+    // Funky START
+    private void OnViewconeEnabledChanged(bool enabled)
+    {
+        if (!enabled)
+        {
+            RemoveOverlays();
+            return;
+        }
+
+        if (_playerManager.LocalSession?.AttachedEntity is { } ent && HasComp<ESViewconeComponent>(ent))
+            AddOverlays();
+    }
+    // Funky END
 
     public override void FrameUpdate(float frameTime)
     {
@@ -138,6 +157,10 @@ public sealed class ESViewconeOverlayManagementSystem : EntitySystem
 
     private void AddOverlays()
     {
+        // Funky
+        if (!_cfg.GetCVar(ViewconeCCVars.ViewconeEnabled))
+            return;
+
         _overlayMan.AddOverlay(_coneOverlay);
         _overlayMan.AddOverlay(_setAlphaOverlay);
         _overlayMan.AddOverlay(_resetAlphaOverlay);

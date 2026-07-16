@@ -1,5 +1,7 @@
 using Content.Shared._ES.Viewcone.Components;
+using Content.Shared._Funkystation.CCVar; // Funky
 using JetBrains.Annotations;
+using Robust.Shared.Configuration; // Funky
 using Robust.Shared.Network;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Spawners;
@@ -11,10 +13,11 @@ namespace Content.Shared._ES.Viewcone;
 ///     it spawns in the correct pos and shit
 /// </summary>
 [PublicAPI]
-public sealed class ESViewconeEffectSystem : EntitySystem
+public sealed partial class ESViewconeEffectSystem : EntitySystem
 {
     [Dependency] private INetManager _net = default!;
     [Dependency] private SharedTransformSystem _xform = default!;
+    [Dependency] private IConfigurationManager _cfg = default!; // Funky change
 
     /// <summary>
     ///     Spawns the given effect entity at the player source, and sets relevant variables
@@ -28,6 +31,10 @@ public sealed class ESViewconeEffectSystem : EntitySystem
         // Server should always handle these, since they shouldn't really be originating from entities that
         // you interact with anyway
         if (_net.IsClient)
+            return;
+
+        // Funky
+        if (!_cfg.GetCVar(ViewconeCCVars.ViewconeEnabled))
             return;
 
         var ent = SpawnNextToOrDrop(effect, source);
