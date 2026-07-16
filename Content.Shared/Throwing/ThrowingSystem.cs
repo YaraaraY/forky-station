@@ -243,7 +243,8 @@ public sealed partial class ThrowingSystem : EntitySystem
 
         // ES START
         // rotate them in the direction of the thrown thing
-        _rotate.TryFaceAngle(user.Value, direction.ToWorldAngle());
+        if (user.Value.Valid)
+            _rotate.TryFaceAngle(user.Value, direction.ToWorldAngle());
         // ES END
 
         if (msg.Cancelled)
