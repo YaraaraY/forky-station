@@ -23,5 +23,5 @@ public sealed class ViewconeCCVars : CVars
 
     // whether mobs always rotate to face the mouse cursor
     public static readonly CVarDef<bool> AlwaysFaceCursor =
-        CVarDef.Create("funkystation.always_face_cursor", true, CVar.SERVER | CVar.REPLICATED);
+        CVarDef.Create("funkystation.always_face_cursor", false, CVar.SERVER | CVar.REPLICATED);
 }
