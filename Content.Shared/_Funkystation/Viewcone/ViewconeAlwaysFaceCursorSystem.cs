@@ -40,8 +40,11 @@ public sealed partial class ViewconeAlwaysFaceCursorSystem : EntitySystem
 
     private void OnCombatModeInit(Entity<CombatModeComponent> ent, ref ComponentInit args)
     {
-        ent.Comp.ToggleMouseRotator = !_enabled;
-        Dirty(ent);
+        if (_enabled)
+        {
+            ent.Comp.ToggleMouseRotator = false;
+            Dirty(ent);
+        }
     }
 
     private void OnChanged(bool enabled)
@@ -54,11 +57,14 @@ public sealed partial class ViewconeAlwaysFaceCursorSystem : EntitySystem
             ApplyToMob(uid, enabled);
         }
 
-        var combatQuery = EntityQueryEnumerator<CombatModeComponent>();
-        while (combatQuery.MoveNext(out var uid, out var combatMode))
+        if (enabled)
         {
-            combatMode.ToggleMouseRotator = !enabled;
-            Dirty(uid, combatMode);
+            var combatQuery = EntityQueryEnumerator<CombatModeComponent>();
+            while (combatQuery.MoveNext(out var uid, out var combatMode))
+            {
+                combatMode.ToggleMouseRotator = false;
+                Dirty(uid, combatMode);
+            }
         }
     }
 

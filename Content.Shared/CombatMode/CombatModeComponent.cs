@@ -50,6 +50,6 @@ namespace Content.Shared.CombatMode
         [DataField, AutoNetworkedField]
         // Funky, added access
         [Access(typeof(SharedCombatModeSystem), typeof(ViewconeAlwaysFaceCursorSystem))]
-        public bool ToggleMouseRotator;
+        public bool ToggleMouseRotator = true;
     }
 }
