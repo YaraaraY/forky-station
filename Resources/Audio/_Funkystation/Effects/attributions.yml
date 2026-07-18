@@ -1,12 +1,12 @@
 - files: ["ratchet_click.ogg"]
-  license: "CC-BY-4.0"
-  copyright: "Made by complex_waveform, taken via freesound.org"
-  source: "https://freesound.org/people/complex_waveform/sounds/213148/"
+  license: "CC-BY-NC-3.0"
+  copyright: "Mixed by vectomassembly"
+  source: "funkystation.org"
 
 - files: ["hydraulic-decompress.ogg"]
-  license: "CC0-1.0"
-  copyright: "Mixed by AraiMaia with sources by SoundsofTheMachine, taken via freesound.org"
-  source: "https://freesound.org/people/SoundsofTheMachine/sounds/843093/"
+  license: "CC-BY-NC-3.0"
+  copyright: "Mixed by vectomassembly"
+  source: "funkystation.org"
 
 - files: ["gears_clicking.ogg"]
   license: "CC0-1.0"

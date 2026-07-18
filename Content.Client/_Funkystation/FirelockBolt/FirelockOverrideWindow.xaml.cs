@@ -129,7 +129,15 @@ public sealed partial class FirelockOverrideWindow : FancyWindow
                 var isEdge = currentStep == 0 || currentStep == RatchetSteps;
                 var volume = isEdge ? 0f : -6f;
 
-                var audioParams = new AudioParams().WithVolume(volume);
+                var progress = currentStep / (float)RatchetSteps;
+
+                // change pitch based on lever, 1.2f at step 0, down to 0.8f at max step
+                var pitch = 1.2f - (progress * 0.4f);
+
+                var audioParams = new AudioParams()
+                    .WithVolume(volume)
+                    .WithPitchScale(pitch);
+
                 _audio.PlayGlobal(new SoundPathSpecifier("/Audio/_Funkystation/Effects/ratchet_click.ogg"), Filter.Local(), false, audioParams);
             }
 
