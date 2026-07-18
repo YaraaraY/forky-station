@@ -1,12 +1,12 @@
 - files: ["ratchet_click.ogg"]
   license: "CC-BY-NC-3.0"
   copyright: "Mixed by vectomassembly"
-  source: "funkystation.org"
+  source: "https://funkystation.org"
 
 - files: ["hydraulic-decompress.ogg"]
   license: "CC-BY-NC-3.0"
   copyright: "Mixed by vectomassembly"
-  source: "funkystation.org"
+  source: "https://funkystation.org"
 
 - files: ["gears_clicking.ogg"]
   license: "CC0-1.0"
