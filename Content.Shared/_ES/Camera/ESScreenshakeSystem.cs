@@ -1,6 +1,9 @@
 using System.Linq;
 using System.Numerics;
 using Content.Shared.Camera;
+using Content.Shared.CCVar; // funk
+using Robust.Shared.Configuration; // funk
+using Robust.Shared.Network; // funk
 using Robust.Shared.Noise;
 using Robust.Shared.Player;
 using Robust.Shared.Random;
@@ -16,6 +19,14 @@ public sealed partial class ESScreenshakeSystem : EntitySystem
 {
     [Dependency] private IRobustRandom _random = default!;
     [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private IConfigurationManager _cfg = default!; // funky
+    [Dependency] private INetManager _net = default!; // funky
+
+    // funky start
+    // accessibility
+    private bool _reducedMotion;
+    private float _intensity = 1f;
+    // funky end
 
     #region Internal
 
@@ -26,6 +37,13 @@ public sealed partial class ESScreenshakeSystem : EntitySystem
         SubscribeLocalEvent<ESScreenshakeComponent, ESGetEyeRotationEvent>(OnGetEyeRotation);
         SubscribeLocalEvent<ESScreenshakeComponent, GetEyeOffsetEvent>(OnGetEyeOffset);
         SubscribeLocalEvent<ESScreenshakeComponent, EntityUnpausedEvent>(OnEntityUnpaused);
+
+        // funky start
+        if (!_net.IsClient)
+            return;
+        Subs.CVar(_cfg, CCVars.ReducedMotion, v => _reducedMotion = v, true);
+        Subs.CVar(_cfg, CCVars.ScreenShakeIntensity, v => _intensity = v, true);
+        // funky end
     }
 
 
@@ -56,6 +74,11 @@ public sealed partial class ESScreenshakeSystem : EntitySystem
 
     private void OnGetEyeOffset(Entity<ESScreenshakeComponent> ent, ref GetEyeOffsetEvent args)
     {
+        // funky start
+        if (_reducedMotion || _intensity <= 0f)
+            return;
+        // funky end
+
         if (!TryComp<EyeComponent>(ent, out var eye))
             return;
 
@@ -85,11 +108,16 @@ public sealed partial class ESScreenshakeSystem : EntitySystem
             accumulatedOffset += new Vector2(offsetX, offsetY);
         }
 
-        args.Offset += accumulatedOffset;
+        args.Offset += accumulatedOffset * _intensity; // funked
     }
 
     private void OnGetEyeRotation(Entity<ESScreenshakeComponent> ent, ref ESGetEyeRotationEvent args)
     {
+        // funky start
+        if (_reducedMotion || _intensity <= 0f)
+            return;
+        // funky end
+
         if (!TryComp<EyeComponent>(ent, out var eye))
             return;
 
@@ -116,7 +144,7 @@ public sealed partial class ESScreenshakeSystem : EntitySystem
         }
 
         // TODO ughhh this shit breaks with something idk
-        args.Rotation += accumulatedAngle;
+        args.Rotation += accumulatedAngle * _intensity; // funked
     }
 
     private void OnEntityUnpaused(Entity<ESScreenshakeComponent> ent, ref EntityUnpausedEvent args)
