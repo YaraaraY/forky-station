@@ -69,3 +69,17 @@
       Steel: 1
       Manipulator: 2
       Cable: 2
+
+# Funky Paper Shredder
+- type: entity
+  parent: BaseMachineCircuitboard
+  id: PaperShredderCircuitboard
+  name: Model IPC-84 paper shredder machine board
+  description: A machine printed circuit board for a paper shredder.
+  components:
+  - type: MachineBoard
+    prototype: PaperShredder
+    stackRequirements:
+      Steel: 1
+      Manipulator: 1
+      Cable: 1

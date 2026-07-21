@@ -67,6 +67,7 @@
     - MassMediaCircuitboard
     - JukeboxCircuitBoard
     - DocumentPrinterCircuitboard # Funky - close enough I guess
+    - PaperShredderCircuitboard # Funky - close enough I guess
 
 - type: technology
   id: MeatManipulation
