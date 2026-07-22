@@ -11,7 +11,7 @@ namespace Content.Shared._RMC14.Whistle;
 public sealed partial class RMCWhistleComponent : Component
 {
     [DataField, AutoNetworkedField]
-    public EntProtoId ActionId = "RMCActionWhistle";
+    public EntProtoId ActionId = "ActionWhistle";
 
     [DataField, AutoNetworkedField]
     public EntityUid? Action;
