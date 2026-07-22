@@ -1,6 +1,5 @@
 using Content.Shared._RMC14.Sound;
 using Content.Shared.Actions;
-using Content.Shared.Actions.Events;
 using Content.Shared.Interaction.Events;
 using Content.Shared.Inventory;
 using Content.Shared.Timing;
@@ -9,12 +8,12 @@ using Robust.Shared.Timing;
 
 namespace Content.Shared._RMC14.Whistle;
 
-public sealed class RMCWhistleSystem : EntitySystem
+public sealed partial class RMCWhistleSystem : EntitySystem
 {
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly SharedActionsSystem _actions = default!;
-    [Dependency] private readonly UseDelaySystem _useDelay = default!;
-    [Dependency] private readonly WhistleSystem _whistle = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private SharedActionsSystem _actions = default!;
+    [Dependency] private UseDelaySystem _useDelay = default!;
+    [Dependency] private WhistleSystem _whistle = default!;
 
     public override void Initialize()
     {
