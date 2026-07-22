@@ -1,0 +1,5 @@
+﻿- type: latheRecipe
+  id: ShredderBin
+  result: ShredderBin
+  materials:
+    Plastic: 100

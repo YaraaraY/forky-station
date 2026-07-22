@@ -78,7 +78,7 @@
   description: A machine printed circuit board for a paper shredder.
   components:
   - type: MachineBoard
-    prototype: PaperShredder
+    prototype: PaperShredderNoBin
     stackRequirements:
       Steel: 1
       Manipulator: 1

@@ -86,3 +86,18 @@
     popupText: shredder-interact-damage
     interactSound: /Audio/Effects/saw.ogg
     interactTimer: 2
+
+- type: entity
+  parent: PaperShredder
+  id: PaperShredderNoBin
+  suffix: No Bin
+  components:
+  - type: ItemSlots
+    slots:
+      Bin:
+        name: shredder-bin-slot-name
+        insertSound: /Audio/Machines/tray_eject.ogg
+        ejectSound: /Audio/Machines/tray_eject.ogg
+        whitelist:
+          tags:
+          - ShredderBin
