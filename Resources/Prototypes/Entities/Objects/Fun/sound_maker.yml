@@ -205,7 +205,9 @@
   - type: Clothing
     sprite: Objects/Fun/whistles.rsi
     quickEquip: false
-    slots: neck
+    slots:
+      - neck
+      - mask
   - type: UseDelay
     delay: 3
   - type: EmitSoundOnUse
