@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2026 Janet Blackquill <uhhadd@gmail.com>
-//
-// SPDX-License-Identifier: LicenseRef-Wallening
-
 using Robust.Shared.Serialization;
 
 namespace Content.Shared._ST.Interaction;

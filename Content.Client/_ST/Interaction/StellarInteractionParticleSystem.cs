@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2026 Janet Blackquill <uhhadd@gmail.com>
-//
-// SPDX-License-Identifier: LicenseRef-Wallening
-
 using System.Numerics;
 using Content.Shared._ST.Interaction;
 using Robust.Client.Animations;
