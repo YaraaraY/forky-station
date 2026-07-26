@@ -1,11 +1,11 @@
 ﻿- type: latheRecipe
-   parent: BaseToolRecipe
-   id: DigitalClock
-   result: DigitalClock
-   materials:
-     Steel: 100
-     Plastic: 50
-    
+  parent: BaseToolRecipe
+  id: DigitalClock
+  result: DigitalClock
+  materials:
+    Steel: 100
+    Plastic: 50
+
 - type: latheRecipe
   id: ShredderBin
   result: ShredderBin
