@@ -106,9 +106,6 @@ public sealed partial class XoRecordManifestSystem : EntitySystem
         if (!TryComp<XoRecordManifestComponent>(ev.Station, out var manifest))
             return;
 
-        if (_manualEnabled)
-            return;
-
         var changed = manifest.Published.Remove(ev.Key.Id);
         changed |= manifest.Discrepancies.Remove(ev.Key.Id);
 
