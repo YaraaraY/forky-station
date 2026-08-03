@@ -30,6 +30,8 @@ public sealed partial class XoRecordsConsoleWindow : FancyWindow
     private CancellationTokenSource? _deleteArmCts;
     private static readonly TimeSpan DeleteArmTimeout = TimeSpan.FromSeconds(4);
 
+    private bool _expectingVerifyResponse;
+
     private readonly List<string> _speciesIds = [];
 
     public XoRecordsConsoleWindow()
@@ -37,6 +39,14 @@ public sealed partial class XoRecordsConsoleWindow : FancyWindow
         RobustXamlLoader.Load(this);
 
         var prototypeManager = IoCManager.Resolve<IPrototypeManager>();
+
+        var successMsg = new FormattedMessage();
+        successMsg.AddMarkupOrThrow($"[color=#ccffcc]{Loc.GetString("xo-records-console-verify-none")}[/color]");
+        VerifySuccessLabel.SetMessage(successMsg);
+
+        var flaggedMsg = new FormattedMessage();
+        flaggedMsg.AddMarkupOrThrow($"[color=#ffcccc]{Loc.GetString("xo-records-console-flagged")}[/color]");
+        FlaggedLabel.SetMessage(flaggedMsg);
 
         foreach (var gender in Enum.GetValues<Gender>())
         {
@@ -69,7 +79,11 @@ public sealed partial class XoRecordsConsoleWindow : FancyWindow
                 OnKeySelected?.Invoke(null);
         };
 
-        VerifyButton.OnPressed += _ => OnVerifyPressed?.Invoke();
+        VerifyButton.OnPressed += _ =>
+        {
+            _expectingVerifyResponse = true;
+            OnVerifyPressed?.Invoke();
+        };
         AddRecordButton.OnPressed += _ => OnAddPressed?.Invoke();
 
         DeleteRecordButton.OnPressed += _ =>
@@ -89,6 +103,8 @@ public sealed partial class XoRecordsConsoleWindow : FancyWindow
 
         SubmitButton.OnPressed += _ =>
         {
+            HideVerifyFeedback();
+
             if (_selectedKey is not { } key)
                 return;
 
@@ -112,19 +128,20 @@ public sealed partial class XoRecordsConsoleWindow : FancyWindow
     public void UpdateState(XoRecordsConsoleState state)
     {
         if (state.SelectedKey != _selectedKey)
+        {
             ResetDeleteArm();
+            HideVerifyFeedback();
+        }
 
         _selectedKey = state.SelectedKey;
 
         PopulateRecordListing(state.Listing, state.SelectedKey);
 
-        VerifyStatusLabel.Visible = state.IsEditable;
-        var verifyMsg = new FormattedMessage();
-        if (state.DiscrepancyCount == 0)
-            verifyMsg.AddMarkupOrThrow($"[color=#388e3c]{Loc.GetString("xo-records-console-verify-none")}[/color]");
-        else
-            verifyMsg.AddMarkupOrThrow($"[color=#d32f2f]{Loc.GetString("xo-records-console-verify-flagged", ("count", state.DiscrepancyCount))}[/color]");
-        VerifyStatusLabel.SetMessage(verifyMsg);
+        if (_expectingVerifyResponse)
+        {
+            _expectingVerifyResponse = false;
+            ShowVerifyFeedback(state.DiscrepancyCount);
+        }
 
         var editable = state.IsEditable;
         AddRecordButton.Disabled = !editable;
@@ -186,6 +203,30 @@ public sealed partial class XoRecordsConsoleWindow : FancyWindow
         _deleteArmCts = null;
         DeleteRecordButton.Text = Loc.GetString("xo-records-console-delete-record");
         DeleteRecordButton.RemoveStyleClass(StyleClass.Negative);
+    }
+
+    private void HideVerifyFeedback()
+    {
+        VerifySuccessBanner.Visible = false;
+        VerifyWarningBanner.Visible = false;
+    }
+
+    private void ShowVerifyFeedback(int discrepancyCount)
+    {
+        HideVerifyFeedback();
+
+        if (discrepancyCount == 0)
+        {
+            VerifySuccessBanner.Visible = true;
+        }
+        else
+        {
+            VerifyWarningBanner.Visible = true;
+
+            var warningMsg = new FormattedMessage();
+            warningMsg.AddMarkupOrThrow($"[color=#ffcc88]{Loc.GetString("xo-records-console-verify-flagged", ("count", discrepancyCount))}[/color]");
+            VerifyWarningLabel.SetMessage(warningMsg);
+        }
     }
 
     private void PopulateRecordListing(List<XoRecordListingEntry> listing, uint? selected)
