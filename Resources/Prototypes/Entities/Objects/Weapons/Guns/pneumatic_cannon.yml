@@ -61,6 +61,7 @@
       storagebase: !type:Container
         ents: []
       gas_tank: !type:ContainerSlot
+  - type: ESCrosshairProvider # Funky, ES port
 
 - type: entity
   parent: BaseStorageItem
@@ -104,6 +105,7 @@
     containers:
       storagebase: !type:Container
         ents: []
+  - type: ESCrosshairProvider # Funky, ES port
 
 - type: entity
   name: experimental pie cannon
@@ -176,6 +178,7 @@
     containers:
       storagebase: !type:Container
         ents: []
+  - type: ESCrosshairProvider # Funky, ES port
 
 # shoots bullets instead of throwing them, no other changes
 - type: entity

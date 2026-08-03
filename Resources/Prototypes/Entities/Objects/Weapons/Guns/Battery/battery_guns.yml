@@ -25,6 +25,7 @@
     startingCharge: 1000
   - type: StaticPrice
     price: 500
+  - type: ESCrosshairProvider # Funky, ES port
 
 - type: entity
   parent: [BaseWeaponBattery, BaseGunWieldable]

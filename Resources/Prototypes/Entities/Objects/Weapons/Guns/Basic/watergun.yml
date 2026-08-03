@@ -45,6 +45,7 @@
   - type: PhysicalComposition
     materialComposition:
       Plastic: 150
+  - type: ESCrosshairProvider # Funky, ES port
 
 - type: entity
   parent: WeaponWaterGunBase

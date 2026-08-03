@@ -9,4 +9,5 @@
     maxAngle: -30
   - type: Gun
     minAngle: 21
-    maxAngle: 32   
+    maxAngle: 32
+  - type: ESCrosshairProvider # Funky, ES port

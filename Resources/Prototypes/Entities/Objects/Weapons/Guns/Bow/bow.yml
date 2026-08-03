@@ -45,7 +45,7 @@
       projectiles: !type:ContainerSlot
   - type: ContainerAmmoProvider
     container: projectiles
-  - type: ESCrosshairProvider
+  - type: ESCrosshairProvider # Funky, ES port
 
 - type: entity
   id: BowImprovised

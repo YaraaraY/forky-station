@@ -50,3 +50,4 @@
     - Belt
   - type: UseDelay
     delay: 1
+  - type: ESCrosshairProvider # Funky, ES port

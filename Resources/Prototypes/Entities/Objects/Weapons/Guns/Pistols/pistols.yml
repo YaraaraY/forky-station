@@ -68,6 +68,7 @@
   - type: Appearance
   - type: StaticPrice
     price: 500
+  - type: ESCrosshairProvider # Funky, ES port
 
 - type: entity
   name: viper
