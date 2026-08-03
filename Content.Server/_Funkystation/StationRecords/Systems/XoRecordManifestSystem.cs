@@ -154,6 +154,11 @@ public sealed partial class XoRecordManifestSystem : EntitySystem
         return Resolve(station, ref manifest, false) && manifest.Discrepancies.Contains(id);
     }
 
+    public int GetDiscrepancyCount(EntityUid station, XoRecordManifestComponent? manifest = null)
+    {
+        return Resolve(station, ref manifest, false) ? manifest.Discrepancies.Count : 0;
+    }
+
     public bool TryGetPublished(EntityUid station, uint id, out GeneralStationRecord? published, XoRecordManifestComponent? manifest = null)
     {
         published = null;

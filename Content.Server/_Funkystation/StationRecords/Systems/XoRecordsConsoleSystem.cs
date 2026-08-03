@@ -140,7 +140,7 @@ public sealed partial class XoRecordsConsoleSystem : EntitySystem
 
         if (owning == null || !HasComp<StationRecordsComponent>(owning))
         {
-            _ui.SetUiState(uid, XoRecordsConsoleKey.Key, new XoRecordsConsoleState(new List<XoRecordListingEntry>(), null, false, null, isEditable));
+            _ui.SetUiState(uid, XoRecordsConsoleKey.Key, new XoRecordsConsoleState(new List<XoRecordListingEntry>(), null, false, null, isEditable, 0));
             return;
         }
 
@@ -172,7 +172,8 @@ public sealed partial class XoRecordsConsoleSystem : EntitySystem
             }
         }
 
-        var newState = new XoRecordsConsoleState(listing, console.ActiveKey, selectedFlagged, selectedFields, isEditable);
+        var discrepancyCount = _manifest.GetDiscrepancyCount(owning.Value, manifest);
+        var newState = new XoRecordsConsoleState(listing, console.ActiveKey, selectedFlagged, selectedFields, isEditable, discrepancyCount);
         _ui.SetUiState(uid, XoRecordsConsoleKey.Key, newState);
     }
 }

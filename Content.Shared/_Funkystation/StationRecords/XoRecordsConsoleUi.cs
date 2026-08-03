@@ -42,7 +42,8 @@ public sealed class XoRecordsConsoleState(
     uint? selectedKey,
     bool selectedFlagged,
     XoRecordFields? published,
-    bool isEditable)
+    bool isEditable,
+    int discrepancyCount)
     : BoundUserInterfaceState
 {
     public readonly List<XoRecordListingEntry> Listing = listing;
@@ -50,6 +51,7 @@ public sealed class XoRecordsConsoleState(
     public readonly bool SelectedFlagged = selectedFlagged;
     public readonly XoRecordFields? Published = published;
     public readonly bool IsEditable = isEditable;
+    public readonly int DiscrepancyCount = discrepancyCount;
 }
 
 [Serializable, NetSerializable]

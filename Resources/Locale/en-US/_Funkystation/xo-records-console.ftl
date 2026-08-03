@@ -23,5 +23,11 @@ xo-records-console-field-dna-placeholder = Enter DNA sequence...
 
 xo-records-console-add-record = Add Record
 xo-records-console-delete-record = Delete Record
+xo-records-console-delete-confirm = Are you sure?
 xo-records-console-submit = Update Record
 xo-records-console-verify = Verify Info
+xo-records-console-verify-none = No discrepancies found. All records verified.
+xo-records-console-verify-flagged = { $count ->
+    [one] 1 record flagged for discrepancies.
+   *[other] { $count } records flagged for discrepancies.
+}
