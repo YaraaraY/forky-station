@@ -42,7 +42,7 @@ public sealed partial class PagerComponent : Component
     public PagerLogEntry? CurrentPage;
 
     [DataField]
-    public SoundSpecifier BeepSound = new SoundPathSpecifier("/Audio/_Funkystation/Effects/Pager/pager-beep.ogg", AudioParams.Default.WithMaxDistance(12f).WithVolume(3f));
+    public SoundSpecifier BeepSound = new SoundPathSpecifier("/Audio/Machines/twobeep.ogg", AudioParams.Default.WithMaxDistance(12f).WithVolume(3f));
 
     [DataField]
     public SoundSpecifier BuzzSound = new SoundPathSpecifier("/Audio/_Funkystation/Effects/Pager/pager-vibrate.ogg", AudioParams.Default.WithMaxDistance(8f).WithVolume(1f));
