@@ -46,6 +46,18 @@ public sealed partial class PagerComponent : Component
 
     [DataField]
     public SoundSpecifier BuzzSound = new SoundPathSpecifier("/Audio/_Funkystation/Effects/Pager/pager-vibrate.ogg", AudioParams.Default.WithMaxDistance(8f).WithVolume(1f));
+
+    /// <summary>
+    /// whether this pager has been emagged
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public bool Emagged;
+
+    /// <summary>
+    /// codes that cause the pager to violently explode when sent
+    /// </summary>
+    [DataField]
+    public List<string> Blacklist = [];
 }
 
 [DataDefinition, Serializable, NetSerializable]

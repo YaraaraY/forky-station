@@ -6,7 +6,23 @@
   description: A small handheld pager, "Pocket Bell" brand. Beeps or buzzes, depending on the mode.
   components:
   - type: Pager
+    blacklist:
+    - "8008135"
+    - "67"
+    - "6767"
+    - "676767"
+    - "67676767"
+    - "shitmin"
+    - "wingstop"
+    - "8264015"
+    - "3284"
+    - "fuckcc"
+    - "fucknt"
+    - "unionize"
+    - "unionise"
+    - "union"
   - type: Ringer
+    popup: pager-page-received
   - type: UserInterface
     interfaces:
       enum.PagerUiKey.Key:
@@ -15,6 +31,9 @@
         type: RingerBoundUserInterface
   - type: ActivatableUI
     key: enum.PagerUiKey.Key
+  - type: DeviceLinkSource
+    ports:
+    - PagerSender
 
 - type: entity
   parent: BasePager

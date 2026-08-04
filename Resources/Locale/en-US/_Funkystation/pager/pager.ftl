@@ -28,3 +28,6 @@ pager-flavor-left = Station Telecomms
 pager-flavor-right = v1.4
 
 loadout-group-pager = Pager
+
+signal-port-name-pager-sender = On page received
+signal-port-description-pager-sender = Transmits a signal whenever the pager receives a page.

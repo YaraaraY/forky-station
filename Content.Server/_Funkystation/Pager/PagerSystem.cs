@@ -10,6 +10,12 @@ using Robust.Server.GameObjects;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
+using Content.Server.Administration.Logs;
+using Content.Shared.Database;
+using Content.Shared.Emag.Systems;
+using Content.Server.Explosion.EntitySystems;
+using Content.Server.DeviceLinking.Systems;
+using Content.Shared.Stunnable;
 
 namespace Content.Server._Funkystation.Pager;
 
@@ -21,6 +27,10 @@ public sealed partial class PagerSystem : SharedPagerSystem
     [Dependency] private SharedAudioSystem _audio = null!;
     [Dependency] private SharedRingerSystem _ringer = null!;
     [Dependency] private StationRecordsSystem _records = null!;
+    [Dependency] private IAdminLogManager _adminLogger = null!;
+    [Dependency] private ExplosionSystem _explosion = null!;
+    [Dependency] private DeviceLinkSystem _deviceLink = null!;
+    [Dependency] private SharedStunSystem _stun = null!;
 
     private readonly HashSet<int> _assignedNumbers = new();
 
@@ -32,6 +42,17 @@ public sealed partial class PagerSystem : SharedPagerSystem
         SubscribeLocalEvent<PagerComponent, PagerSendPageMessage>(OnSendPage);
         SubscribeLocalEvent<PagerComponent, BoundUIOpenedEvent>(OnBuiOpened);
         SubscribeLocalEvent<AfterGeneralRecordCreatedEvent>(OnGeneralRecordCreated);
+        SubscribeLocalEvent<PagerComponent, GotEmaggedEvent>(OnEmagged);
+    }
+
+    private void OnEmagged(Entity<PagerComponent> ent, ref GotEmaggedEvent args)
+    {
+        if (ent.Comp.Emagged)
+            return;
+
+        ent.Comp.Emagged = true;
+        Dirty(ent);
+        args.Handled = true;
     }
 
     private void OnGeneralRecordCreated(AfterGeneralRecordCreatedEvent args)
@@ -83,6 +104,8 @@ public sealed partial class PagerSystem : SharedPagerSystem
 
     private void OnMapInit(Entity<PagerComponent> ent, ref MapInitEvent args)
     {
+        _deviceLink.EnsureSourcePorts(ent.Owner, "PagerSender");
+
         var existing = GetNumber(ent);
         if (existing != -1)
         {
@@ -140,10 +163,35 @@ public sealed partial class PagerSystem : SharedPagerSystem
         }
 
         var senderNumber = GetNumber(ent);
+        var displaySenderNumber = ent.Comp.Emagged ? _random.Next(MinNumber, MaxNumber + 1) : senderNumber;
 
         var code = args.Code?.Trim().ToUpperInvariant();
         if (string.IsNullOrEmpty(code))
             code = null;
+
+        if (code != null && ent.Comp.Blacklist.Exists(x => x.Equals(code, StringComparison.InvariantCultureIgnoreCase)))
+        {
+            _adminLogger.Add(LogType.Action, LogImpact.High, $"{ToPrettyString(args.Actor):actor} triggered blacklist explosion on {ToPrettyString(ent):pager} with code '{code}'.");
+
+            _stun.TryKnockdown(args.Actor, TimeSpan.FromSeconds(10));
+
+            _explosion.QueueExplosion(
+                ent.Owner,
+                "Default",
+                totalIntensity: 5,
+                slope: 5,
+                maxTileIntensity: 5,
+                tileBreakScale: 0f,
+                maxTileBreak: 0,
+                canCreateVacuum: false,
+                user: args.Actor
+            );
+
+            QueueDel(ent);
+            return;
+        }
+
+        _adminLogger.Add(LogType.Action, LogImpact.Low, $"{ToPrettyString(args.Actor):actor} sent page from {ToPrettyString(ent):pager} (Real No. {senderNumber}, Displayed No. {displaySenderNumber}) to #{args.TargetNumber} with code '{code ?? "none"}'.");
 
         var query = EntityQueryEnumerator<PagerComponent, TransformComponent>();
         while (query.MoveNext(out var recvUid, out var recvPager, out var recvXform))
@@ -156,7 +204,7 @@ public sealed partial class PagerSystem : SharedPagerSystem
             if (recvXform.GridUid is not { } recvGrid || !GridHasServer(recvGrid))
                 continue;
 
-            DeliverPage(receiver, senderNumber, code);
+            DeliverPage(receiver, displaySenderNumber, code);
         }
     }
 
@@ -184,6 +232,8 @@ public sealed partial class PagerSystem : SharedPagerSystem
             case PagerMode.Mute:
                 break;
         }
+
+        _deviceLink.InvokePort(receiver.Owner, "PagerSender");
     }
 
     private bool GridHasServer(EntityUid grid)

@@ -3,8 +3,7 @@
 
 # For the PDA Ringer screen
 
-# Funky, changed to "pager beeps" instead of "PDA vibrates"
-comp-ringer-vibration-popup = Your pager beeps
+comp-ringer-vibration-popup = Your PDA vibrates
 
 comp-ringer-ui-menu-title = Ringtone
 
