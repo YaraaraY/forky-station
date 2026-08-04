@@ -19,3 +19,9 @@
   parent: BaseCircuitboardRecipe
   id: DocumentPrinterCircuitboard
   result: DocumentPrinterCircuitboard
+
+# Pager server
+- type: latheRecipe
+  parent: [ BaseCircuitboardRecipe, BaseEngineeringMachineRecipeCategory ]
+  id: PagerServerCircuitboard
+  result: PagerServerCircuitboard
