@@ -1890,7 +1890,7 @@
   id: UplinkClothingOuterHardsuitJuggernaut
   name: uplink-clothing-outer-hardsuit-juggernaut-name
   description: uplink-clothing-outer-hardsuit-juggernaut-desc
-  icon: { sprite: /Textures/Structures/Storage/Crates/syndicate.rsi, state: icon }
+  icon: { sprite: /Textures/_Funkystation/Structures/Storage/Crates/syndicate.rsi, state: icon } # Funky
   productEntity: CrateCybersunJuggernautBundle
   cost:
     Telecrystal: 80
