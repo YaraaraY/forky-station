@@ -50,6 +50,7 @@
   - SurveillanceWirelessCameraMonitorCircuitboard
   - TelecomServerCircuitboard
   - HolopadMachineCircuitboard
+  - PagerServerCircuitboard # Funky
 
 - type: technology
   id: AdvancedEntertainment

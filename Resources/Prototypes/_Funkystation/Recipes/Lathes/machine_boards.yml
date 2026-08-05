@@ -25,3 +25,9 @@
   parent: BaseCircuitboardRecipe
   id: PaperShredderCircuitboard
   result: PaperShredderCircuitboard
+  
+# Pager server
+- type: latheRecipe
+  parent: [ BaseCircuitboardRecipe, BaseEngineeringMachineRecipeCategory ]
+  id: PagerServerCircuitboard
+  result: PagerServerCircuitboard
