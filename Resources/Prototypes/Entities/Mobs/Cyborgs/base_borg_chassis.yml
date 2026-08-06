@@ -328,9 +328,11 @@
     - NanoTrasen
   - type: Access
     groups:
-    - AllAccess
+    - Research # Funky
     tags:
     - Borg
+    - Maintenance # Funky
+    - External # Funky
   - type: AccessReader
     access: [["Command"], ["Research"]]
   - type: ShowJobIcons

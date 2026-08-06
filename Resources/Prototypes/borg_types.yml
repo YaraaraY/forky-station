@@ -57,6 +57,15 @@
   - Engineering
   - Science
 
+  addComponents: # Funky
+  - type: Access
+    groups:
+    - Engineering
+    - Research
+    tags:
+    - Maintenance
+    - External
+
   # Visual
   inventoryTemplateId: borgShort
   spriteBodyState: engineer
@@ -94,6 +103,15 @@
   - Supply
   - Science
 
+  addComponents: # Funky
+  - type: Access
+    groups:
+    - Cargo
+    - Research
+    tags:
+    - Maintenance
+    - External
+
   # Visual
   inventoryTemplateId: borgTall
   spriteBodyState: miner
@@ -129,6 +147,15 @@
   radioChannels:
   - Science
   - Service
+
+  addComponents: # Funky
+  - type: Access
+    groups:
+    - Service
+    - Research
+    tags:
+    - Maintenance
+    - External
 
   # Visual
   inventoryTemplateId: borgShort
@@ -176,6 +203,14 @@
     damageContainers:
     - Biological
 
+  - type: Access # Funky
+    groups:
+    - Medical
+    - Research
+    tags:
+    - Maintenance
+    - External
+
   # Visual
   inventoryTemplateId: borgDutch
   spriteBodyState: medical
@@ -217,6 +252,15 @@
   radioChannels:
   - Science
   - Service
+
+  addComponents: # Funky
+  - type: Access
+    groups:
+    - Service
+    - Research
+    tags:
+    - Maintenance
+    - External
 
   # Visual
   inventoryTemplateId: borgTall
