@@ -17,6 +17,8 @@ using Content.Shared.Interaction;
 using Content.Shared.Inventory;
 using Content.Shared.Popups;
 using Content.Shared.Tag;
+using Content.Shared.Stacks;
+using Content.Server.Stack;
 using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Configuration;
@@ -39,6 +41,7 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
     [Dependency] private TagSystem _tag = null!;
     [Dependency] private SharedGravitySystem _gravity = null!;
     [Dependency] private SharedPhysicsSystem _physics = null!;
+    [Dependency] private StackSystem _stack = null!;
 
     // qualifying damage types that can puncture a suit
     private static readonly ProtoId<DamageTypePrototype>[] PuncturingDamageTypes =
@@ -46,8 +49,8 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
 
     private static readonly ProtoId<TagPrototype> SabotageTag = "Knife";
 
-    private float _accumulator;
-    private const float UpdateInterval = 1f;
+    private float _atmosAccumulator;
+    private const float AtmosUpdateInterval = 1f;
     private bool _enabled;
 
     public override void Initialize()
@@ -70,10 +73,15 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
     {
         base.Update(frameTime);
 
-        _accumulator += frameTime;
-        if (_accumulator < UpdateInterval)
-            return;
-        _accumulator -= UpdateInterval;
+        _atmosAccumulator += frameTime;
+        var doAtmos = false;
+        var atmosDt = 0f;
+        if (_atmosAccumulator >= AtmosUpdateInterval)
+        {
+            doAtmos = true;
+            atmosDt = _atmosAccumulator;
+            _atmosAccumulator -= AtmosUpdateInterval;
+        }
 
         var query = EntityQueryEnumerator<SuitBreachedComponent>();
         while (query.MoveNext(out var suitUid, out var breach))
@@ -89,7 +97,7 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
                 continue;
             }
 
-            TickBreach((suitUid, breach), UpdateInterval);
+            TickBreach((suitUid, breach), frameTime, doAtmos, atmosDt);
         }
     }
 
@@ -194,8 +202,14 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
 
     private void TryApplySealant(EntityUid suitUid, EntityUid? wearer, ref InteractUsingEvent args)
     {
-        if (!TryComp<SuitSealantCanisterComponent>(args.Used, out var canister))
+        var isCanister = TryComp(args.Used, out SuitSealantCanisterComponent? canister);
+        var isPatch = TryComp(args.Used, out SuitPatchComponent? patch);
+
+        if (!isCanister && !isPatch)
             return;
+
+        if (wearer == null && TryGetWearer(suitUid, out var actualWearer))
+            wearer = actualWearer;
 
         if (!TryComp<SuitBreachedComponent>(suitUid, out _))
         {
@@ -210,7 +224,7 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
             return;
         }
 
-        if (canister.Charges <= 0)
+        if (isCanister && canister is { Charges: <= 0 })
         {
             _popup.PopupEntity(Loc.GetString("suit-breach-seal-canister-empty"), suitUid, args.User);
             args.Handled = true;
@@ -218,17 +232,33 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
         }
 
         var isSelf = wearer != null && wearer == args.User;
-        var delay = isSelf ? canister.SelfApplyDelay : canister.OtherApplyDelay;
+        TimeSpan delay;
+        bool breakOnMove;
+
+        if (isCanister && canister != null)
+        {
+            delay = isSelf ? canister.SelfApplyDelay : canister.OtherApplyDelay;
+            breakOnMove = false;
+        }
+        else if (patch != null)
+        {
+            delay = isSelf ? patch.SelfApplyDelay : patch.OtherApplyDelay;
+            breakOnMove = patch.BreakOnMove;
+        }
+        else
+        {
+            return;
+        }
 
         var doAfterArgs = new DoAfterArgs(EntityManager,
             args.User,
             delay,
             new SuitSealDoAfterEvent(),
             suitUid,
-            target: suitUid,
+            target: wearer ?? suitUid,
             used: args.Used)
         {
-            BreakOnMove = false,
+            BreakOnMove = breakOnMove,
             BreakOnDamage = true,
             NeedHand = true,
         };
@@ -236,9 +266,9 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
         args.Handled = _doAfter.TryStartDoAfter(doAfterArgs);
     }
 
-    private bool TryGetWearer(EntityUid suitUid)
+    private bool TryGetWearer(EntityUid suitUid, out EntityUid wearer)
     {
-        var wearer = Transform(suitUid).ParentUid;
+        wearer = Transform(suitUid).ParentUid;
         return wearer != EntityUid.Invalid &&
                _inventory.TryGetSlotEntity(wearer, "outerClothing", out var equipped) &&
                equipped == suitUid;
@@ -246,23 +276,40 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
 
     private bool IsWorn(EntityUid suitUid)
     {
-        return TryGetWearer(suitUid);
+        return TryGetWearer(suitUid, out _);
     }
 
     private void OnSealDoAfter(Entity<SuitBreachedComponent> suit, ref SuitSealDoAfterEvent args)
     {
-        if (args.Cancelled || args.Handled || args.Used is not { } canisterUid)
+        if (args.Cancelled || args.Handled || args.Used is not { } usedUid)
             return;
+
+        var isCanister = TryComp(usedUid, out SuitSealantCanisterComponent? canister);
+        var isPatch = HasComp<SuitPatchComponent>(usedUid);
+
+        if (!isCanister && !isPatch)
+            return;
+
+        if (canister != null)
+        {
+            if (canister.Charges <= 0)
+                return;
+
+            canister.Charges--;
+            Dirty(usedUid, canister);
+            _audio.PlayPvs(canister.ApplySound, suit.Owner);
+        }
+        else if (TryComp(usedUid, out StackComponent? stackComp))
+        {
+            if (!_stack.TryUse((usedUid, stackComp), 1))
+                return;
+        }
+        else
+        {
+            QueueDel(usedUid);
+        }
 
         args.Handled = true;
-
-        if (!TryComp<SuitSealantCanisterComponent>(canisterUid, out var canister) || canister.Charges <= 0)
-            return;
-
-        canister.Charges--;
-        Dirty(canisterUid, canister);
-
-        _audio.PlayPvs(canister.ApplySound, suit.Owner);
 
         var newSeverity = Regress(suit);
 
@@ -304,7 +351,7 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
     }
 
     // drains the connected tank at the current severity's rate
-    private void TickBreach(Entity<SuitBreachedComponent> suit, float dt)
+    private void TickBreach(Entity<SuitBreachedComponent> suit, float frameTime, bool doAtmos, float atmosDt)
     {
         var wearerUid = Transform(suit.Owner).ParentUid;
         if (!TryComp<InternalsComponent>(wearerUid, out var internals) ||
@@ -318,10 +365,13 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
             return;
         }
 
-        var rate = suit.Comp.DrainRatesPerSecond.GetValueOrDefault(suit.Comp.Severity, 0f);
-        if (rate > 0 && tank.Air.TotalMoles > 0)
+        if (doAtmos)
         {
-            _gasTank.RemoveAir((internals.GasTankEntity.Value, tank), rate * dt);
+            var rate = suit.Comp.DrainRatesPerSecond.GetValueOrDefault(suit.Comp.Severity, 0f);
+            if (rate > 0 && tank.Air.TotalMoles > 0)
+            {
+                _gasTank.RemoveAir((internals.GasTankEntity.Value, tank), rate * atmosDt);
+            }
         }
 
         var hasGasLeft = tank.Air.TotalMoles > 0;
@@ -345,7 +395,7 @@ public sealed partial class SuitBreachSystem : SharedSuitBreachSystem
 
             _physics.WakeBody(wearerUid, body: physics);
             var direction = suit.Comp.LeakAngle.ToVec();
-            _physics.ApplyLinearImpulse(wearerUid, direction * impulse, body: physics);
+            _physics.ApplyLinearImpulse(wearerUid, direction * impulse * frameTime, body: physics);
         }
         else
         {

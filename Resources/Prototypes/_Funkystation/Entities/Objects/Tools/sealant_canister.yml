@@ -10,3 +10,7 @@
   - type: Item
     size: Small
   - type: SuitSealantCanister
+  - type: Tag
+    tags:
+    - Recyclable
+    - Trash
