@@ -9,7 +9,6 @@
   speed: 1.5
   speedVariance: 0.8
   gravity: 0
-  angle: 0
   spreadAngle: 360
   sizeVariance: 0.3
   stretchFactor: 0.35
