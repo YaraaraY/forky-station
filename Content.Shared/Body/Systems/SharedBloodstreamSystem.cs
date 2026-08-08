@@ -523,10 +523,6 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
                     break;
             }
 
-            // Funky Wall Stains
-            var splashEv = new SplashOnWallEvent(xform.Coordinates, tempSolution.Clone());
-            RaiseLocalEvent(ref splashEv);
-
             _puddle.TrySpillAt(ent.Owner, tempSolution, out _, sound: false);
 
             tempSolution.RemoveAllSolution();

@@ -32,6 +32,15 @@ public sealed partial class WallStainSystem : EntitySystem
     private static readonly ProtoId<ReagentPrototype> WaterReagent = "Water";
     private static readonly ProtoId<ReagentPrototype> SpaceCleanerReagent = "SpaceCleaner";
 
+    private static readonly Vector2i[] AdjacentTileOffsets =
+    {
+        new(0, 0),
+        new(0, 1),
+        new(0, -1),
+        new(1, 0),
+        new(-1, 0)
+    };
+
     [Dependency] private SharedMapSystem _map = null!;
     [Dependency] private SharedTransformSystem _transform = null!;
     [Dependency] private SharedSolutionContainerSystem _solution = null!;
@@ -82,16 +91,8 @@ public sealed partial class WallStainSystem : EntitySystem
             return;
 
         var tilePos = _map.TileIndicesFor(gridUid.Value, grid, coords);
-        var checkOffsets = new[]
-        {
-            new Vector2i(0, 0),
-            new Vector2i(0, 1),
-            new Vector2i(0, -1),
-            new Vector2i(1, 0),
-            new Vector2i(-1, 0)
-        };
 
-        foreach (var offset in checkOffsets)
+        foreach (var offset in AdjacentTileOffsets)
         {
             var targetTile = tilePos + offset;
             var anchored = _map.GetAnchoredEntitiesEnumerator(gridUid.Value, grid, targetTile);
@@ -150,6 +151,7 @@ public sealed partial class WallStainSystem : EntitySystem
 
             stainComp = Comp<WallStainComponent>(stainUid);
             stainComp.Direction = direction;
+            stainComp.SplatSeed = _random.Next();
             Dirty(stainUid, stainComp);
         }
 
@@ -348,6 +350,7 @@ public sealed partial class WallStainSystem : EntitySystem
         var color = solution.GetColor(_prototype);
         comp.Color = color.WithAlpha(color.A * 0.6f);
         comp.StainState = solution.ContainsPrototype(WaterReagent) || solution.ContainsPrototype(SpaceCleanerReagent) ? "drip" : "splatter";
+        comp.FillLevel = comp.MaxStainVolume > 0 ? (float) (solution.Volume / comp.MaxStainVolume) : 0f;
         Dirty(uid, comp);
     }
 
