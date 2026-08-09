@@ -104,7 +104,7 @@ public sealed partial class IVDripSystem : SharedIVDripSystem
                     // 4. Inject Chems -> Chem Stream
                     if (chems.Volume > 0)
                     {
-                        if (_solutionContainer.TryGetSolution(attachedTo, bsComp.MetabolitesSolutionName, out var chemSolEnt, out var chemSol) &&
+                        if (_solutionContainer.TryGetInjectableSolution(attachedTo, out var chemSolEnt, out var chemSol) &&
                             chemSol.AvailableVolume >= chems.Volume)
                         {
                             _solutionContainer.TryAddSolution(chemSolEnt.Value, chems);
@@ -179,7 +179,7 @@ public sealed partial class IVDripSystem : SharedIVDripSystem
                     // 4. Inject Chems -> Chem Stream
                     if (chems.Volume > 0)
                     {
-                        if (_solutionContainer.TryGetSolution(attachedTo, bsComp.MetabolitesSolutionName, out var chemSolEnt, out var chemSol) &&
+                        if (_solutionContainer.TryGetInjectableSolution(attachedTo, out var chemSolEnt, out var chemSol) &&
                             chemSol.AvailableVolume >= chems.Volume)
                         {
                             _solutionContainer.TryAddSolution(chemSolEnt.Value, chems);
