@@ -100,8 +100,8 @@
   - type: RefillableSolution
     solution: pack
   - type: Damageable
+  - type: Injurable
     damageContainer: Inorganic
-    damageModifierSet: Glass
   - type: DamageOnHighSpeedImpact
     minimumSpeed: 2
     damage:
