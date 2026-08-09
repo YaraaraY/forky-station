@@ -1,11 +1,7 @@
-// SPDX-FileCopyrightText: 2025 YaraaraY <158123176+YaraaraY@users.noreply.github.com>
-//
-// SPDX-License-Identifier: MIT
-
 using System.Diagnostics.CodeAnalysis;
-using Content.Server.Body.Components;
 using Content.Server.Chat.Systems;
 using Content.Shared._RMC14.Medical.IV;
+using Content.Shared.Body.Components;
 using Content.Shared.Chat.Prototypes;
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
@@ -16,12 +12,12 @@ using Robust.Shared.Timing;
 
 namespace Content.Server._RMC14.Medical.IV;
 
-public sealed class IVDripSystem : SharedIVDripSystem
+public sealed partial class IVDripSystem : SharedIVDripSystem
 {
-    [Dependency] private readonly ChatSystem _chat = default!;
-    [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
+    [Dependency] private ChatSystem _chat = default!;
+    [Dependency] private ItemSlotsSystem _itemSlots = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private  SharedSolutionContainerSystem _solutionContainer = default!;
 
     private bool TryGetBloodstream(
         EntityUid attachedTo,
@@ -108,7 +104,7 @@ public sealed class IVDripSystem : SharedIVDripSystem
                     // 4. Inject Chems -> Chem Stream
                     if (chems.Volume > 0)
                     {
-                        if (_solutionContainer.TryGetSolution(attachedTo, bsComp.ChemicalSolutionName, out var chemSolEnt, out var chemSol) &&
+                        if (_solutionContainer.TryGetSolution(attachedTo, bsComp.MetabolitesSolutionName, out var chemSolEnt, out var chemSol) &&
                             chemSol.AvailableVolume >= chems.Volume)
                         {
                             _solutionContainer.TryAddSolution(chemSolEnt.Value, chems);
@@ -183,7 +179,7 @@ public sealed class IVDripSystem : SharedIVDripSystem
                     // 4. Inject Chems -> Chem Stream
                     if (chems.Volume > 0)
                     {
-                        if (_solutionContainer.TryGetSolution(attachedTo, bsComp.ChemicalSolutionName, out var chemSolEnt, out var chemSol) &&
+                        if (_solutionContainer.TryGetSolution(attachedTo, bsComp.MetabolitesSolutionName, out var chemSolEnt, out var chemSol) &&
                             chemSol.AvailableVolume >= chems.Volume)
                         {
                             _solutionContainer.TryAddSolution(chemSolEnt.Value, chems);

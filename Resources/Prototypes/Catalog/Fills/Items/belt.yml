@@ -96,8 +96,8 @@
         - id: WireBrush
 
 - type: entity
-  id: ClothingBeltMedicalFilled
   parent: ClothingBeltMedical
+  id: ClothingBeltMedicalFilled
   suffix: Filled
   components:
   - type: EntityTableContainerFill
@@ -118,9 +118,9 @@
         - id: PillCanisterTricordrazine
 
 - type: entity
-  id: ClothingBeltMedicalEMTFilled
   parent: ClothingBeltMedicalEMT
-  suffix: Paramedic,Filled
+  id: ClothingBeltMedicalEMTFilled
+  suffix: Paramedic, Filled
   components:
   - type: EntityTableContainerFill
     containers:

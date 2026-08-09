@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2025 YaraaraY <158123176+YaraaraY@users.noreply.github.com>
-//
-// SPDX-License-Identifier: MIT
-
 using Content.Shared._RMC14.Medical.IV;
 using Robust.Client.GameObjects;
 using Robust.Client.Graphics;
@@ -10,9 +6,9 @@ using Robust.Shared.Map;
 
 namespace Content.Client._RMC14.Medical.IV;
 
-public sealed class IVDripOverlay : Overlay
+public sealed partial class IVDripOverlay : Overlay
 {
-    [Dependency] private readonly IEntityManager _entity = default!;
+    [Dependency] private IEntityManager _entity = default!;
 
     public override OverlaySpace Space => OverlaySpace.WorldSpaceBelowEntities;
 

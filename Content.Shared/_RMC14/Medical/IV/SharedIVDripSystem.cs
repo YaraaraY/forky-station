@@ -1,11 +1,8 @@
-// SPDX-FileCopyrightText: 2025 YaraaraY <158123176+YaraaraY@users.noreply.github.com>
-//
-// SPDX-License-Identifier: MIT
-
 using System.Linq;
 using Content.Shared.Chat.Prototypes;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Damage;
+using Content.Shared.Damage.Systems;
 using Content.Shared.DoAfter;
 using Content.Shared.DragDrop;
 using Content.Shared.Examine;
@@ -23,17 +20,17 @@ using Content.Shared.Mobs.Components;
 
 namespace Content.Shared._RMC14.Medical.IV;
 
-public abstract class SharedIVDripSystem : EntitySystem
+public abstract partial class SharedIVDripSystem : EntitySystem
 {
-    [Dependency] private readonly SharedContainerSystem _containers = default!;
-    [Dependency] private readonly DamageableSystem _damageable = default!;
-    [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
-    [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly IPrototypeManager _prototype = default!;
-    [Dependency] private readonly SharedSolutionContainerSystem _solutionContainer = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private SharedContainerSystem _containers = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private SharedDoAfterSystem _doAfter = default!;
+    [Dependency] private INetManager _net = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private IPrototypeManager _prototype = default!;
+    [Dependency] private SharedSolutionContainerSystem _solutionContainer = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
 
     private readonly HashSet<EntityUid> _packsToUpdate = [];
 
@@ -55,7 +52,7 @@ public abstract class SharedIVDripSystem : EntitySystem
 
         SubscribeLocalEvent<BloodPackComponent, MapInitEvent>(OnBloodPackMapInit);
         SubscribeLocalEvent<BloodPackComponent, AfterAutoHandleStateEvent>(OnBloodPackAfterState);
-        SubscribeLocalEvent<BloodPackComponent, SolutionContainerChangedEvent>(OnBloodPackSolutionChanged);
+        SubscribeLocalEvent<BloodPackComponent, SolutionChangedEvent>(OnBloodPackSolutionChanged);
         SubscribeLocalEvent<BloodPackComponent, AfterInteractEvent>(OnBloodPackAfterInteract);
         SubscribeLocalEvent<BloodPackComponent, AttachBloodPackDoAfterEvent>(OnBloodPackAttachDoAfter);
         SubscribeLocalEvent<BloodPackComponent, GotUnequippedHandEvent>(OnBloodPackUnequippedHand);
@@ -159,7 +156,7 @@ public abstract class SharedIVDripSystem : EntitySystem
         UpdatePackVisuals(pack);
     }
 
-    private void OnBloodPackSolutionChanged(Entity<BloodPackComponent> pack, ref SolutionContainerChangedEvent args)
+    private void OnBloodPackSolutionChanged(Entity<BloodPackComponent> pack, ref SolutionChangedEvent args)
     {
         UpdatePackVisuals(pack);
     }
@@ -347,7 +344,10 @@ public abstract class SharedIVDripSystem : EntitySystem
             TryComp(container.Owner, out IVDripComponent? iv))
         {
             iv.FillColor = solution.GetColor(_prototype);
-            iv.FillPercentage = (int) (solution.Volume / solution.MaxVolume * 100);
+            // funky, guard against a solution that has maxvol still 0
+            iv.FillPercentage = solution.MaxVolume > 0
+                ? (int) (solution.Volume / solution.MaxVolume * 100)
+                : 0;
             Dirty(container.Owner, iv);
             UpdateIVAppearance((container.Owner, iv));
         }
@@ -373,7 +373,10 @@ public abstract class SharedIVDripSystem : EntitySystem
                 continue;
 
             iv.Comp.FillColor = solution.GetColor(_prototype);
-            iv.Comp.FillPercentage = (int) (solution.Volume / solution.MaxVolume * 100);
+            // funky, guard against a solution that has maxvol still 0
+            iv.Comp.FillPercentage = solution.MaxVolume > 0
+                ? (int) (solution.Volume / solution.MaxVolume * 100)
+                : 0;
             Dirty(iv);
             UpdateIVAppearance(iv);
             return;
@@ -397,7 +400,10 @@ public abstract class SharedIVDripSystem : EntitySystem
         if (_solutionContainer.TryGetSolution(pack.Owner, pack.Comp.Solution, out var solEnt))
         {
             var solution = solEnt.Value.Comp.Solution;
-            pack.Comp.FillPercentage = solution.Volume / solution.MaxVolume;
+            // funky, guard against a solution that has maxvol still 0
+            pack.Comp.FillPercentage = solution.MaxVolume > 0
+                ? solution.Volume / solution.MaxVolume
+                : FixedPoint2.Zero;
             pack.Comp.FillColor = solution.GetColor(_prototype);
         }
         else

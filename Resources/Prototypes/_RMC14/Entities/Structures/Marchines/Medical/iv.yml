@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2025 YaraaraY <158123176+YaraaraY@users.noreply.github.com>
-#
-# SPDX-License-Identifier: MIT
-
 - type: entity
   parent: BaseStructure
   id: CMIV
@@ -80,16 +76,16 @@
     size: Small
     sprite: _RMC14/Objects/Medical/blood_pack.rsi
   - type: ExaminableSolution
-    solution: drink
+    solution: pack
   - type: FitsInDispenser
-    solution: drink
+    solution: pack
   - type: Tag
     tags:
     - Bloodpack
-  - type: SolutionContainerManager
-    solutions:
-      pack:
-        maxVol: 100
+  - type: Solution
+    id: pack
+    solution:
+      maxVol: 100
   - type: SolutionTransfer
     canChangeTransferAmount: true
   - type: Appearance
@@ -125,10 +121,10 @@
   name: IV bag
   suffix: CM, Full
   components:
-  - type: SolutionContainerManager
-    solutions:
-      pack:
-        maxVol: 100
-        reagents:
-        - ReagentId: Saline
-          Quantity: 100
+  - type: Solution
+    id: pack
+    solution:
+      maxVol: 100
+      reagents:
+      - ReagentId: Saline
+        Quantity: 100
