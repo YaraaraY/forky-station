@@ -2,7 +2,7 @@
   parent: BaseItem
   id: LaundryBag
   name: laundry bag
-  description: A large plastic bag designed to hold dirty clothes for the wash.
+  description: A proprietary design of plastic bag designed by the Interstellar Custodial Labour Union, made to hold dirty clothes for the wash.
   components:
   - type: Sprite
     sprite: _Funkystation/Objects/Specific/Janitorial/laundry_bag.rsi
