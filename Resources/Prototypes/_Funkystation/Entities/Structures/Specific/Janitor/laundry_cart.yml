@@ -5,6 +5,7 @@
   description: A sturdy cart used for transporting laundry bags and clothes.
   components:
   - type: LaundryCart
+    requiredBags: 3
   - type: Rotatable
   - type: Clickable
   - type: InteractionOutline
@@ -47,6 +48,18 @@
           tags:
           - LaundryBag
         priority: 1
+      bag_slot5:
+        name: Laundry Bag 5
+        whitelist:
+          tags:
+          - LaundryBag
+        priority: 0
+      bag_slot6:
+        name: Laundry Bag 6
+        whitelist:
+          tags:
+          - LaundryBag
+        priority: 0
   - type: ItemMapper
     mapLayers:
       cart-labeler:
@@ -69,7 +82,7 @@
           tags:
           - LaundryBag
       fill-4:
-        minCount: 4
+        minCount: 6
         whitelist:
           tags:
           - LaundryBag
@@ -81,6 +94,7 @@
       bag_slot2: !type:ContainerSlot {}
       bag_slot3: !type:ContainerSlot {}
       bag_slot4: !type:ContainerSlot {}
+      bag_slot5: !type:ContainerSlot {}
       hidden_mobs: !type:Container {}
   - type: Fixtures
     fixtures:
