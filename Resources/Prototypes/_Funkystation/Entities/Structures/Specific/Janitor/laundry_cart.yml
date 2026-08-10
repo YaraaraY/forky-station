@@ -95,6 +95,7 @@
       bag_slot3: !type:ContainerSlot {}
       bag_slot4: !type:ContainerSlot {}
       bag_slot5: !type:ContainerSlot {}
+      bag_slot6: !type:ContainerSlot {}
       hidden_mobs: !type:Container {}
   - type: Fixtures
     fixtures:
