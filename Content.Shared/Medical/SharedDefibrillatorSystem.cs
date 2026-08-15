@@ -27,7 +27,8 @@ using Content.Shared.EntityEffects.Effects.StatusEffects; // funky
 using Content.Shared.Chemistry.EntitySystems; // funky
 using Content.Shared.Chemistry.Reagent; // funky
 using Content.Shared.Body.Components; // funky
-using Content.Shared._Funkystation.CCVar; // funky
+using Content.Shared._Funkystation.CCVar;
+using Content.Shared.Damage; // funky
 
 namespace Content.Shared.Medical;
 
@@ -240,60 +241,70 @@ public abstract partial class SharedDefibrillatorSystem : EntitySystem
                 _damageable.TryChangeDamage(target, ent.Comp.ZapHeal, true, origin: user);
 
             // funky start, need an adrenaline reagent in their system to kick the heart back on
+            var hasAdrenaline = false;
+            if (TryComp<BloodstreamComponent>(target, out var bloodstream))
+            {
+                var bloodSolution = bloodstream.BloodSolution;
+
+                if (_solutionContainer.ResolveSolution(target, bloodstream.BloodSolutionName, ref bloodSolution))
+                {
+                    var contents = bloodSolution.Value.Comp.Solution.Contents;
+
+                    // check reagents in bloodstream
+                    foreach (var (reagentId, quantity) in contents)
+                    {
+                        if (quantity <= FixedPoint2.Zero)
+                            continue;
+
+                        // check effects
+                        if (!_prototypeManager.TryIndex<ReagentPrototype>(reagentId.Prototype, out var reagentProto))
+                            continue;
+
+                        if (reagentProto.Metabolisms == null || !reagentProto.Metabolisms.Metabolisms.TryGetValue("Bloodstream", out var metabolism))
+                            continue;
+
+                        var isAdrenaline = metabolism.Effects.Any(effect => effect is GenericStatusEffect
+                        {
+                            Key: "Adrenaline",
+                        });
+
+                        // if this reagent grants adrenaline, consume it and roll for revival
+                        if (!isAdrenaline)
+                            continue;
+
+                        hasAdrenaline = true;
+
+                        // removes the adrenaline cost amount
+                        _solutionContainer.RemoveReagent(bloodSolution.Value, reagentId, FixedPoint2.New(_adrenalineCostPerShock));
+
+                        break;
+                    }
+                }
+            }
+
             var canRevive = true;
             if (_mobState.IsDead(target, targetMobState))
             {
                 canRevive = false;
-                var hasAdrenaline = false;
 
-                if (TryComp<BloodstreamComponent>(target, out var bloodstream))
+                if (hasAdrenaline)
                 {
-                    var bloodSolution = bloodstream.BloodSolution;
-
-                    if (_solutionContainer.ResolveSolution(target, bloodstream.BloodSolutionName, ref bloodSolution))
-                    {
-                        var contents = bloodSolution.Value.Comp.Solution.Contents;
-
-                        // check reagents in bloodstream
-                        foreach (var (reagentId, quantity) in contents)
-                        {
-                            if (quantity <= FixedPoint2.Zero)
-                                continue;
-
-                            // check effects
-                            if (!_prototypeManager.TryIndex<ReagentPrototype>(reagentId.Prototype, out var reagentProto))
-                                continue;
-
-                            if (reagentProto.Metabolisms == null || !reagentProto.Metabolisms.Metabolisms.TryGetValue("Bloodstream", out var metabolism))
-                                continue;
-
-                            var isAdrenaline = metabolism.Effects.Any(effect => effect is GenericStatusEffect
-                            {
-                                Key: "Adrenaline",
-                            });
-
-                            // if this reagent grants adrenaline, consume it and roll for revival
-                            if (!isAdrenaline)
-                                continue;
-
-                            hasAdrenaline = true;
-
-                            // removes the adrenaline cost amount
-                            _solutionContainer.RemoveReagent(bloodSolution.Value, reagentId, FixedPoint2.New(_adrenalineCostPerShock));
-
-                            // server-only roll to prevent client mispredicting a successful revival
-                            canRevive = _net.IsServer && _random.Prob(_reviveChance);
-
-                            break;
-                        }
-                    }
+                    // server-only roll to prevent client mispredicting a successful revival
+                    canRevive = _net.IsServer && _random.Prob(_reviveChance);
                 }
-
-                // if they have no adrenaline reagent, popup
-                if (!hasAdrenaline)
+                else
                 {
+                    // if they have no adrenaline reagent, popup
                     _popup.PopupClient(Loc.GetString("defibrillator-no-adrenaline"), target, user);
                 }
+            }
+
+            // adrenaline zap heals 25 asphyx
+            if (hasAdrenaline)
+            {
+                var asphyxHeal = new DamageSpecifier();
+                asphyxHeal.DamageDict.Add("Asphyxiation", FixedPoint2.New(-25));
+                _damageable.TryChangeDamage(target, asphyxHeal, true, origin: user);
             }
             // funky end
 
