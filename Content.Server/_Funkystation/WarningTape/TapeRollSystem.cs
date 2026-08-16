@@ -90,7 +90,13 @@ public sealed partial class TapeRollSystem : EntitySystem
 
     private void OnAfterInteract(Entity<TapeRollComponent> ent, ref AfterInteractEvent args)
     {
-        if (args.Handled)
+        if (args.Handled || !args.CanReach) // don't place tape from across the room bro :sob:
+            return;
+
+        var userMap = _transform.GetMapCoordinates(args.User);
+        var clickMap = _transform.ToMapCoordinates(args.ClickLocation);
+
+        if (userMap.MapId != clickMap.MapId || (userMap.Position - clickMap.Position).Length() > 1.0f)
             return;
 
         var roll = ent.Comp;
