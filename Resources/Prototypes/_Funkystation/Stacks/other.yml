@@ -1,6 +1,6 @@
 ﻿- type: stack
   id: WarningCone
-  name: warning cone
+  name: stack-cone
   spawn: ClothingHeadHatCone
   maxCount: 8
   icon:
