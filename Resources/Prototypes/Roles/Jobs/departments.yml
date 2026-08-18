@@ -147,4 +147,5 @@
 #  - Reporter - funky
 #  - Psychologist - funky
   - Dispatcher # funky
+  - Prisoner # funky
   primary: false
