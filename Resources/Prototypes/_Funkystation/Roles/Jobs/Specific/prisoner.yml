@@ -6,7 +6,6 @@
   startingGear: PrisonerGear
   icon: "JobIconPrisoner"
   supervisors: job-supervisors-nobody
-  canBeAntag: false
 
 - type: startingGear
   id: PrisonerGear

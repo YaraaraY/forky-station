@@ -30,6 +30,7 @@
   - Passenger
   - Reporter
   - Visitor
+  - Prisoner # funky
   #- ServiceWorker
 
 - type: department
@@ -147,5 +148,4 @@
 #  - Reporter - funky
 #  - Psychologist - funky
   - Dispatcher # funky
-  - Prisoner # funky
   primary: false
