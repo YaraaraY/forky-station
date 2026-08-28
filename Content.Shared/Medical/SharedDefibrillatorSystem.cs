@@ -17,19 +17,21 @@ using Content.Shared.Timing;
 using Content.Shared.Traits.Assorted;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Player;
-using Robust.Shared.Prototypes; // funky
-using Robust.Shared.Random; // funky
-using System.Linq; // funky
-using Robust.Shared.Configuration; // funky
-using Robust.Shared.Network; // funky
-using Content.Shared.Inventory; // funky
-using Content.Shared.FixedPoint; // funky
-using Content.Shared.EntityEffects.Effects.StatusEffects; // funky
-using Content.Shared.Chemistry.EntitySystems; // funky
-using Content.Shared.Chemistry.Reagent; // funky
-using Content.Shared.Body.Components; // funky
+// funky start
+using Robust.Shared.Prototypes;
+using Robust.Shared.Random;
+using System.Linq;
+using Robust.Shared.Configuration;
+using Robust.Shared.Network;
+using Content.Shared.Inventory;
+using Content.Shared.FixedPoint;
+using Content.Shared.EntityEffects.Effects.StatusEffects;
+using Content.Shared.Chemistry.EntitySystems;
+using Content.Shared.Chemistry.Reagent;
+using Content.Shared.Body.Components;
 using Content.Shared._Funkystation.CCVar;
-using Content.Shared.Damage; // funky
+using Content.Shared.Damage;
+// funky end
 
 namespace Content.Shared.Medical;
 
@@ -71,7 +73,6 @@ public abstract partial class SharedDefibrillatorSystem : EntitySystem
         _config.OnValueChanged(DefibrillatorCVars.AdrenalineCost, value => _adrenalineCostPerShock = value, true); // funky
 
         SubscribeLocalEvent<DefibrillatorComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<DefibrillatorComponent, DefibrillatorZapDoAfterEvent>(OnDoAfter);
     }
 
     private void OnAfterInteract(Entity<DefibrillatorComponent> ent, ref AfterInteractEvent args)
@@ -239,8 +240,6 @@ public abstract partial class SharedDefibrillatorSystem : EntitySystem
 
             _damageable.TryChangeDamage(target, ent.Comp.ZapHeal, true, origin: user);
 
-            if (_mobState.IsDead(target, targetMobState) && // is the target currently dead
-                TryComp<MobThresholdsComponent>(target, out var targetThresholds) && //do they have a threshold
             // funky start, need an adrenaline reagent in their system to kick the heart back on
             var hasAdrenaline = false;
             if (TryComp<BloodstreamComponent>(target, out var bloodstream))
@@ -264,10 +263,8 @@ public abstract partial class SharedDefibrillatorSystem : EntitySystem
                         if (reagentProto.Metabolisms == null || !reagentProto.Metabolisms.Metabolisms.TryGetValue("Bloodstream", out var metabolism))
                             continue;
 
-                        var isAdrenaline = metabolism.Effects.Any(effect => effect is GenericStatusEffect
-                        {
-                            Key: "Adrenaline",
-                        });
+                        var isAdrenaline = metabolism.Effects.Any(effect => effect is ModifyStatusEffect modify &&
+                            modify.EffectProto.Id == "StatusEffectAdrenaline");
 
                         // if this reagent grants adrenaline, consume it and roll for revival
                         if (!isAdrenaline)
@@ -310,6 +307,7 @@ public abstract partial class SharedDefibrillatorSystem : EntitySystem
             // funky end
 
             if (canRevive && // funky
+                TryComp<MobThresholdsComponent>(target, out var targetThresholds) &&
                 _mobThreshold.TryGetThresholdForState(target, MobState.Dead, out var threshold, targetThresholds) &&
                 _damageable.GetTotalDamage(target) < threshold) //is their current health above their death threshold
             {
