@@ -4,6 +4,7 @@ using Content.Client.Graphics;
 using Content.Client.Light;
 using Content.Shared._Funkystation.WallStains.Components;
 using Content.Shared.Tag;
+using Content.Shared.Wall;
 using Robust.Client.GameObjects;
 using Robust.Client.Graphics;
 using Robust.Shared.Enums;
@@ -21,7 +22,6 @@ public sealed partial class WallStainOverlay : Overlay
     private static readonly ProtoId<ShaderPrototype> StencilEqualDrawShader = "StencilEqualDraw";
 
     private static readonly ProtoId<TagPrototype> DirectionalWindowTag = "DirectionalWindow";
-    private static readonly ProtoId<TagPrototype> WallTag = "Wall";
     private static readonly ProtoId<TagPrototype> WindowTag = "Window";
     private static readonly ProtoId<TagPrototype> AirlockTag = "Airlock";
 
@@ -29,7 +29,6 @@ public sealed partial class WallStainOverlay : Overlay
     [Dependency] private IEntityManager _entityManager = null!;
     [Dependency] private IPrototypeManager _prototypeManager = null!;
     [Dependency] private IGameTiming _gameTiming = null!;
-    [Dependency] public IMapManager MapManager = null!;
 
     private readonly TransformSystem _transformSystem;
     private readonly SpriteSystem _spriteSystem;
