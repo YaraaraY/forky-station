@@ -152,7 +152,7 @@ public sealed partial class WallStainOverlay : Overlay
                 continue;
 
             // Finally, make sure the entity is one of the following:
-            if (!_tagSystem.HasTag(uid, WallTag) &&
+            if (!_entityManager.HasComponent<WallComponent>(uid) &&
                 !_tagSystem.HasTag(uid, WindowTag) &&
                 !_tagSystem.HasTag(uid, AirlockTag))
             {
