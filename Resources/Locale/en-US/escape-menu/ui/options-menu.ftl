@@ -144,12 +144,14 @@ ui-options-header-text-chat = Chat
 ui-options-header-text-other = Text input other
 
 ui-options-hotkey-keymap = Use US QWERTY Keys
+# funky, changed walk to sprint
 ui-options-hotkey-toggle-walk = Toggle Sprint
 
 ui-options-function-move-up = Move Up
 ui-options-function-move-left = Move Left
 ui-options-function-move-down = Move Down
 ui-options-function-move-right = Move Right
+# funky, changed walk to sprint
 ui-options-function-walk = Sprint
 ui-options-function-toggle-knockdown = Toggle Crawling
 
