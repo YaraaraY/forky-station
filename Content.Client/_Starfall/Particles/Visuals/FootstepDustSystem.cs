@@ -12,14 +12,17 @@ namespace Content.Client._Starfall.Particles;
 /// <summary>
 /// Spawns dust particle puffs under entities' feet when they run.
 /// </summary>
-public sealed class FootstepDustSystem : EntitySystem
+public sealed partial class FootstepDustSystem : EntitySystem
 {
-    [Dependency] private readonly ClientParticleSystem _particles = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly IEyeManager _eye = default!;
+    [Dependency] private ParticleSystem _particles = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private IEyeManager _eye = default!;
 
     private static readonly ProtoId<ParticleEffectPrototype> DustEffect = "SfFootstepDust";
+
+    // funky, a few loose pixels that scatter away from the feet alongside the dust puff
+    private static readonly ProtoId<ParticleEffectPrototype> PixelDriftEffect = "SprintPixelDrift";
 
     // Tracks last spawn position for each entity to avoid spam
     private readonly Dictionary<EntityUid, (MapCoordinates Pos, TimeSpan Time)> _lastDust = new();
@@ -64,6 +67,10 @@ public sealed class FootstepDustSystem : EntitySystem
 
             // Spawn dust at foot level
             _particles.SpawnEffect(DustEffect, feetPos);
+
+            // funky, plus a couple stray pixels that drift off from the same spot
+            _particles.SpawnEffect(PixelDriftEffect, feetPos);
+
             _lastDust[uid] = (feetPos, curTime);
         }
 
@@ -80,4 +87,3 @@ public sealed class FootstepDustSystem : EntitySystem
         }
     }
 }
-
