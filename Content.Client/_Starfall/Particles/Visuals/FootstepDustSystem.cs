@@ -19,8 +19,6 @@ public sealed partial class FootstepDustSystem : EntitySystem
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private IEyeManager _eye = default!;
 
-    private static readonly ProtoId<ParticleEffectPrototype> DustEffect = "SfFootstepDust";
-
     // funky, a few loose pixels that scatter away from the feet alongside the dust puff
     private static readonly ProtoId<ParticleEffectPrototype> PixelDriftEffect = "SprintPixelDrift";
 
@@ -51,7 +49,7 @@ public sealed partial class FootstepDustSystem : EntitySystem
             var eyeRot = -(float)_eye.CurrentEye.Rotation;
             var cosE = MathF.Cos(eyeRot);
             var sinE = MathF.Sin(eyeRot);
-            const float feetOffset = -0.65f;
+            const float feetOffset = -0.55f;
             var worldFeetOffset = new Vector2(-feetOffset * sinE, feetOffset * cosE);
             var feetPos = new MapCoordinates(pos.Position + worldFeetOffset, pos.MapId);
 
@@ -65,10 +63,7 @@ public sealed partial class FootstepDustSystem : EntitySystem
                     continue;
             }
 
-            // Spawn dust at foot level
-            _particles.SpawnEffect(DustEffect, feetPos);
-
-            // funky, plus a couple stray pixels that drift off from the same spot
+            // funky, a couple stray pixels that drift off from the same spot
             _particles.SpawnEffect(PixelDriftEffect, feetPos);
 
             _lastDust[uid] = (feetPos, curTime);

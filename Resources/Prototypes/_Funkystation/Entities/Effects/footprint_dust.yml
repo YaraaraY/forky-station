@@ -9,7 +9,7 @@
   lifetimeVariance: 0.2
   speed: 1.2
   speedVariance: 0.6
-  particleSize: 0.2
+  particleSize: 0.7
   sizeVariance: 0.05
   emissionRate: 0
   maxCount: 3
