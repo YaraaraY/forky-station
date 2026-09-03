@@ -67,13 +67,14 @@
   - type: FireVisuals
     sprite: _Funkystation/Objects/Weapons/Throwable/molotov.rsi
     normalState: icon-fire
+  - type: Damageable
   - type: Injurable
     damageContainer: Inorganic
   - type: Destructible
     thresholds:
     - trigger:
         !type:DamageTrigger
-        damage: 5
+        damage: 10
       behaviors:
       - !type:DoActsBehavior
         acts: [ "Destruction" ]
