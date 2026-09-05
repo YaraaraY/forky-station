@@ -23,6 +23,9 @@ public sealed partial class CMChatSystem : EntitySystem // Persistence: SharedCM
 
     public bool TryRepetition(ChatBox chat, OutputPanel contents, FormattedMessage message, NetEntity sender, string unwrapped, ChatChannel channel, bool repeatCheckSender)
     {
+        if (ChatChannel.AdminRelated.HasFlag(channel)) // Persistence: don't stack anything that's admin-chat related
+            return false;
+
         var repeated = false;
         foreach (var old in chat.RepeatQueue)
         {
