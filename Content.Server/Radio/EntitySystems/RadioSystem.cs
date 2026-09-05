@@ -1,12 +1,9 @@
 using Content.Server.Administration.Logs;
-using Content.Server.Chat.Managers; // Persistence: Chat stacking from RMC14 - pull/7587
 using Content.Server.Chat.Managers;
 using Content.Server.Chat.Systems;
 using Content.Server.Ghost;
 using Content.Server.Power.Components;
-using Content.Server.Station.Systems;
 using Content.Shared._RMC14.Chat; // Persistence: Chat stacking from RMC14 - pull/7587
-using Content.Shared.CCVar;
 using Content.Shared.Chat;
 using Content.Shared.Database;
 using Content.Shared.Radio;
@@ -33,7 +30,6 @@ public sealed partial class RadioSystem : SharedRadioSystem
     [Dependency] private IChatManager _chatManager = default!;
     [Dependency] private GhostSystem _ghost = default!;
     [Dependency] private EntityQuery<TelecomExemptComponent> _exemptQuery = default!;
-    [Dependency] private readonly IChatManager _chatManager = default!; // Persistence: Chat stacking from RMC14 - pull/7587
 
     // set used to prevent radio feedback loops.
     private readonly HashSet<string> _messages = new();

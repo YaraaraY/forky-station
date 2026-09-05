@@ -9,7 +9,7 @@ using Content.Server.Discord.DiscordLink;
 using Content.Server.Ghost;
 using Content.Server.Players.RateLimiting;
 using Content.Server.Preferences.Managers;
-using Content.Shared._RMC14.CCVar;
+using Content.Shared._RMC14.CCVar; // RMC Mentor Chat Funky Port
 using Content.Shared._RMC14.Chat; // Persistence: Chat stacking from RMC14 - pull/7587
 using Content.Shared.Administration;
 using Content.Shared.CCVar;
@@ -459,9 +459,8 @@ internal sealed partial class ChatManager : IChatManager
         {
             var customWrapMessage = PrependFollowButtonIfAppropriate(wrappedMessage, source, client);
             var msg = new ChatMessage(channel, message, wrappedMessage, netSource, user?.Key, hideChat, colorOverride, audioPath, audioVolume, repeatCheckSender: !_entityManager.HasComponent<ChatRepeatIgnoreSenderComponent>(source)); // Persistence: Chat stacking from RMC14 - pull/7587
-            _netManager.ServerSendToMany(new MsgChatMessage() { Message = msg }, clients);
+            _netManager.ServerSendToMany(new MsgChatMessage() { Message = msg }, clients); // Persistence: Chat stacking from RMC14 - pull/7587
         }
-
 
         if (!recordReplay)
             return;

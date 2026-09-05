@@ -1,7 +1,6 @@
 ﻿// Persistence: Chat stacking from RMC14 - pull/7587
 using Content.Client.UserInterface.Systems.Chat.Widgets;
 using Content.Shared._RMC14.CCVar;
-using Content.Shared._RMC14.Chat;
 using Content.Shared.Chat;
 using Robust.Client.UserInterface.Controls;
 using Robust.Shared.Configuration;
@@ -9,9 +8,9 @@ using Robust.Shared.Utility;
 
 namespace Content.Client._RMC14.Chat;
 
-public sealed class CMChatSystem : EntitySystem // Persistence: SharedCMChatSystem < EntitySystem
+public sealed partial class CMChatSystem : EntitySystem // Persistence: SharedCMChatSystem < EntitySystem
 {
-    [Dependency] private readonly IConfigurationManager _config = default!;
+    [Dependency] private IConfigurationManager _config = default!;
 
     private int _repeatHistory;
 
