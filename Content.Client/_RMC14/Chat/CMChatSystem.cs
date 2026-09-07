@@ -44,7 +44,7 @@ public sealed partial class CMChatSystem : EntitySystem // Persistence: SharedCM
             var copy = new FormattedMessage(old.FormattedMessage);
             old.Count++;
             copy.AddMarkupPermissive($" [color=red]x{old.Count}[/color]");
-            contents.SetMessage(old.Index, copy);
+            contents.SetMessage(old.Index, copy, tagsAllowed: null);
             repeated = true;
             break;
         }
