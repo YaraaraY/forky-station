@@ -25,6 +25,12 @@
     notificationsEnabled: false
     cartridgeSlot:
       locked: true
+  - type: ItemSlots
+  - type: ContainerContainer
+    containers:
+      Cartridge-Slot: !type:ContainerSlot {}
+      preinstalled-program-container: !type:Container {}
+      removable-program-container: !type:Container {}
   - type: AutoActivateCartridge
   - type: EntityTableContainerFill
     containers:
