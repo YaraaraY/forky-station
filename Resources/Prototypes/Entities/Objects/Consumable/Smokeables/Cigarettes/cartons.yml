@@ -29,8 +29,8 @@
 - type: entity
   id: CigCartonRed
   parent: CigCartonGreen
-  name: Martian Reds carton # Funky
-  description: A carton containing 6 packets of Martian Reds. # Funky
+  name: Royal Reds carton # Funky
+  description: A carton containing 6 packets of Royal Reds. # Funky
   components:
   - type: Sprite
     sprite: _Funkystation/Objects/Consumable/Smokeables/Cigarettes/Cartons/red.rsi # Funky
@@ -63,8 +63,8 @@
 - type: entity
   id: CigCartonBlack
   parent: CigCartonGreen
-  name: Blanc & Noir carton # Funky
-  description: A carton containing 6 packets of Blanc & Noir. # Funky
+  name: Ruĝa Stelo carton # Funky
+  description: A carton containing 6 packets of Ruĝa Stelo. # Funky
   components:
   - type: Sprite
     sprite: _Funkystation/Objects/Consumable/Smokeables/Cigarettes/Cartons/black.rsi # Funky

@@ -157,8 +157,8 @@
 - type: entity
   id: CigPackRed
   parent: CigPackBase
-  name: Martian Reds packet # Funky
-  description: The first tobacco product manufactured by Humans extraterrestrially on their first off-world colony, then bought out by NanoTrasen. Ubiquitous.
+  name: Royal Reds packet # Funky
+  description: A premium blend of tobacco with a smooth, chocolate-y aftertaste. Elegant and renowned. # Funky
   components:
   - type: Sprite
     sprite: _Funkystation/Objects/Consumable/Smokeables/Cigarettes/Packs/red.rsi # Funky
@@ -179,8 +179,8 @@
 - type: entity
   id: CigPackBlack
   parent: CigPackBase
-  name: Blanc & Noir packet # Funky
-  description: A brand made by Mimes, for Mimes, from Mimes. Tastes exactly like the drink. # Funky
+  name: Ruĝa Stelo packet # Funky
+  description: A brand of cigarettes produced by the USP, extremely popular amongst military personnel. These are known to still burn bright even in the darkest, dampest trenches. # Funky
   components:
   - type: Sprite
     sprite: _Funkystation/Objects/Consumable/Smokeables/Cigarettes/Packs/black.rsi # Funky
