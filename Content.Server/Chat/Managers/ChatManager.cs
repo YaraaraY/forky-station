@@ -458,8 +458,8 @@ internal sealed partial class ChatManager : IChatManager
         foreach (var client in clients)
         {
             var customWrapMessage = PrependFollowButtonIfAppropriate(wrappedMessage, source, client);
-            var msg = new ChatMessage(channel, message, wrappedMessage, netSource, user?.Key, hideChat, colorOverride, audioPath, audioVolume, repeatCheckSender: !_entityManager.HasComponent<ChatRepeatIgnoreSenderComponent>(source)); // Persistence: Chat stacking from RMC14 - pull/7587
-            _netManager.ServerSendToMany(new MsgChatMessage() { Message = msg }, clients); // Persistence: Chat stacking from RMC14 - pull/7587
+            var msg = new ChatMessage(channel, message, customWrapMessage, netSource, user?.Key, hideChat, colorOverride, audioPath, audioVolume, repeatCheckSender: !_entityManager.HasComponent<ChatRepeatIgnoreSenderComponent>(source)); // Persistence: Chat stacking from RMC14 - pull/7587
+            _netManager.ServerSendMessage(new MsgChatMessage() { Message = msg }, client);
         }
 
         if (!recordReplay)
