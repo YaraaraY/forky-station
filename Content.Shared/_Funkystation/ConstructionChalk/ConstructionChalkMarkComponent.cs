@@ -10,7 +10,7 @@ namespace Content.Shared._Funkystation.ConstructionChalk;
 public sealed partial class ConstructionChalkMarkComponent : Component
 {
     [DataField, AutoNetworkedField]
-    public ProtoId<ConstructionPrototype> ConstructionPrototype = new(string.Empty);
+    public ProtoId<ConstructionPrototype>? ConstructionPrototype;
 
     [DataField, AutoNetworkedField]
     public Angle Rotation = Angle.Zero;
