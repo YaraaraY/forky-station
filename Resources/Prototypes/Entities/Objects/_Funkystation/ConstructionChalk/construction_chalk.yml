@@ -76,7 +76,6 @@
   categories: [ HideSpawnMenu ]
   name: chalk mark
   description: A construction plan chalked out on the floor.
-  noSpawn: true
   components:
   - type: ConstructionChalkMark
   - type: Sprite
