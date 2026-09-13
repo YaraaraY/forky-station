@@ -120,7 +120,8 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
     // generic ghost visuals for now
     private void OnMarkState(Entity<ConstructionChalkMarkComponent> ent, ref AfterAutoHandleStateEvent args)
     {
-        if (!_construction.TryGetRecipePrototype(ent.Comp.ConstructionPrototype, out var targetProtoId) ||
+        if (ent.Comp.ConstructionPrototype is not { } recipeId ||
+            !_construction.TryGetRecipePrototype(recipeId.Id, out var targetProtoId) ||
             !_proto.TryIndex(targetProtoId, out var targetProto))
         {
             return;
