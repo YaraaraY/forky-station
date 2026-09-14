@@ -51,13 +51,15 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
 
         var coords = GetCoordinates(ev.Coordinates);
         var mapPos = _transform.ToMapCoordinates(coords);
-        if (!TryResolveFamily(ev.ConstructionPrototype, out var familyRoot, out var layerIndex, chalkComp.Mode) ||
+
+        if (!IsChalkableRecipe(ev.ConstructionPrototype, chalkComp.Mode) ||
             !_proto.TryIndex<ConstructionPrototype>(ev.ConstructionPrototype, out var recipe))
         {
             return;
         }
 
-        if (MarkAlreadyPresent(mapPos, familyRoot, layerIndex))
+        // just checks the same recipe...
+        if (MarkAlreadyPresent(mapPos, ev.ConstructionPrototype))
             return;
 
         bool IgnoreOccupied(EntityUid e)
@@ -143,11 +145,8 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
         }
     }
 
-    private bool TryResolveFamily(string constructionPrototype, out string familyRoot, out int layerIndex, ChalkMode mode)
+    private bool IsChalkableRecipe(string constructionPrototype, ChalkMode mode)
     {
-        familyRoot = constructionPrototype;
-        layerIndex = 0;
-
         foreach (var category in _proto.EnumeratePrototypes<ChalkCategoryPrototype>())
         {
             if (category.Mode != mode)
@@ -156,51 +155,27 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
             foreach (var entry in category.Entries)
             {
                 if (entry.ConstructionPrototype.Id == constructionPrototype)
-                {
-                    familyRoot = entry.ConstructionPrototype.Id;
-                    layerIndex = 0;
                     return true;
-                }
 
                 if (!_proto.TryIndex<ConstructionPrototype>(entry.ConstructionPrototype.Id, out var recipe))
                     continue;
 
-                for (var i = 0; i < recipe.AlternativePrototypes.Length; i++)
-                {
-                    if (recipe.AlternativePrototypes[i] != constructionPrototype)
-                        continue;
-
-                    familyRoot = entry.ConstructionPrototype.Id;
-                    layerIndex = i;
+                if (recipe.AlternativePrototypes.Any(alt => alt == constructionPrototype))
                     return true;
-                }
             }
         }
 
         return false;
     }
 
-    private (string familyRoot, int layerIndex) ResolveFamilyUnscoped(string constructionPrototype)
-    {
-        foreach (var mode in new[] { ChalkMode.Construction, ChalkMode.Piping })
-        {
-            if (TryResolveFamily(constructionPrototype, out var familyRoot, out var layerIndex, mode))
-                return (familyRoot, layerIndex);
-        }
-
-        return (constructionPrototype, 0);
-    }
-
-    private bool MarkAlreadyPresent(MapCoordinates mapPos, string familyRoot, int layerIndex)
+    private bool MarkAlreadyPresent(MapCoordinates mapPos, string constructionPrototype)
     {
         foreach (var existing in _lookup.GetEntitiesInRange<ConstructionChalkMarkComponent>(mapPos, 0.1f))
         {
             if (existing.Comp.ConstructionPrototype is not { } existingProtoId)
                 continue;
 
-            var (existingFamily, existingLayer) = ResolveFamilyUnscoped(existingProtoId);
-
-            if (existingFamily == familyRoot && existingLayer == layerIndex)
+            if (existingProtoId.Id == constructionPrototype)
                 return true;
         }
 
