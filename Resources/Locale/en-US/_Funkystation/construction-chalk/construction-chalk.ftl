@@ -2,8 +2,8 @@
 chalk-mode-construction = construction
 chalk-mode-piping = piping
 chalk-mode-switched = Chalk set to { $mode } mode.
-
 chalk-mark-erase-verb = Erase mark
+chalk-mode-status-label = Mode: [color=white]{$modeString}[/color]
 
 chalk-category-walls = Walls
 chalk-entry-wall = Wall

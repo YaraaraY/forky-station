@@ -3,10 +3,12 @@ using Content.Client._Funkystation.Placement;
 using Content.Shared.Atmos.Components;
 using Content.Shared.Atmos.EntitySystems;
 using Content.Shared.Construction.Prototypes;
+using Content.Shared.Interaction;
 using Robust.Client.GameObjects;
 using Robust.Client.Graphics;
 using Robust.Client.Placement;
 using Robust.Client.Placement.Modes;
+using Robust.Client.Player;
 using Robust.Shared.Enums;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
@@ -28,6 +30,7 @@ public sealed partial class AlignAtmosPipeLayers : SnapgridCenter
     [Dependency] private IEntityManager _entityManager = default!;
     [Dependency] private IPrototypeManager _protoManager = default!;
     [Dependency] private IEyeManager _eyeManager = default!;
+    [Dependency] private IPlayerManager _playerManager = default!;
 
     private readonly SharedMapSystem _mapSystem;
     private readonly SharedTransformSystem _transformSystem;
@@ -52,6 +55,26 @@ public sealed partial class AlignAtmosPipeLayers : SnapgridCenter
         _pipeLayersSystem = _entityManager.System<SharedAtmosPipeLayersSystem>();
         _spriteSystem = _entityManager.System<SpriteSystem>();
         _constructionSystem = _entityManager.System<ConstructionSystem>();
+    }
+
+    // funky. mirrors AlignRCDConstruction
+    public override bool IsValidPosition(EntityCoordinates position)
+    {
+        if (_playerManager.LocalSession?.AttachedEntity is not { } player ||
+            !_entityManager.TryGetComponent<TransformComponent>(player, out var xform))
+        {
+            return false;
+        }
+
+        if (!_transformSystem.InRange(xform.Coordinates, position, SharedInteractionSystem.InteractionRange))
+        {
+            InvalidPlaceColor = InvalidPlaceColor.WithAlpha(0f);
+            return false;
+        }
+
+        InvalidPlaceColor = InvalidPlaceColor.WithAlpha(1f);
+
+        return base.IsValidPosition(position);
     }
 
     /// <inheritdoc/>
@@ -149,11 +172,15 @@ public sealed partial class AlignAtmosPipeLayers : SnapgridCenter
         if (newProto.ID == layerHijack.CurrentPrototype?.ID) // funky
             return;
 
+        var current = pManager.CurrentPermission; // funky
+
         // Start placing
         pManager.BeginPlacing(new PlacementInformation()
         {
             IsTile = false,
             PlacementOption = newProto.PlacementMode,
+            Range = current?.Range ?? 0, // funky
+            UseEditorContext = current?.UseEditorContext ?? true, // funky
         },
         layerHijack.WithPrototype(newProto)); // funky
 

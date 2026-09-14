@@ -1,11 +1,13 @@
 ﻿using System.Linq;
 using Content.Client.Construction;
+using Content.Client.Items;
 using Content.Client.UserInterface.Controls;
 using Content.Shared._Funkystation.ConstructionChalk;
 using Content.Shared.Construction.Prototypes;
 using Content.Shared.Interaction.Events;
 using Robust.Client.GameObjects;
 using Robust.Client.Placement;
+using Robust.Client.Placement.Modes;
 using Robust.Shared.Enums;
 using Robust.Shared.Map;
 using Robust.Shared.Prototypes;
@@ -29,8 +31,16 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
         base.Initialize();
 
         SubscribeLocalEvent<ConstructionChalkComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<ConstructionChalkMarkComponent, AfterAutoHandleStateEvent>(OnMarkState);
         SubscribeLocalEvent<ConstructionChalkComponent, EntParentChangedMessage>(OnParentChanged);
+        SubscribeLocalEvent<ConstructionChalkComponent, AfterAutoHandleStateEvent>(OnChalkState);
+        SubscribeLocalEvent<ConstructionChalkMarkComponent, AfterAutoHandleStateEvent>(OnMarkState);
+
+        Subs.ItemStatus<ConstructionChalkComponent>(ent => new ConstructionChalkStatusControl(ent));
+    }
+
+    private void OnChalkState(Entity<ConstructionChalkComponent> ent, ref AfterAutoHandleStateEvent args)
+    {
+        ent.Comp.IsStatusControlUpdateRequired = true;
     }
 
     private void OnParentChanged(Entity<ConstructionChalkComponent> ent, ref EntParentChangedMessage args)
@@ -100,10 +110,14 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
 
         var hijack = new ChalkPlacementHijack(_entMan, _proto, chalk.Owner, recipe, RequestPlaceMark);
 
+        var placementMode = recipe.PlacementMode == nameof(SnapgridCenter)
+            ? nameof(ChalkSnapgridCenter)
+            : recipe.PlacementMode;
+
         _placementManager.BeginPlacing(new PlacementInformation
         {
             IsTile = false,
-            PlacementOption = recipe.PlacementMode,
+            PlacementOption = placementMode,
         },
         hijack);
     }
@@ -120,8 +134,10 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
     // generic ghost visuals for now
     private void OnMarkState(Entity<ConstructionChalkMarkComponent> ent, ref AfterAutoHandleStateEvent args)
     {
-        if (ent.Comp.ConstructionPrototype is not { } recipeId ||
-            !_construction.TryGetRecipePrototype(recipeId.Id, out var targetProtoId) ||
+        if (ent.Comp.ConstructionPrototype is not { } protoId)
+            return;
+
+        if (!_construction.TryGetRecipePrototype(protoId, out var targetProtoId) ||
             !_proto.TryIndex(targetProtoId, out var targetProto))
         {
             return;

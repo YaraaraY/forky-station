@@ -4,7 +4,7 @@ using Robust.Shared.GameStates;
 namespace Content.Shared._Funkystation.ConstructionChalk;
 
 // tool that places construction chalk marks
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true)]
 public sealed partial class ConstructionChalkComponent : Component
 {
     // which set of categories the radial shows
@@ -13,4 +13,7 @@ public sealed partial class ConstructionChalkComponent : Component
 
     [DataField]
     public SoundSpecifier PlaceSound = new SoundCollectionSpecifier("Chalk");
+
+    [ViewVariables]
+    public bool IsStatusControlUpdateRequired;
 }

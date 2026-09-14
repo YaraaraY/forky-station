@@ -5,6 +5,7 @@ using Content.Shared.Construction.Prototypes;
 using Content.Shared.Interaction;
 using Content.Shared.Interaction.Events;
 using Robust.Shared.Audio.Systems;
+using Robust.Shared.Map;
 using Robust.Shared.Physics;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Prototypes;
@@ -48,20 +49,16 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
         if (!TryComp<ConstructionChalkComponent>(GetEntity(ev.Chalk), out var chalkComp))
             return;
 
-        if (!IsChalkableRecipe(ev.ConstructionPrototype, chalkComp.Mode) ||
+        var coords = GetCoordinates(ev.Coordinates);
+        var mapPos = _transform.ToMapCoordinates(coords);
+        if (!TryResolveFamily(ev.ConstructionPrototype, out var familyRoot, out var layerIndex, chalkComp.Mode) ||
             !_proto.TryIndex<ConstructionPrototype>(ev.ConstructionPrototype, out var recipe))
         {
             return;
         }
 
-        var coords = GetCoordinates(ev.Coordinates);
-        var mapPos = _transform.ToMapCoordinates(coords);
-
-        // prevent placing the same chalk mark multiple times in the same spot
-        if (_lookup.GetEntitiesInRange<ConstructionChalkMarkComponent>(mapPos, 0.1f).Any(existingMark => existingMark.Comp.ConstructionPrototype == ev.ConstructionPrototype))
-        {
+        if (MarkAlreadyPresent(mapPos, familyRoot, layerIndex))
             return;
-        }
 
         bool IgnoreOccupied(EntityUid e)
         {
@@ -104,11 +101,17 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
         if (mark.Comp.IsBuilding)
             return;
 
+        if (mark.Comp.ConstructionPrototype is not { } protoId)
+        {
+            QueueDel(mark.Owner);
+            return;
+        }
+
         mark.Comp.IsBuilding = true;
 
         try
         {
-            if (!_proto.TryIndex(mark.Comp.ConstructionPrototype, out var recipe))
+            if (!_proto.TryIndex(protoId, out var recipe))
             {
                 QueueDel(mark.Owner);
                 return;
@@ -140,8 +143,11 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
         }
     }
 
-    private bool IsChalkableRecipe(string constructionPrototype, ChalkMode mode)
+    private bool TryResolveFamily(string constructionPrototype, out string familyRoot, out int layerIndex, ChalkMode mode)
     {
+        familyRoot = constructionPrototype;
+        layerIndex = 0;
+
         foreach (var category in _proto.EnumeratePrototypes<ChalkCategoryPrototype>())
         {
             if (category.Mode != mode)
@@ -150,16 +156,52 @@ public sealed partial class ConstructionChalkSystem : SharedConstructionChalkSys
             foreach (var entry in category.Entries)
             {
                 if (entry.ConstructionPrototype.Id == constructionPrototype)
+                {
+                    familyRoot = entry.ConstructionPrototype.Id;
+                    layerIndex = 0;
                     return true;
+                }
 
                 if (!_proto.TryIndex<ConstructionPrototype>(entry.ConstructionPrototype.Id, out var recipe))
                     continue;
 
-                if (recipe.AlternativePrototypes.Any(alt => alt == constructionPrototype))
+                for (var i = 0; i < recipe.AlternativePrototypes.Length; i++)
                 {
+                    if (recipe.AlternativePrototypes[i] != constructionPrototype)
+                        continue;
+
+                    familyRoot = entry.ConstructionPrototype.Id;
+                    layerIndex = i;
                     return true;
                 }
             }
+        }
+
+        return false;
+    }
+
+    private (string familyRoot, int layerIndex) ResolveFamilyUnscoped(string constructionPrototype)
+    {
+        foreach (var mode in new[] { ChalkMode.Construction, ChalkMode.Piping })
+        {
+            if (TryResolveFamily(constructionPrototype, out var familyRoot, out var layerIndex, mode))
+                return (familyRoot, layerIndex);
+        }
+
+        return (constructionPrototype, 0);
+    }
+
+    private bool MarkAlreadyPresent(MapCoordinates mapPos, string familyRoot, int layerIndex)
+    {
+        foreach (var existing in _lookup.GetEntitiesInRange<ConstructionChalkMarkComponent>(mapPos, 0.1f))
+        {
+            if (existing.Comp.ConstructionPrototype is not { } existingProtoId)
+                continue;
+
+            var (existingFamily, existingLayer) = ResolveFamilyUnscoped(existingProtoId);
+
+            if (existingFamily == familyRoot && existingLayer == layerIndex)
+                return true;
         }
 
         return false;
