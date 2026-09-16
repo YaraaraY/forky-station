@@ -72,14 +72,6 @@
             max: 1
       - !type:DoActsBehavior
         acts: [ "Destruction" ]
-  - type: Extractable
-    grindableSolutionName: glass
-  - type: SolutionContainerManager
-    solutions:
-      glass:
-        reagents:
-        - ReagentId: Silicon
-          Quantity: 10
   - type: QuickConstructable # DEN quick construction
     category: Glass
 
@@ -151,8 +143,6 @@
           ShardGlassReinforced:
             min: 1
             max: 1
-      - !type:DoActsBehavior
-        acts: [ "Destruction" ]
   - type: QuickConstructable # DEN quick construction
     category: ReinforcedGlass
   - type: Solution
@@ -221,8 +211,6 @@
           ShardGlassPlasma:
             min: 1
             max: 1
-      - !type:DoActsBehavior
-        acts: [ "Destruction" ]
   - type: QuickConstructable # DEN quick construction
     category: PlasmaGlass
   - type: Solution
@@ -273,21 +261,6 @@
   - type: Construction
     graph: Glass
     node: SheetRPGlass
-  - type: Extractable
-    grindableSolutionName: rpglass
-  - type: SolutionContainerManager
-    solutions:
-      rpglass:
-        reagents:
-        - ReagentId: Silicon
-          Quantity: 10
-        - ReagentId: Plasma
-          Quantity: 10
-        - ReagentId: Iron
-          Quantity: 4.5
-        - ReagentId: Carbon
-          Quantity: 0.5
-        canReact: false
   - type: QuickConstructable # DEN quick construction
     category: ReinforcedPlasmaGlass
   - type: Solution
@@ -358,19 +331,6 @@
           ShardGlassUranium:
             min: 1
             max: 1
-      - !type:DoActsBehavior
-        acts: [ "Destruction" ]
-  - type: Extractable
-    grindableSolutionName: uglass
-  - type: SolutionContainerManager
-    solutions:
-      uglass:
-        reagents:
-        - ReagentId: Silicon
-          Quantity: 10
-        - ReagentId: Uranium
-          Quantity: 10
-        canReact: false
   - type: QuickConstructable # DEN quick construction
     category: UraniumGlass
   - type: Solution
@@ -420,21 +380,6 @@
   - type: Construction
     graph: Glass
     node: SheetRUGlass
-  - type: Extractable
-    grindableSolutionName: ruglass
-  - type: SolutionContainerManager
-    solutions:
-      ruglass:
-        reagents:
-        - ReagentId: Silicon
-          Quantity: 10
-        - ReagentId: Uranium
-          Quantity: 10
-        - ReagentId: Iron
-          Quantity: 4.5
-        - ReagentId: Carbon
-          Quantity: 0.5
-        canReact: false
   - type: QuickConstructable # DEN quick construction
     category: ReinforcedUraniumGlass
   - type: Solution
@@ -505,21 +450,6 @@
           ShardGlassClockwork:
             min: 1
             max: 1
-      - !type:DoActsBehavior
-        acts: [ "Destruction" ]
-  - type: Extractable
-    grindableSolutionName: brassglass
-  - type: SolutionContainerManager
-    solutions:
-      cglass:
-        reagents:
-        - ReagentId: Silicon
-          Quantity: 10
-        - ReagentId: Zinc
-          Quantity: 3.3
-        - ReagentId: Copper
-          Quantity: 6.7
-        canReact: false
   - type: QuickConstructable # DEN quick construction
     category: ClockworkGlass
   - type: Solution
