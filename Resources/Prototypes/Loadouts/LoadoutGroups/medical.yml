@@ -11,8 +11,8 @@
   id: MedicalBackpack
   name: loadout-group-medical-doctor-backpack
   loadouts:
-  - MedicalDoctorBackpack
-  - MedicalDoctorSatchel
+  # - MedicalDoctorBackpack # funky
+  # - MedicalDoctorSatchel # funky
   - MedicalDoctorDuffel
 
 - type: loadoutGroup

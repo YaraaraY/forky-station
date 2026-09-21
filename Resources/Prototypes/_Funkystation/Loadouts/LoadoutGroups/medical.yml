@@ -100,3 +100,9 @@
   loadouts:
   - FuMedInternDress
   - FuMedInternJumpsuit
+
+- type: loadoutGroup
+  id: MedicalPouch
+  name: loadout-group-pouch
+  loadouts:
+  - MedicalPouch

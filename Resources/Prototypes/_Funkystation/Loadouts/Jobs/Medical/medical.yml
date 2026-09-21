@@ -64,3 +64,8 @@
   equipment:
     jumpsuit: FuClothingUniformScrubsTealSleeveless
   groupBy: "scrubs"
+
+- type: loadout
+  id: MedicalPouch
+  equipment:
+    pocket2: PouchMedical

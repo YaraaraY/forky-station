@@ -75,9 +75,12 @@
 
 - type: Tag
   id: Molotov
-  
+
 - type: Tag
   id: PASpeakerElectronics
-  
+
 - type: Tag
   id: ConstructionChalk
+
+- type: Tag
+  id: Pouch

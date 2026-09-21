@@ -22,7 +22,7 @@
     shoes: ClothingShoesColorWhite
     id: MedicalInternWallet # Funky: the wallet-ening
     ears: ClothingHeadsetMedical
-    pocket2: BookMedicalReferenceBook
+    pocket1: BookMedicalReferenceBook # funky, pocket1
 
 - type: chameleonOutfit
   id: MedicalInternChameleonOutfit

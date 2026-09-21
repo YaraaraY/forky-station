@@ -3,3 +3,8 @@
   id: ScientistHardhatWhite
   equipment:
     head: ClothingHeadHatHardhatWhite
+
+- type: loadout
+  id: ResearchPouch
+  equipment:
+    pocket2: PouchResearch

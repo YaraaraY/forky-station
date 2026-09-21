@@ -1,0 +1,11 @@
+﻿- type: loadoutGroup
+  id: LeatherSatchel
+  name: loadout-group-backpack
+  loadouts:
+  - LeatherSatchel
+
+- type: loadoutGroup
+  id: CommonPouch
+  name: loadout-group-pouch
+  loadouts:
+  - CommonPouch

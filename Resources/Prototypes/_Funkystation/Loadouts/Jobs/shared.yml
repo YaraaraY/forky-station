@@ -1,0 +1,9 @@
+﻿- type: loadout
+  id: LeatherSatchel
+  equipment:
+    back: ClothingBackpackSatchelLeather
+
+- type: loadout
+  id: CommonPouch
+  equipment:
+    pocket2: PouchGeneric

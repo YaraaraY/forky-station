@@ -1,0 +1,5 @@
+﻿- type: loadoutGroup
+  id: ResearchPouch
+  name: loadout-group-pouch
+  loadouts:
+  - ResearchPouch
