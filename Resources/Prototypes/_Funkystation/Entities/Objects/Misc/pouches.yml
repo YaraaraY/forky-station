@@ -44,7 +44,7 @@
   parent: BasePouch
   id: PouchResearch
   name: research pouch
-  description: A small pouch, resembling a pocket protector, worn frequently by researchers and scientists. Designed to fit into your pocket for extra storage.
+  description: A small, purple-trimmed pouch commonly worn by researchers. The bundled emergency transceiver was permanently disabled to cut operating costs. Designed to fit into your pocket for extra storage.
   components:
   - type: Sprite
     sprite: _Funkystation/Objects/Storage/pouch.rsi
