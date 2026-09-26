@@ -42,6 +42,7 @@
   equipment:
     id: HDPDA
     ears: ClothingHeadsetHD
+    back: ClothingBackpackSatchelLeather # funky
   storage:
     back:
     - Flash

@@ -23,6 +23,7 @@
     id: MedicalInternWallet # Funky: the wallet-ening
     ears: ClothingHeadsetMedical
     pocket1: BookMedicalReferenceBook # funky, pocket1
+    pocket2: PouchMedical # funky
 
 - type: chameleonOutfit
   id: MedicalInternChameleonOutfit

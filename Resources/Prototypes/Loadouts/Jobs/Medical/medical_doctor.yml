@@ -82,22 +82,6 @@
   equipment:
     jumpsuit: UniformScrubsColorPurple
 
-# Back
-- type: loadout
-  id: MedicalDoctorBackpack
-  equipment:
-    back: ClothingBackpackMedical
-
-- type: loadout
-  id: MedicalDoctorSatchel
-  equipment:
-    back: ClothingBackpackSatchelMedical
-
-- type: loadout
-  id: MedicalDoctorDuffel
-  equipment:
-    back: ClothingBackpackDuffelMedical
-
 # OuterClothing
 - type: loadout
   id: MedicalDoctorWintercoat

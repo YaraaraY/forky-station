@@ -23,6 +23,7 @@
     id: ResearchAssistantWallet # Funky: the wallet-ening
     ears: ClothingHeadsetScience
     pocket1: BookScientistsGuidebook # funky, pocket1
+    pocket2: PouchResearch # funky
   #storage:
     #back:
     #- Stuff
