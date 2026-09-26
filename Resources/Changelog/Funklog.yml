@@ -907,4 +907,14 @@
   id: 106
   time: '2026-09-25T13:25:45Z'
   url: https://github.com/funky-station/forky-station/pull/494
+- author: AraiMaia
+  changes:
+  - message: You can now pat people down by right clicking them, and selecting the
+      verb.
+    type: Add
+  - message: You can now open the worn storage items of people in the strip menu.
+    type: Tweak
+  id: 107
+  time: '2026-09-26T19:32:08Z'
+  url: https://github.com/funky-station/forky-station/pull/536
 Order: -1
