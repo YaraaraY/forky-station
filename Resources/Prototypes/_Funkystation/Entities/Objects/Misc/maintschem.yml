@@ -220,7 +220,7 @@
     damage:
       types:
         Brute: -2
-        Burn: -2
+        Heat: -2
     healingBeginSound:
       path: "/Audio/Items/Medical/ointment_begin.ogg"
       params:
@@ -306,7 +306,7 @@
     damage:
       types:
         Brute: -1
-        Burn: -1
+        Heat: -1
     healingBeginSound:
       path: "/Audio/Items/Medical/ointment_begin.ogg"
       params:
@@ -510,7 +510,7 @@
     damage:
       types:
         Brute: -4
-        Burn: -4
+        Heat: -4
     healingBeginSound:
       path: "/Audio/Items/Medical/ointment_begin.ogg"
       params:
