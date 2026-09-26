@@ -1,4 +1,5 @@
-loadout-group-xo-backpack = XO backpack
+# Internal affairs
+loadout-group-xo-backpack = Executive Officer backpack
 
 # Engineering
 fu-loadout-group-station-engineer-head = Station Engineer head
