@@ -917,4 +917,12 @@
   id: 107
   time: '2026-09-26T19:32:08Z'
   url: https://github.com/funky-station/forky-station/pull/536
+- author: honeyed-lemons
+  changes:
+  - message: Added Quick Construction menus to Steel, Metal Rods, and all types of
+      Glass.
+    type: Add
+  id: 108
+  time: '2026-09-26T19:33:09Z'
+  url: https://github.com/funky-station/forky-station/pull/505
 Order: -1
