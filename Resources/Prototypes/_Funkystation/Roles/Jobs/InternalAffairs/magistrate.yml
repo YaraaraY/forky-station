@@ -28,7 +28,7 @@
     id: MagistrateWallet
     ears: ClothingHeadsetMagistrate
     outerClothing: ClothingOuterRobesJudge
-    pocket2: PouchGeneric # funky
+    pocket2: PouchGeneric
   storage:
     back:
     - BookSentencingGuidelines

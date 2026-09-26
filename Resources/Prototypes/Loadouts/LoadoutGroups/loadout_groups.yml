@@ -135,6 +135,14 @@
   - CaptainMantle
 
 - type: loadoutGroup
+  id: CaptainBackpack
+  name: loadout-group-captain-backpack
+  loadouts:
+  - CaptainBackpack
+  - CaptainSatchel
+  - CaptainDuffel
+
+- type: loadoutGroup
   id: CaptainOuterClothing
   name: loadout-group-captain-outerclothing
   loadouts:

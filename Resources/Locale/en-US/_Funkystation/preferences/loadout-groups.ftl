@@ -1,3 +1,5 @@
+loadout-group-xo-backpack = XO backpack
+
 # Engineering
 fu-loadout-group-station-engineer-head = Station Engineer head
 fu-loadout-group-station-engineer-uniform = Station Engineer uniform
