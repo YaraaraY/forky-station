@@ -148,5 +148,7 @@
   groups:
   - Glasses
   - Trinkets
+  - Survival
+  - GroupTankHarness
   - GroupSpeciesBreathTool
   - GroupBreathToolDecapoid # MACRO: Decapoid
