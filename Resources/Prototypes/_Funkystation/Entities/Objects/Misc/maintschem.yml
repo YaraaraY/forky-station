@@ -348,7 +348,7 @@
   parent: [ReagentPacket, ItemHeftyBase]
   id: ReagentContainerBathSalts
   name: bath salts
-  description: Not the ones you're thinking of. These are the ones for you actual bathtub.
+  description: Not the ones you're thinking of. These are the ones for your actual bathtub.
   components:
   - type: Sprite
     sprite: _Funkystation/Objects/Misc/Maintschem/bath_salts.rsi
