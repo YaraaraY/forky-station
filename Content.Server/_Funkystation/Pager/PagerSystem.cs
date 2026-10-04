@@ -193,6 +193,7 @@ public sealed partial class PagerSystem : SharedPagerSystem
         }
 
         _adminLogger.Add(LogType.Action, LogImpact.Low, $"{ToPrettyString(args.Actor):actor} sent page from {ToPrettyString(ent):pager} (Real No. {senderNumber}, Displayed No. {displaySenderNumber}) to #{args.TargetNumber} with code '{code ?? "none"}'.");
+        SendFeedback(ent, args.Actor);
 
         var query = EntityQueryEnumerator<PagerComponent, TransformComponent>();
         while (query.MoveNext(out var recvUid, out var recvPager, out var recvXform))
@@ -207,6 +208,13 @@ public sealed partial class PagerSystem : SharedPagerSystem
 
             DeliverPage(receiver, displaySenderNumber, code);
         }
+    }
+
+    // sound n popup
+    private void SendFeedback(Entity<PagerComponent> ent, EntityUid user)
+    {
+        _audio.PlayPvs(GetSendSound(ent), ent);
+        Popup.PopupEntity(Loc.GetString("pager-page-sent"), ent, user);
     }
 
     private void DeliverPage(Entity<PagerComponent> receiver, int senderNumber, string? code)

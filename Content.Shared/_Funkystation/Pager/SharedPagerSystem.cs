@@ -136,6 +136,11 @@ public abstract partial class SharedPagerSystem : EntitySystem
         return ent.Comp.BuzzSound;
     }
 
+    protected SoundSpecifier GetSendSound(Entity<PagerComponent> ent)
+    {
+        return ent.Comp.SendSound;
+    }
+
     protected bool TryConsumeCooldown(Entity<PagerComponent> ent, TimeSpan now)
     {
         if (now < ent.Comp.LastSent + ent.Comp.SendCooldown)
