@@ -14,17 +14,9 @@
   - Corporate
 
 - type: pagerPrefix
-  id: PagerPrefixSecurity
-  department: Security
-  prefix: 1
-  massPageAccess:
-  - HeadOfSecurity
-  - Captain
-
-- type: pagerPrefix
   id: PagerPrefixMedical
   department: Medical
-  prefix: 2
+  prefix: 1
   massPageAccess:
   - ChiefMedicalOfficer
   - Captain
@@ -32,7 +24,7 @@
 - type: pagerPrefix
   id: PagerPrefixScience
   department: Science
-  prefix: 3
+  prefix: 2
   massPageAccess:
   - ResearchDirector
   - Captain
@@ -40,15 +32,15 @@
 - type: pagerPrefix
   id: PagerPrefixEngineering
   department: Engineering
-  prefix: 4
+  prefix: 3
   massPageAccess:
   - ChiefEngineer
   - Captain
 
 - type: pagerPrefix
-  id: PagerPrefixCargo
+  id: PagerPrefixLogistics
   department: Cargo
-  prefix: 5
+  prefix: 4
   massPageAccess:
   - Quartermaster
   - Captain
@@ -56,7 +48,7 @@
 - type: pagerPrefix
   id: PagerPrefixInternalAffairs
   department: InternalAffairs
-  prefix: 6
+  prefix: 5
   massPageAccess:
   - ExecutiveOfficer
   - Captain
@@ -64,7 +56,15 @@
 - type: pagerPrefix
   id: PagerPrefixService
   department: Service
-  prefix: 7
+  prefix: 6
   massPageAccess:
   - HospitalityDirector
+  - Captain
+
+- type: pagerPrefix
+  id: PagerPrefixSecurity
+  department: Security
+  prefix: 99
+  massPageAccess:
+  - HeadOfSecurity
   - Captain
